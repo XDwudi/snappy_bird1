@@ -17,9 +17,10 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "node --test tests/*.test.ts tests/*.test.mjs",
-    "check": "npm run format:check && npm run typecheck && npm run check:architecture && npm test",
+    "check": "npm run format:check && npm run typecheck && npm run check:architecture && npm run check:design && npm test",
     "verify": "npm run check && npm run build && node scripts/check-dist.mjs && node --test tests/package.smoke.mjs",
-    "hooks:install": "git config --local core.hooksPath .githooks"
+    "hooks:install": "git config --local core.hooksPath .githooks",
+    "check:design": "node scripts/check-design.mjs"
   },
   "devDependencies": {
     "@types/node": "24.13.5",

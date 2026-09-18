@@ -1,5 +1,7 @@
 # 架构设计
 
+详细Roguelike系统提案见 [系统框架](design/SYSTEMS.md) 和 [ADR-002](adr/002-roguelike-systems.md)。以下描述当前已实现的工程底座。
+
 ## 范围
 
 采用 TypeScript + 原生 Canvas 2D + 微信小游戏适配层作为轻量 2D 游戏的起点。

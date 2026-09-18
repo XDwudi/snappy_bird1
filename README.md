@@ -1,7 +1,9 @@
 # Snappy Bird · 微信小游戏工程底座
 
-当前版本：**0.1.0 / 开发准备阶段**。项目名为暂用名，不代表已决定做飞鸟玩法。
-默认目标是**微信小游戏**（`compileType: game`），不是普通小程序中的 WXML 页面。
+当前工程版本：**0.1.0**；策划版本：**v0.2提案 / 待评审**。
+游戏方向已确定为 Flappy 式飞行 + Roguelike 技能构筑，暂用名《风羽远征》。
+先看 [游戏策划案](docs/design/GAME_DESIGN.md) 和 [66项技能图鉴](docs/design/SKILL_ATLAS.md)。
+目标是**微信小游戏**（`compileType: game`），不是普通小程序中的 WXML 页面。
 目前仅实现工程启动验证页，没有玩法、联网、广告或支付。
 
 ## 快速开始
@@ -59,5 +61,6 @@ npm run build
 ## 当前验证边界
 
 Node 测试及模拟 `wx` 的冒烟不能替代微信开发者工具和 iOS / Android 真机验收。
-未配置远端仓库，GitHub Actions 配置已提供，但只有推送后才会运行；
-账号接入、保护分支和微信发布均没有执行。具体记录见 [任务看板](docs/tasks/BOARD.md)。
+已配置 [GitHub远端](https://github.com/XDwudi/snappy_bird1)，工程基线已在本地提交并打标；Git HTTPS推送失败，远端仍为空，详见 [同步记录](docs/tasks/TASK-004-github-sync.md)。
+微信工具CLI连通且已登录；当前游客AppID被拒，需要真实小游戏AppID才能继续预览和上传。
+用户已授权工具测试与上传；尚未验证实际画面或真机，也未上传/发布。见 [CLI接入](docs/WECHAT_CLI.md)。
