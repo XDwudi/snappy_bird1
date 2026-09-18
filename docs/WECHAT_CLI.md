@@ -17,11 +17,11 @@
 # 生成预览二维码（真实AppID/权限必须可用）
 /Applications/wechatwebdevtools.app/Contents/MacOS/cli preview --project /Users/lxd/project/gpt/snappy_bird/dist
 
-# 以下仅为准备好的上传示例，尚未执行
+# 开发测试上传示例（结果以 TASK-003 实际记录为准）
 /Applications/wechatwebdevtools.app/Contents/MacOS/cli upload \
   --project /Users/lxd/project/gpt/snappy_bird/dist \
-  --version 0.1.0 \
-  --desc '工程验证：启动页、无玩法；以实际候选commit为准' \
+  --version 0.2.0 \
+  --desc '两章首轮试玩：39技能6遗物；平台待验收' \
   --info-output /private/tmp/snappy-bird-upload-info.json
 ```
 
@@ -31,8 +31,8 @@
 
 ## 当前状态与授权
 
-用户已授权测试和上传，无需重复请求操作许可；必要AppID尚缺，已提出信息请求。
-游客AppID导入被拒，尚未验证游戏画面或上传。收到AppID后继续接入即可。
+用户已授权测试和上传，无需重复请求操作许可；AppID已仅在忽略的本地配置中保存。
+真实项目open成功；Nightly模拟器启动异常，preview权限请求TLS断连，尚未通过微信验收。
 不要把服务端口直接暴露到公网；无需读取、提交或要求用户发送AppSecret。
 上传开发版本与正式审核发布分开记录；当前授权不自动包含对外正式发布。
 

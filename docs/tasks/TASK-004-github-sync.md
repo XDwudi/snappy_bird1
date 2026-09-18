@@ -1,6 +1,6 @@
 # TASK-004 · GitHub同步与CI
 
-- 状态：Blocked（Git HTTPS传输故障）
+- 状态：In Progress（权限及main同步已恢复，开发分支CI待记录）
 - 远端：[XDwudi/snappy_bird1](https://github.com/XDwudi/snappy_bird1)
 - 远端可见性：public（API读取得知，未修改）
 - 提交身份：XDwudi；邮箱与用户提供一致，仅写入本仓库配置
@@ -32,3 +32,9 @@ gh run list --repo XDwudi/snappy_bird1 --limit 5
 
 然后建立策划评审PR，保留main工程基线；无需重复询问指定远端的同步授权。
 不得用force push或重建远端历史作为网络错误的解决办法。
+
+## 本轮恢复检查
+
+2026-09-18：GitHub API确认当前账号对目标仓库admin/push为true；HTTPS接口可连接。使用gh凭据、HTTP/1.1和有界低速超时推送main成功，返回Everything up-to-date并建立origin/main跟踪。
+因此目前未发现GitHub权限拒绝。此前已观察到的是TLS超时/Empty reply；不能据此把原因归结为仓库无写权限。
+推送前扫描本地AppID隔离和全部Git历史，开发包/个人配置不会同步GitHub。保留main基线，首版在开发分支交付试玩。

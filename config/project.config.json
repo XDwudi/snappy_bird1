@@ -7,7 +7,20 @@
     "urlCheck": true,
     "es6": false,
     "enhance": false,
-    "minified": false
+    "minified": false,
+    "useCompilerPlugins": [],
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "packNpmRelationList": []
   },
-  "packOptions": { "ignore": [], "include": [] }
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "condition": {},
+  "simulatorType": "wechat",
+  "simulatorPluginLibVersion": {}
 }

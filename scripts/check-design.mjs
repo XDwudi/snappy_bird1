@@ -9,6 +9,19 @@ const rows = atlas
   .filter((line) => /^\|\s*[ESFNIACH]\d{2}\s*\|/.test(line));
 const ids = rows.map((row) => row.split('|')[1].trim());
 const known = new Set(ids);
+const expansion = await readFile('docs/design/CHAPTER_EXPANSION.md', 'utf8');
+const extras = [...expansion.matchAll(/^\|\s*(X\d{2})\s*\|/gm)].map(
+  (match) => match[1],
+);
+assert.equal(new Set(extras).size, 12, 'Expected 12 creative skills');
+const { SKILLS, RELICS } = await import('../src/game/skills.ts');
+assert.equal(SKILLS.length, 39);
+assert.equal(RELICS.length, 6);
+for (const skill of SKILLS)
+  assert.ok(
+    known.has(skill.id) || extras.includes(skill.id),
+    `Unknown runtime skill ${skill.id}`,
+  );
 assert.equal(ids.length, 66, 'Expected 66 skill rows');
 assert.equal(known.size, ids.length, 'Skill IDs must be unique');
 for (const faction of ['E', 'S', 'F', 'N', 'I', 'A']) {
@@ -64,5 +77,5 @@ async function checkLinks(directory) {
 }
 await checkLinks('.');
 console.log(
-  'Design checked: 66 unique skills, 9 resonance prerequisite pairs, 15/35/66 scopes, local Markdown links. No balance claim.',
+  'Design checked: 78 design skills, 39 runtime skills, 6 relics, legacy resonance prerequisites and local Markdown links. No balance claim.',
 );

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { bootstrap } from '../src/app/bootstrap.ts';
-import type { GamePlatform } from '../src/core/ports.ts';
+import type { GamePlatform, Point } from '../src/core/ports.ts';
 
 test('disposing app stops frames and removes every platform subscription once', () => {
   const pending = new Map<number, (time: number) => void>();
@@ -17,9 +17,15 @@ test('disposing app stops frames and removes every platform subscription once', 
     };
   }
   const platform: GamePlatform = {
+    randomSeed: () => 42,
     surface: {
       viewport: () => ({ width: 375, height: 667 }),
       clear() {},
+      gradient() {},
+      rect() {},
+      circle() {},
+      line() {},
+      polygon() {},
       text() {},
     },
     requestFrame(callback) {
@@ -32,7 +38,8 @@ test('disposing app stops frames and removes every platform subscription once', 
     },
     onHide: (callback) => subscribe('hide', callback),
     onShow: (callback) => subscribe('show', callback),
-    onTap: (callback) => subscribe('tap', callback),
+    onTap: (callback) =>
+      subscribe('tap', () => callback({ x: 180, y: 490 } as Point)),
     dispose: () => {
       platformDisposes++;
     },

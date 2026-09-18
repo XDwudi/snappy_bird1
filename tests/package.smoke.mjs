@@ -3,16 +3,25 @@ import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import { runInNewContext } from 'node:vm';
 
-test('built package boots with only WeChat APIs, handles input, resize and lifecycle', async () => {
+test('built game boots, maps touch coordinates, enters gameplay and freezes on hide', async () => {
   let nextId = 0;
-  const frames = new Map();
-  const listeners = new Map();
-  const text = [];
-  const scales = [];
+  const frames = new Map(),
+    listeners = new Map(),
+    texts = [];
+  const transforms = [];
   const ctx = {
-    scale: (...args) => scales.push(args),
+    setTransform: (...args) => transforms.push(args),
     fillRect() {},
-    fillText: (value) => text.push(value),
+    fillText: (value) => texts.push(value),
+    beginPath() {},
+    moveTo() {},
+    lineTo() {},
+    quadraticCurveTo() {},
+    closePath() {},
+    fill() {},
+    arc() {},
+    stroke() {},
+    createLinearGradient: () => ({ addColorStop() {} }),
   };
   const canvas = { width: 0, height: 0, getContext: () => ctx };
   const wx = {
@@ -24,8 +33,8 @@ test('built package boots with only WeChat APIs, handles input, resize and lifec
     }),
   };
   for (const name of ['Hide', 'Show', 'TouchStart', 'WindowResize']) {
-    wx[`on${name}`] = (fn) => listeners.set(name, fn);
-    wx[`off${name}`] = (fn) => {
+    wx['on' + name] = (fn) => listeners.set(name, fn);
+    wx['off' + name] = (fn) => {
       if (listeners.get(name) === fn) listeners.delete(name);
     };
   }
@@ -39,31 +48,36 @@ test('built package boots with only WeChat APIs, handles input, resize and lifec
     await readFile('dist/game.js', 'utf8'),
     {
       wx,
-      requestAnimationFrame(callback) {
+      requestAnimationFrame(fn) {
         const id = nextId++;
-        frames.set(id, callback);
+        frames.set(id, fn);
         return id;
       },
       cancelAnimationFrame: (id) => frames.delete(id),
     },
     { timeout: 1000 },
   );
-  assert.equal(frames.size, 1);
   assert.equal(canvas.width, 750);
   assert.equal(canvas.height, 1334);
-  assert.deepEqual(scales, [[2, 2]]);
+  assert.equal(transforms.length, 1);
   frame(0);
-  assert.ok(text.includes('工程骨架已就绪'));
-  listeners.get('TouchStart')();
-  frame(16);
-  assert.ok(text.includes('触摸输入正常'));
+  assert.ok(texts.includes('风羽远征'));
+  const scale = 375 / 360,
+    offsetY = (667 - 640 * scale) / 2;
+  listeners.get('TouchStart')({
+    changedTouches: [{ clientX: 180 * scale, clientY: 490 * scale + offsetY }],
+  });
+  for (let t = 16; t < 3500; t += 16) frame(t);
+  assert.ok(texts.includes('Ⅰ  晴空林地'));
   listeners.get('Hide')();
   assert.equal(frames.size, 0);
   listeners.get('Show')();
   listeners.get('Show')();
   assert.equal(frames.size, 1);
-  listeners.get('WindowResize')();
   frame(10000);
-  assert.equal(frames.size, 1);
+  assert.ok(texts.includes('云端小憩'));
+  listeners.get('WindowResize')();
+  assert.equal(transforms.length, 2);
   listeners.get('Hide')();
+  assert.equal(frames.size, 0);
 });

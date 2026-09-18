@@ -4,6 +4,7 @@ import type { FrameClock } from './ports.ts';
 export function createFrameLoop(
   clock: FrameClock,
   update: (deltaSeconds: number) => void,
+  maxDeltaSeconds = 0.05,
 ) {
   let running = false;
   let handle: number | undefined;
@@ -16,7 +17,7 @@ export function createFrameLoop(
       previous === undefined ? 0 : (timestampMs - previous) / 1000;
     previous = timestampMs;
     try {
-      update(Math.max(0, Math.min(elapsed, 0.05)));
+      update(Math.max(0, Math.min(elapsed, maxDeltaSeconds)));
     } catch (error) {
       stop();
       throw error;
