@@ -1,0 +1,22 @@
+name: 开发任务
+description: 给开发者或 agent 的可验收任务
+title: '[TASK] '
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: 目标与范围
+      description: 为什么做、做什么、不做什么
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收条件
+      description: 用可观察行为描述，列出微信端需要验证的场景
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: 依赖、负责模块与风险

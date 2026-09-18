@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "types": ["node", "minigame-api-typings"] },
+  "include": ["src/**/*.ts", "tests/**/*.ts"]
+}

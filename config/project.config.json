@@ -1,0 +1,13 @@
+{
+  "description": "Snappy Bird engineering foundation",
+  "compileType": "game",
+  "projectname": "snappy-bird",
+  "miniprogramRoot": "./",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "enhance": false,
+    "minified": false
+  },
+  "packOptions": { "ignore": [], "include": [] }
+}
