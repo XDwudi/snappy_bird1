@@ -44,7 +44,7 @@ class RainEffect extends WeatherEffect {
     if (!this.isDebuffImmune(gameCtx)) {
       // 雨水积累
       const raincoatLv = gameCtx.abilities.owned.get('raincoat') || 0
-      const accumRate = Config.WEATHER.RAIN.ACCUMULATION_RATE * (1 - 0.4 * raincoatLv)
+      const accumRate = Config.WEATHER.RAIN.ACCUMULATION_RATE * Math.max(0, 1 - 0.4 * raincoatLv)
       this.rainLevel = Math.min(100, this.rainLevel + accumRate)
 
       // 重力增加（驯化雨豁免；风暴之眼并发≥2 时按 debuff 缩放）

@@ -62,6 +62,7 @@ class SpawnSystem {
     this._deps = deps
 
     // 生成计时状态（原 Game.js 字段，语义不变）
+    this._lastPipeCenter = null
     this._pipeDistance = 0    // [v1.3.0] 距上次生成管道的累计滚动距离(px)，替代旧 spawnTimer(帧)
     this._monsterDistance = 0 // [v1.3.0] 距上次生成怪物的累计滚动距离(px)
     this.itemSpawnTimer = 0   // [v1.1.1] 随机道具刷新计时器
@@ -88,6 +89,7 @@ class SpawnSystem {
 
   /** 重置全部生成计时状态（Game.start / backToReady 时调用） */
   reset() {
+    this._lastPipeCenter = null
     this._pipeDistance = 0    // [v1.3.0]
     this._monsterDistance = 0 // [v1.3.0]
     this.itemSpawnTimer = 0   // [v1.1.1]
@@ -108,6 +110,8 @@ class SpawnSystem {
    */
   setBossActive(active) {
     this._bossActive = !!active
+    this._lastPipeCenter = null
+    this._pipeDistance = 0
     // [v1.5.0 D21] 进战即供第一枚（计时器预置满，下个生成帧即生成——无卡输出链零启动延迟；
     // 火力流因此也快 ~1 发，已计入数值闭环口径），战斗结束清零、下一场同样即供
     this._bossSupplyTimer = active ? Config.BOSS.MISSILE_SUPPLY_INTERVAL_FRAMES : 0
@@ -171,7 +175,7 @@ class SpawnSystem {
 
   /**
    * [v1.3.0] 管道生成间隔改距离制：返回当前生成间隔（滚动像素）。
-   * [v1.2.2] N5 ramp 同步改距离版：120s起从270px线性收紧，至300s达240px下限。
+   * [v1.2.2] N5 ramp 同步改距离版：120s起从300px线性收紧，至300s达275px下限。
    * 与帧数制无关——减速期空间密度保持不变。
    * [v1.5.0] 章节注入点：pipeDistanceScale 按比例缩放最终间隔（默认不覆写）。
    * @returns {number} 当前生成间隔（px）
@@ -204,14 +208,25 @@ class SpawnSystem {
    */
   spawnPipe() {
     const stats = this._deps.getStats()
-    const gapBonus = stats.gapBonus
+    const gapBonus = stats.gapBonus || 0
     // [v1.1.5] 管道以基础间隙生成，动画缩回至最终间隙(baseGap + gapBonus)
     const finalGap = this._deps.getGapSize()  // 含 gapBonus 的最终间隙
     const baseGap = finalGap - gapBonus       // 不含 gapBonus 的基础间隙
     const groundY = this._deps.screenH - Config.GROUND.HEIGHT
     const minTop = Config.PIPE.MIN_TOP
-    const maxTop = groundY - finalGap - Config.PIPE.MIN_BOTTOM
-    const topHeight = minTop + Math.random() * (maxTop - minTop)
+    const minCenter = minTop + finalGap / 2
+    const maxCenter = groundY - Config.PIPE.MIN_BOTTOM - finalGap / 2
+    const P = Config.PIPE
+    const t = Math.min(1, this._deps.getGameTime() / P.CENTER_STEP_RAMP)
+    const step = P.CENTER_STEP_START + (P.CENTER_STEP_END - P.CENTER_STEP_START) * t
+    const previous = this._lastPipeCenter == null ? this._deps.getBirdY() : this._lastPipeCenter
+    const anchor = Math.max(minCenter, Math.min(maxCenter, previous))
+    const low = Math.max(minCenter, anchor - step)
+    const high = Math.min(maxCenter, anchor + step)
+    const center = low + Math.random() * (high - low)
+    this._lastPipeCenter = center
+    // 缩小射线围绕同一中心展开，不把整个间隙向上偏移。
+    const topHeight = center - baseGap / 2
     // 以基础间隙生成，shrinkBonus 驱动缩回动画
     const pipe = new Pipe(this._deps.screenW + 10, topHeight, baseGap, groundY)
     pipe.shrinkBonus = gapBonus

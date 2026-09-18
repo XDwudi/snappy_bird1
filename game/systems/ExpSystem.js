@@ -20,6 +20,7 @@ class ExpSystem {
     // [v1.4.0] 经验银行（exp_bank）：由 Game 根据持卡情况调用 configureBank 同步
     this.bankEnabled = false   // 是否持有经验银行
     this.bankBalance = 0       // 银行余额
+    this.bankDepositRate = 0
     this.bankRate = 0          // 每 10s 生息比例（0.05/级）
     this.lastBankDeposit = 0   // 最近一次 addExp 存入银行的量（Game 取走后清零）
     this.lastBankWithdraw = 0  // 最近一次升级时银行转入经验池的量
@@ -41,31 +42,23 @@ class ExpSystem {
 
   /**
    * 添加经验
-   * [v1.4.0] 经验银行分叉：单次获得超出「当前升级所需 ×1.5」的部分存入银行（不直接进经验条）；
-   *           银行上限 = 当前升级所需 ×2，超限部分自动入池；每次升级时银行全额转入经验池
-   *           （双刹车：上限 ×2 + 升级即全额取出，杜绝"只存不花"憋利邪道）
+   * [v1.6.0] 正常经验不扣减；额外储蓄每级5%，下次升级取整提取，余数保留。
+   *           余额上限为当前升级所需×2；每10秒生息每级5%。
    * @param {number} amount - 基础经验值（未乘倍率）
    * @param {number} multiplier - 经验倍率
    * @returns {number} 实际增加的经验
    */
   addExp(amount, multiplier) {
-    let actual = Math.round(amount * multiplier)
+    const actual = Math.round(amount * multiplier)
     this.lastBankDeposit = 0
     this.lastBankWithdraw = 0
 
-    if (this.bankEnabled && actual > 0) {
-      const BANK = Config.EXP.BANK
-      const needed = this.getExpNeeded(this.level)
-      const directCap = Math.ceil(needed * BANK.DIRECT_CAP_RATIO)
-      if (actual > directCap) {
-        let overflow = actual - directCap
-        actual = directCap
-        const room = Math.max(0, needed * BANK.CAP_RATIO - this.bankBalance)
-        const deposit = Math.min(overflow, room)
-        this.bankBalance += deposit
-        this.lastBankDeposit = deposit
-        actual += (overflow - deposit)  // 超限部分自动入池
-      }
+    // 正常经验全额入池；先取历史储蓄，再检查顿悟，防止银行反而压低成长。
+    if (this.bankEnabled && this.exp + actual >= this.getExpNeeded(this.level)) {
+      const withdraw = Math.floor(this.bankBalance)
+      this.exp += withdraw
+      this.bankBalance = Math.round((this.bankBalance - withdraw) * 100) / 100
+      this.lastBankWithdraw = withdraw
     }
 
     this.exp += actual
@@ -80,12 +73,6 @@ class ExpSystem {
         this.level += 2
         this.pendingLevelUps += 2
         this.enlightenUsed++
-        this.lastBankWithdraw = 0
-        if (this.bankEnabled && this.bankBalance > 0) {
-          this.exp += this.bankBalance
-          this.lastBankWithdraw += this.bankBalance
-          this.bankBalance = 0
-        }
       }
     }
 
@@ -94,12 +81,14 @@ class ExpSystem {
       this.exp -= this.getExpNeeded(this.level)
       this.level++
       this.pendingLevelUps++
-      // [v1.4.0] 升级瞬间银行"连本带利"全额取出（可能继续跨级，由 while 循环处理）
-      if (this.bankEnabled && this.bankBalance > 0) {
-        this.exp += this.bankBalance
-        this.lastBankWithdraw += this.bankBalance
-        this.bankBalance = 0
-      }
+    }
+
+    // 本次新增储蓄留到下一次升级，余额允许小数以免低额经验损失收益。
+    if (this.bankEnabled && actual > 0) {
+      const cap = this.getExpNeeded(this.level) * Config.EXP.BANK.CAP_RATIO
+      const deposit = Math.min(Math.round(actual * this.bankDepositRate * 100) / 100, Math.max(0, cap - this.bankBalance))
+      this.bankBalance = Math.round((this.bankBalance + deposit) * 100) / 100
+      this.lastBankDeposit = deposit
     }
 
     return actual
@@ -126,6 +115,7 @@ class ExpSystem {
   configureBank(lv) {
     this.bankEnabled = lv > 0
     this.bankRate = Config.EXP.BANK.INTEREST_PER_LV * lv
+    this.bankDepositRate = Config.EXP.BANK.DEPOSIT_PER_LV * lv
   }
 
   /**

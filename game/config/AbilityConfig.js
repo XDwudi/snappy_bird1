@@ -134,7 +134,7 @@ const Abilities = [
     category: ABILITY.CATEGORY.PASSIVE,
     rarity: 'uncommon',
     maxLevel: 3,
-    effectText: (lv) => `雨水积累 -${40 * lv}%`
+    effectText: (lv) => `雨水积累 -${Math.min(100, 40 * lv)}%`
   },
   {
     id: 'wind_rider',
@@ -434,11 +434,11 @@ const Abilities = [
     id: 'exp_bank',
     name: '经验银行',
     icon: '🏦',
-    desc: '溢出经验存入银行生息',
+    desc: '额外储蓄经验，下次升级提取',
     category: ABILITY.CATEGORY.SPECIAL,
     rarity: 'uncommon',
     maxLevel: 3,
-    effectText: (lv) => `溢出经验入银行，每10s生息${5 * lv}%`
+    effectText: (lv) => `额外经验存${5 * lv}%，升级取出，10s息${5 * lv}%`
   },
   // U4 定风珠：只免疫负面 debuff（增益保留），免疫判定在 debuff 应用点
   {

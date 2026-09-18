@@ -1,3 +1,4 @@
+// v1.6.0: 当前胜率含生存/击杀，击杀时长仅含method=kill。下方v1.5.0注释为历史方案。
 /**
  * test_boss_sim.js - v1.5.0 Boss 战模拟测试器（§6.3 验收指标后四项 + Boss 击杀时长）
  *
@@ -23,7 +24,7 @@
  *     中间弹必中悬停鸟，无卡局 2.5-10.6s 即战败）——是"站枪口"而非"站撸下限"。
  *     修正为：每局随机固定悬停高度（0.25-0.65H）+ 中等水平反应式避让
  *     （羽刃 260px/52px 预判反向避让、冲锋预警期离开锁定高度；不做精准微操）。
- *     胜率仍是"中等水平偏下限"口径，真人走位只会更好
+ *     胜率仍是"中等水平偏下限"口径，不据此推断真人胜率
  *   - 火力 build：开局正常随机选卡模拟 60s 局，Boss 战开打瞬间注入"成型火力流"
  *     （barrage3/rack2/hunter2/link2/slayer2/storm1——§4.9"火力+挂架+链路+屠龙者"成型口径；
  *     稀有卡自然抽率低，优先选卡无法稳定成型，注入 = 模拟已成型玩家进 Boss 战）
@@ -227,15 +228,16 @@ function runGame(runIndex, build) {
     origStart()
   }
   const origVictory = game._onBossVictory.bind(game)
-  game._onBossVictory = function () {
+  game._onBossVictory = function (method = 'kill') {
     const f = rec.bossFights[rec.bossFights.length - 1]
     if (f && f.result === 'timeout') {
       f.endSec = game.gameTime / 60
       f.result = 'win'
-      f.bossHpLeft = 0
+      f.method = method
+      f.bossHpLeft = game.boss ? Math.max(0, game.boss.hp) : null
       if (rec.bossFights.filter(x => x.chapter === f.chapter).length > 1) rec.rematchWins++
     }
-    origVictory()
+    origVictory(method)
   }
   const origDefeat = game._onBossDefeat.bind(game)
   game._onBossDefeat = function () {
@@ -243,7 +245,7 @@ function runGame(runIndex, build) {
     if (f && f.result === 'timeout') {
       f.endSec = game.gameTime / 60
       f.result = 'defeat'
-      f.bossHpLeft = game.boss ? game.boss.hp : null
+      f.bossHpLeft = game.boss ? Math.max(0, game.boss.hp) : null
     }
     return origDefeat()
   }
@@ -302,14 +304,14 @@ function report(build, recs) {
   console.log(`\n========== build=${build}（${recs.length} 局）==========`)
   const ch1Fights = recs.map(r => r.bossFights.find(f => f.chapter === 1)).filter(Boolean)
   const ch1Wins = ch1Fights.filter(f => f.result === 'win')
-  const ch1KillDurs = ch1Wins.map(f => f.endSec - f.startSec)
+  const ch1KillDurs = ch1Wins.filter(f => f.method === 'kill').map(f => f.endSec - f.startSec)
   const firstFightWins = recs.filter(r => r.bossFights[0] && r.bossFights[0].result === 'win').length
-  const anyWin = recs.filter(r => r.bossFights.some(f => f.result === 'win')).length
+  const anyWin = recs.filter(r => r.bossFights.some(f => f.chapter === 1 && f.result === 'win')).length
   const survive60 = recs.filter(r => r.survivalSec >= 60).length
   const twoChapter = recs.filter(r => r.chaptersCleared >= 2).length
   const clearSecs = recs.map(r => r.ch1ClearSec).filter(v => v != null)
 
-  console.log(`Ch1 一战击杀率（②口径）: ${pct(firstFightWins, recs.length)}（含回归战击杀: ${pct(anyWin, recs.length)}；存活≥60s: ${pct(survive60, recs.length)}）`)
+  console.log(`Ch1 一战通关率（生存或击杀）: ${pct(firstFightWins, recs.length)}（含回归战通关: ${pct(anyWin, recs.length)}；存活≥60s: ${pct(survive60, recs.length)}）`)
   if (ch1KillDurs.length > 0) {
     const s = ch1KillDurs.slice().sort((a, b) => a - b)
     console.log(`Ch1 Boss 击杀时长（①③口径，n=${ch1KillDurs.length}）: 中位 ${median(s).toFixed(1)}s | P25 ${percentile(s, 0.25).toFixed(1)}s | P75 ${percentile(s, 0.75).toFixed(1)}s | min ${s[0].toFixed(1)}s | max ${s[s.length - 1].toFixed(1)}s`)
@@ -338,6 +340,7 @@ function report(build, recs) {
 
   return {
     firstFightWinRate: recs.length ? firstFightWins / recs.length : 0,
+    survivalWins: ch1Wins.filter(f => f.method === 'survival').length,
     killDurMedian: ch1KillDurs.length ? median(ch1KillDurs) : NaN,
     killDurMin: ch1KillDurs.length ? Math.min(...ch1KillDurs) : NaN,
     killDurMax: ch1KillDurs.length ? Math.max(...ch1KillDurs) : NaN,
@@ -348,7 +351,7 @@ function report(build, recs) {
 
 // ==================== 主流程 ====================
 console.log(`Boss 战模拟：每种 build ${RUNS} 局，seed=${BASE_SEED}，上限 ${MAX_SECONDS}s/局`)
-console.log('（脚本玩家不躲弹幕=站撸下限口径；无卡=升级面板不选卡，大礼包/祝福选第一项防软锁）')
+console.log('（脚本玩家有简化反应式躲弹（非真人实测）；无卡=升级面板不选卡，大礼包/祝福选第一项防软锁）')
 
 const fireRecs = []
 const firemaxRecs = []
@@ -477,15 +480,10 @@ if (!isNaN(firemax.killDurMedian)) {
 } else {
   allPass &= judge(false, '①-上限 满配击杀时长', '无击杀样本')
 }
-// [v1.5.0 D21] ②-时长 转硬门槛：保底供给+×4 后无卡输出链闭环，击杀时长 50-90s（方案 45-60s 偏乐观已修正）
-if (!isNaN(nocard.killDurMedian)) {
-  allPass &= judge(nocard.killDurMedian >= 50 && nocard.killDurMedian <= 90,
-    '②-时长 无卡脚本 Ch1 击杀时长 50-90s（D21 数值闭环，取中位）',
-    `中位 ${nocard.killDurMedian.toFixed(1)}s（min ${nocard.killDurMin.toFixed(1)}s | max ${nocard.killDurMax.toFixed(1)}s，n=${nocardRecs.filter(r => r.bossFights[0] && r.bossFights[0].result === 'win').length} 胜）`)
-} else {
-  allPass &= judge(false, '②-时长 无卡脚本 Ch1 击杀时长', '无击杀样本——保底输出链未闭环')
-}
-note(nocard.firstFightWinRate >= 0.4, '② 无卡脚本胜率 ≥40%（一战击杀口径）', (100 * nocard.firstFightWinRate).toFixed(1) + '%（击杀时长已闭环；胜率受脚本"不精准走位"生存下限限制，真人显著更好）')
+// v1.6.0 生存通关取代旧版“无卡必须击杀50–90秒”约束；击杀统计只含真正击杀。
+allPass &= judge(nocard.survivalWins > 0, '② 无卡可通过生存完成第一章',
+  `生存通关 ${nocard.survivalWins} 局；时限 ${Config.BOSS.VARIANTS[0].survivalFrames / 60}s`)
+note(nocard.firstFightWinRate >= 0.4, '② 无卡脚本胜率 ≥40%（一战双通关口径）', (100 * nocard.firstFightWinRate).toFixed(1) + '%（击杀时长已闭环；胜率受脚本"不精准走位"生存下限限制，仍需真机验证）')
 note(fire.firstFightWinRate >= 0.9, '② 火力 build 胜率 ≥90%（脚本下限口径）', (100 * fire.firstFightWinRate).toFixed(1) + '%（脚本玩家近似站撸；真人走位显著更好）')
 if (!isNaN(fire.clearMedian)) {
   allPass &= judge(fire.clearMedian >= 60 && fire.clearMedian <= 120, '④ Ch1 通关中位 60-120s（火力通关样本）', fire.clearMedian.toFixed(1) + 's')

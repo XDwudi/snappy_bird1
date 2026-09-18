@@ -167,7 +167,7 @@ class AbilitySystem {
     // [v1.1.5] 坚韧 → 最大护盾+1/级，获得1层护盾
     if (id === 'toughness') {
       this._recalcMaxShieldLayers()
-      this.shieldLayers = Math.min(this.shieldLayers + 1, this.maxShieldLayers)
+      this.addShieldLayer(1)
       Logger.info('Ability', '坚韧升级', { level: this.owned.get('toughness'), maxShield: this.maxShieldLayers, layers: this.shieldLayers })
     }
 
@@ -205,7 +205,7 @@ class AbilitySystem {
     // [v1.1.5] 弹力护盾 → 最大护盾+1/级，获得1层护盾，初始化恢复计时器
     if (id === 'bounce_shield') {
       this._recalcMaxShieldLayers()
-      this.shieldLayers = Math.min(this.shieldLayers + 1, this.maxShieldLayers)
+      this.addShieldLayer(1)
       this.bounceShieldRecoverTimer = 0
       Logger.info('Ability', '弹力护盾升级', {
         level: this.owned.get('bounce_shield'),
@@ -468,9 +468,8 @@ class AbilitySystem {
     if (this.hasStat('hasShieldBurst')) {
       this.shieldBurstTimer--
       if (this.shieldBurstTimer <= 0) {
-        this.shieldLayers = Math.min(this.shieldLayers + 1, this.maxShieldLayers)
+        this.addShieldLayer(1)
         this.shieldBurstTimer = this._getShieldBurstCD()
-        this._emitFx('shield')  // [v1.2.2] N7 护盾获得特效
         Logger.info('Shield', '护盾爆发获得护盾', { layers: this.shieldLayers, max: this.maxShieldLayers })
       }
     }
@@ -481,9 +480,8 @@ class AbilitySystem {
       this.shieldRecoverTimer++
       // [v1.4.0] 超载神盾：护盾恢复CD缩短
       if (this.shieldRecoverTimer >= Config.SHIELD.TOUGHNESS_RECOVER_CD * this._getOverdriveCDScale()) {
-        this.shieldLayers = Math.min(this.shieldLayers + 1, this.maxShieldLayers)
+        this.addShieldLayer(1)
         this.shieldRecoverTimer = 0
-        this._emitFx('shield')  // [v1.2.2] N7 护盾获得特效
         Logger.info('Shield', '坚韧护盾恢复', { layers: this.shieldLayers, max: this.maxShieldLayers })
       }
     }
@@ -494,9 +492,8 @@ class AbilitySystem {
       this.bounceShieldRecoverTimer++
       const cd = this._getBounceShieldRecoverCD()
       if (this.bounceShieldRecoverTimer >= cd) {
-        this.shieldLayers = Math.min(this.shieldLayers + 1, this.maxShieldLayers)
+        this.addShieldLayer(1)
         this.bounceShieldRecoverTimer = 0
-        this._emitFx('shield')  // [v1.2.2] N7 护盾获得特效
         Logger.info('Shield', '弹力护盾恢复', { layers: this.shieldLayers, max: this.maxShieldLayers })
       }
     }
@@ -543,7 +540,14 @@ class AbilitySystem {
     return (Config.MISSILE.BARRAGE_BASE_SEC - Config.MISSILE.BARRAGE_REDUCTION_SEC * (lv - 1)) * 60
   }
 
-  // [v1.4.0] 血契/活力统一结算：maxHp = 初始 + 活力 - 血契×1（下限1）
+  // 临时等级变化只同步属性，不执行选卡的一次性收益。
+  refreshDerivedStats() {
+    this._recalcMaxHp()
+    this._recalcMaxShieldLayers()
+    this.invalidateStats()
+  }
+
+  // 血契/活力：maxHp = 初始 + 活力 - 血契（下限1）。
   _recalcMaxHp() {
     const vitLv = this.owned.get('vitality') || 0
     const pactLv = this.owned.get('blood_pact') || 0
@@ -795,7 +799,7 @@ class AbilitySystem {
     if (this.invincibleFrames > 0) return
     this.comboCount++
     const threshold = this.getStat('comboThreshold')
-    if (this.comboCount >= threshold) {
+    if ((this.owned.get('combo_heart') || 0) > 0 && this.comboCount >= threshold) {
       this.invincibleFrames = 180  // [v1.1.2] 300→180帧(3s)，避免永久无敌
       Logger.info('Combo', '连击无敌触发', { comboCount: this.comboCount, threshold, invincibleFrames: 180 })
       this.comboCount = 0

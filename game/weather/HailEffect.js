@@ -99,7 +99,7 @@ class HailEffect extends WeatherEffect {
    * 处理冰雹碰撞
    * [v1.2.1] 碰撞优先级（与文档对齐，决策D5/D8）：冰晶护体 > 统一护盾 > HP扣血
    * [v1.4.0] §2.6 新节点：驯化冰雹（不伤人，10%掉exp）与羽盾（最前置）插入；
-   *          冰雹链实际顺序：定风珠免疫 → 驯化 → 羽盾 → 冰晶护体（D8 裁定优先于 §2.6 表内位置，
+   *          冰雹链实际顺序：定风珠免疫 → 驯化 → 无敌/时间扭曲 → 羽盾 → 冰晶护体（D8 裁定优先于 §2.6 表内位置，
    *          冰晶转化是冰雹特有的资源化路径，保持"冰雹变护盾"玩家友好语义）→ 统一护盾 → HP → 凤凰
    */
   _handleHailCollision(hailstone, gameCtx) {
@@ -119,6 +119,12 @@ class HailEffect extends WeatherEffect {
         gameCtx.gainExp(Config.WEATHER.TAMED_HAIL_EXP_AMOUNT, 'tamed_hail')
         gameCtx.addFloatingText(hailstone.x, hailstone.y - 20, `+${Config.WEATHER.TAMED_HAIL_EXP_AMOUNT} EXP`, '#b8ff9e', 35)
       }
+      return
+    }
+
+    // 无敌期不重复消耗防御资源，也不缩短已有保护时间。
+    if (abilities.invincibleFrames > 0 || abilities.timeWarpActive > 0) {
+      this._addCrackEffect(hailstone.x, hailstone.y, '#ffffff')
       return
     }
 
@@ -150,12 +156,6 @@ class HailEffect extends WeatherEffect {
       gameCtx.bird.invincibleBlink = 20
       this._addCrackEffect(hailstone.x, hailstone.y, '#64c8ff')
       gameCtx.addFloatingText(hailstone.x, hailstone.y - 20, '冰雹!', '#a0d0ff', 30)
-      return
-    }
-
-    // 无敌帧
-    if (abilities.invincibleFrames > 0) {
-      this._addCrackEffect(hailstone.x, hailstone.y, '#ffffff')
       return
     }
 

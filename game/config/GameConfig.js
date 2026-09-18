@@ -24,15 +24,18 @@ module.exports = {
   // ==================== 管道参数 ====================
   PIPE: {
     WIDTH: 60,              // 管道宽度
-    GAP: 180,               // 管道间隙基础值
-    MIN_GAP: 120,           // 最小间隙
+    GAP: 205,               // 管道间隙基础值
+    MIN_GAP: 160,           // 最小间隙
     // [v1.3.0] 生成改为距离制（修复减速 bug）：原 SPAWN_INTERVAL:90(帧) × SCROLL_SPEED:3.0 = 270px
     // 旧配置 SPAWN_INTERVAL:90 / SPAWN_INTERVAL_MIN:75 已废弃删除，引用处全部清理
-    SPAWN_DISTANCE: 270,    // 生成间隔（滚动像素），等价原90帧×3.0速度
-    // [v1.2.2] N5 终局加压：120s起生成间隔线性收紧，至300s达下限 [v1.3.0] 同步改距离版 270→240px
+    SPAWN_DISTANCE: 300, // 生成间隔（滚动像素），保持减速时空间密度不变
+    // [v1.2.2] N5 终局加压：120s起生成间隔线性收紧，至300s达下限；v1.6.0 为300→275px
     SPAWN_RAMP_START: 7200,   // 间隔收紧起点（帧）=120s
     SPAWN_RAMP_TIME: 10800,   // 收紧周期（帧），120s→300s
-    SPAWN_DISTANCE_MIN: 240,  // 生成间隔下限（滚动像素），等价原75帧×3.0≈225，取240保持密度略缓
+    SPAWN_DISTANCE_MIN: 275, // 120秒后收紧，300秒到达下限
+    CENTER_STEP_START: 65,  // 相邻间隙中心最大变化，防止随机生成陡峭折返
+    CENTER_STEP_END: 95,
+    CENTER_STEP_RAMP: 10800, // 180秒平滑增加
     CAP_HEIGHT: 26,         // 管道帽高度
     CAP_OVERHANG: 4,        // 帽突出宽度
     MIN_TOP: 50,            // 顶部管道最小高度
@@ -52,27 +55,24 @@ module.exports = {
   // ==================== 游戏全局参数 ====================
   GAME: {
     SCROLL_SPEED: 3.0,      // 初始滚动速度
-    SPEED_RAMP_TIME: 3600,  // 速度增长周期（帧），3600=60s
-    SPEED_RAMP_MAX: 1.5,    // 最大速度增量
-    GAP_RAMP_TIME: 3600,    // 间隙缩小周期
-    GAP_RAMP_MAX: 40,       // 最大间隙缩小量
+    SPEED_RAMP_TIME: 5400, // 第一段速度增长周期=90秒
+    SPEED_RAMP_MAX: 0.8,    // 最大速度增量
+    GAP_RAMP_TIME: 5400,    // 间隙缩小周期
+    GAP_RAMP_MAX: 20,       // 最大间隙缩小量
 
-    // [v1.2.1] 第二段难度缓坡：60s后速度/间隙以半速继续爬升，至180s封顶
-    SPEED_RAMP2_START: 3600,  // 第二段起点（帧）=60s
-    SPEED_RAMP2_TIME: 7200,   // 第二段爬升周期（帧），60s→180s
-    SPEED_RAMP2_MAX: 0.75,    // 第二段最大速度增量（第一段的一半）
-    GAP_RAMP2_START: 3600,    // 第二段起点（帧）=60s
-    GAP_RAMP2_TIME: 7200,     // 第二段爬升周期（帧），60s→180s
-    GAP_RAMP2_MAX: 20,        // 第二段最大间隙缩小量（第一段的一半）
+    // [v1.6.0] 第二段缓坡：90秒后继续爬升，至210秒封顶
+    SPEED_RAMP2_START: 5400, // 第二段起点=90秒
+    SPEED_RAMP2_TIME: 7200, // 第二段周期=120秒
+    SPEED_RAMP2_MAX: 0.5, // 第二段速度增量
+    GAP_RAMP2_START: 5400, // 第二段起点=90秒
+    GAP_RAMP2_TIME: 7200, // 第二段周期=120秒
+    GAP_RAMP2_MAX: 15, // 第二段间隙缩小量
 
-    // [v1.5.1] 前期减压（真机反馈①③"前期管道密度太高/容易暴毙"，拟人基线前30s死亡率80%）：
-    // 开局管道更疏、间隙更宽，90s 内线性回归现值（与既有 60s/120s ramp 叠加制、终值精确无差）；
-    // 手感红线：不动 60fps 帧驱动、不动重力/上升力，只动生成节奏与间隙宽度。
-    // 定案数值（D22，多轮迭代+局部扫描实测）：间距 270→314 起步 / 间隙 180→216 起步，
-    // 拟人中位 19.6→46.6s、前30s死亡率 80%→12%，机器人红线 60.5s 守住（73.4s）
+    // [v1.6.0] 前90秒减压：间距330→300，间隙230→185；保留基础飞行物理。
+    // 第二段从90秒开始，210秒封顶；配合相邻中心变化上限，不再独立全屏随机跳变。
     EARLY_EASE_RAMP_TIME: 5400,   // 减压回归周期（帧）=90s
-    EARLY_EASE_SPAWN_BONUS: 44,   // 开局生成间隔加宽（px）：270→314 起步，90s 线性回归 270
-    EARLY_EASE_GAP_BONUS: 36,     // 开局间隙加宽（px）：180→216 起步，90s 线性回归 180
+    EARLY_EASE_SPAWN_BONUS: 30, // 开局间距额外+30px，90秒归零
+    EARLY_EASE_GAP_BONUS: 25, // 开局间隙额外+25px，90秒归零
 
     STATE: {
       READY: 'ready',
@@ -130,10 +130,10 @@ module.exports = {
     SCORE_NEAR_MISS: 3,    // 擦边额外得分
     SCORE_SURVIVAL_INTERVAL: 300, // 存活时间得分间隔(帧)，300=5s
 
-    // [v1.4.0] 经验银行（exp_bank）：溢出经验存银行生息，升级时全额取出
+    // [v1.6.0] 经验银行：额外储蓄，下一次升级提取（先历史提款，后本次存入）
     BANK: {
-      DIRECT_CAP_RATIO: 1.5,   // 单次获得经验直接入池上限 = 当前升级所需 ×1.5，超出部分入银行
-      CAP_RATIO: 2,            // 银行余额上限 = 当前升级所需 ×2，超限部分自动入池（防囤积刹车①）
+      DEPOSIT_PER_LV: 0.05,    // 每次经验额外存入5%/级，正常经验不扣减
+      CAP_RATIO: 2, // 余额上限=当前升级所需×2，额外储蓄超限部分不再增加
       INTEREST_PER_LV: 0.05    // 每 10s 生息 5%/级（生息节奏对齐 WEATHER.CHECK_INTERVAL，不新增逐帧计时器）
     },
 
@@ -594,11 +594,11 @@ module.exports = {
         mods: {
           scrollSpeedAdd: 0,         // 滚动速度加算
           gapAdd: 0,                 // 管道间隙加算(px)
-          monsterSpawnDistance: 450, // 怪物生成距离(px)
-          monsterMaxAlive: 2,        // 同屏怪物上限
+          monsterSpawnDistance: 650, // 怪物生成距离(px)
+          monsterMaxAlive: 1,        // 同屏怪物上限
           monsterHpMult: 1,          // 怪物 HP 倍率
-          floaterTrackSpeed: 1.1,    // 浮游追踪速度(px/帧)
-          batSineAmp: 55,            // 蝙蝠正弦振幅(px)
+          floaterTrackSpeed: 0.65,    // 浮游追踪速度(px/帧)
+          batSineAmp: 40,            // 蝙蝠正弦振幅(px)
           eliteChance: 0.25,         // §5.1 精英怪概率
           bossHp: 36                 // §4.6 关底 Boss HP；[v1.5.0 D21] 30→36（数值闭环：让
                                      // 成型火力需 6 发/满配 5 发/无卡保底 9 发，击杀时长三档分离，
@@ -712,6 +712,7 @@ module.exports = {
     VARIANTS: [
       { // Ch1 雷羽巨鹰（基准框架）：3发/4s → 5发/2.5s，弹速 4.5→5.5；冲锋 CD12s；召唤蝙蝠×2/15s
         name: '雷羽巨鹰',
+        survivalFrames: 2700, // 有效战斗45秒，暂停和演出不计时
         gatherText: '雷云聚集……',
         p1: { volley: 3, volleyInterval: 240, bulletSpeed: 4.5 },
         p2: { volley: 5, volleyInterval: 150, bulletSpeed: 5.5 },
@@ -724,6 +725,7 @@ module.exports = {
       { // Ch2 沙暴巨鹰：4发/3.5s → 6发/2.2s，弹速 5.0→6.0；冲锋 CD10s；召唤浮游×1/15s（追踪压力替代数量）；
         // 配色 #c98f3f + 沙粒尾迹；弹幕视觉为沙锥
         name: '沙暴巨鹰',
+        survivalFrames: 3600, // 有效战斗60秒
         gatherText: '沙暴逼近……',
         p1: { volley: 4, volleyInterval: 210, bulletSpeed: 5.0 },
         p2: { volley: 6, volleyInterval: 132, bulletSpeed: 6.0 },

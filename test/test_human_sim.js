@@ -59,8 +59,8 @@ const RUNS = argNum('runs', 100)           // 局数
 const BASE_SEED = argNum('seed', 20260151) // 基础随机种子（与 gameplay_sim 区分族）
 const MAX_SECONDS = 300                    // 每局游戏时间上限（秒）
 const MAX_FRAMES = MAX_SECONDS * 60
-const SCREEN_W = 375
-const SCREEN_H = 667
+const SCREEN_W = argNum('width', 375)
+const SCREEN_H = argNum('height', 667)
 
 // ==================== 确定性随机（LCG, Park-Miller） ====================
 const realRandom = Math.random
@@ -195,12 +195,15 @@ function pilotTick(game, pilot) {
 }
 
 // ==================== 单局模拟 ====================
-function runGame(runIndex) {
-  Math.random = makeLcg(BASE_SEED + runIndex * 7919)
+function runGame(runIndex, seed = BASE_SEED) {
+  Math.random = makeLcg(seed + runIndex * 7919)
 
   const game = new Game(makeMockCanvas(), makeMockCtx(), SCREEN_W, SCREEN_H, null)
 
   const rec = {
+    bossReached: false,
+    bossReachedSec: null,
+    firstChapterCleared: false,
     survivalSec: 0,
     pipesPassed: 0,
     level: 1,
@@ -214,7 +217,7 @@ function runGame(runIndex) {
   const origHandleCollision = game._handleCollision.bind(game)
   game._handleCollision = function (pipe) {
     if (pipe) {
-      pendingCause = pipe.isBoss ? 'Boss本体' : (pipe.type === 'bat' || pipe.type === 'floater' ? '撞怪物' : '撞管道')
+      pendingCause = pipe.isBoss ? 'Boss本体' : (pipe.type === 'monster' ? '撞怪物' : pipe.type === 'feather' ? 'Boss弹幕' : '撞管道')
     } else {
       const groundY = SCREEN_H - Config.GROUND.HEIGHT
       pendingCause = (game.bird.y > groundY - 60) ? '撞地面' : '撞天花板'
@@ -252,6 +255,12 @@ function runGame(runIndex) {
     }
 
     game.update()
+    if (!rec.bossReached && game.chapterSystem.index === 0 && game.chapterSystem.isBossActive()) {
+      rec.bossReached = true
+      rec.bossReachedSec = game.gameTime / 60
+    }
+    if (game.bossBadges.includes(1) ||
+        (game.bossClears && game.bossClears.some(c => c.chapter === 1))) rec.firstChapterCleared = true
   }
 
   rec.survivalSec = game.gameTime / 60
@@ -290,6 +299,7 @@ function bar(ratio, width = 24) {
 }
 
 // ==================== 主流程 ====================
+function main() {
 const t0 = Date.now()
 const runs = []
 for (let r = 0; r < RUNS; r++) runs.push(runGame(r))
@@ -358,8 +368,15 @@ out.push('\n【6. 玩家行为统计（模型自洽性检查）】')
 out.push(`  平均每局愣神 ${fmt(avgDaze)} 次（每 60s 约 ${fmt(avgDaze / Math.max(0.1, surv.mean) * 60, 1)} 次）、拍翅 ${fmt(avgFlap, 0)} 次`)
 out.push(`  平均等级 Lv${fmt(runs.reduce((a, r) => a + r.level, 0) / RUNS)}、平均过管 ${fmt(runs.reduce((a, r) => a + r.pipesPassed, 0) / RUNS)} 根`)
 
+out.push('\n【7. 第一章可达性】')
+out.push(`  Boss到达: ${runs.filter(r => r.bossReached).length}/${RUNS}；章节通过: ${runs.filter(r => r.firstChapterCleared).length}/${RUNS}`)
 out.push('\n' + '='.repeat(64))
 console.log(out.join('\n'))
 
 // 机器可读摘要（供调参脚本 diff）：MEDIAN/MEAN/PRE30/PRE60
 console.log(`SUMMARY median=${fmt(surv.median)} mean=${fmt(surv.mean)} pre30=${fmt(diedPre30 / RUNS * 100)} pre60=${fmt(diedPre60 / RUNS * 100)} p25=${fmt(surv.p25)} p75=${fmt(surv.p75)}`)
+
+}
+
+module.exports = { runGame, stats, PILOT }
+if (require.main === module) main()

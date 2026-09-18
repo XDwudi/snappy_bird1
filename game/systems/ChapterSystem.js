@@ -56,7 +56,7 @@ class ChapterSystem {
 
   // ==================== 生命周期 ====================
 
-  /** 重置到 Ch1（Game.start / backToReady 时调用）；恢复生成系统默认（零修正） */
+  /** 重置到 Ch1（Game.start / backToReady 时调用）；注入第一章生成配置 */
   reset() {
     this.index = 0
     this.pipesPassed = 0
@@ -69,7 +69,7 @@ class ChapterSystem {
     this._bossReturnAt = 0
     this._transition = null
     this._pipeLerp = null
-    this._deps.setSpawnMods(null)
+    this._deps.setSpawnMods(this.getMods())
     this._deps.setBossActive(false)
     if (this._deps.setWeatherFrozen) this._deps.setWeatherFrozen(false)
   }

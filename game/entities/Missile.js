@@ -102,7 +102,7 @@ class Missile {
    * 是否飞出屏幕
    */
   isOffscreen(screenW, screenH) {
-    return this.x > screenW + 30 || this.y < -30 || this.y > screenH + 30
+    return this.x < -30 || this.x > screenW + 30 || this.y < -30 || this.y > screenH + 30
   }
 
   /**
