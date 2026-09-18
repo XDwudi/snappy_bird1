@@ -61,6 +61,6 @@ npm run build
 ## 当前验证边界
 
 Node 测试及模拟 `wx` 的冒烟不能替代微信开发者工具和 iOS / Android 真机验收。
-已配置 [GitHub远端](https://github.com/XDwudi/snappy_bird1)，工程基线已在本地提交并打标；Git HTTPS推送失败，远端仍为空，详见 [同步记录](docs/tasks/TASK-004-github-sync.md)。
+已配置 [GitHub远端](https://github.com/XDwudi/snappy_bird1)，工程基线 main、策划分支及 v0.1.0 标签已同步远端；GitHub Actions 因账号账单锁定未能启动，分支保护仍待确认，详见 [同步记录](docs/tasks/TASK-004-github-sync.md)。
 微信工具CLI连通且已登录；当前游客AppID被拒，需要真实小游戏AppID才能继续预览和上传。
 用户已授权工具测试与上传；尚未验证实际画面或真机，也未上传/发布。见 [CLI接入](docs/WECHAT_CLI.md)。
