@@ -30,5 +30,6 @@
 - 模拟器仍显示“Cannot convert undefined or null to object / something wrong in electron appservice”；对照官方示例补充配置字段后仍未恢复。
 - preview两次返回ECONNRESET，在获取AppID权限时TLS连接断开；进程仍可能返回0，未生成可用二维码。
 - 本机浏览器同一构建包能启动并响应菜单/暂停/结算；这不能定位微信错误根因，也不能代替真机验证。
-- 开发上传结果将在候选提交后记录；正式审核/发布未执行。
+- 上传已实际执行，版本0.2.0，候选commit `515b8e9`，release/dirty=false，基础库3.17.1；结果仍为ECONNRESET，获取权限时TLS断连，未上传成功。正式审核/发布未执行。
+- 候选入口SHA256：`80825ce4a1aabe69ad398ee25427eb47fd41e582d8df79201a75d6ead5ac1a8f`；内部计量包42,662字节。
 - 下一步：恢复微信工具正常启动与服务连接，验证AppID账号确属小游戏并完成iOS/Android测试。无需AppSecret。

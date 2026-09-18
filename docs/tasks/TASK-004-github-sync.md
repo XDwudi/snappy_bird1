@@ -1,6 +1,6 @@
 # TASK-004 · GitHub同步与CI
 
-- 状态：In Progress（权限及main同步已恢复，开发分支CI待记录）
+- 状态：Blocked（同步已完成；GitHub Actions因账号账单问题未启动）
 - 远端：[XDwudi/snappy_bird1](https://github.com/XDwudi/snappy_bird1)
 - 远端可见性：public（API读取得知，未修改）
 - 提交身份：XDwudi；邮箱与用户提供一致，仅写入本仓库配置
@@ -38,3 +38,12 @@ gh run list --repo XDwudi/snappy_bird1 --limit 5
 2026-09-18：GitHub API确认当前账号对目标仓库admin/push为true；HTTPS接口可连接。使用gh凭据、HTTP/1.1和有界低速超时推送main成功，返回Everything up-to-date并建立origin/main跟踪。
 因此目前未发现GitHub权限拒绝。此前已观察到的是TLS超时/Empty reply；不能据此把原因归结为仓库无写权限。
 推送前扫描本地AppID隔离和全部Git历史，开发包/个人配置不会同步GitHub。保留main基线，首版在开发分支交付试玩。
+
+## 首版交付记录
+
+- `main`、`docs/roguelike-design`、`feat/p1-playable-prototype` 与基线标签已同步；可玩代码提交 `515b8e9`。
+- 首版试玩使用标签 `v0.2.0-playtest.1`，不是通过微信验收的正式发布标签。
+- CI基线运行35368484974没有执行步骤。GitHub检查注释明确：The job was not started because your account is locked due to a billing issue.
+- 这属于GitHub账号账单限制，需要账号所有者在GitHub处理；没有调整账单或支付设置。远端CI未通过，main仍保留基线，不自动合并开发分支。
+- 本地21项测试+产物冒烟通过，60局脚本试跑通过；源码/文档及已有历史检查未含真实AppID。
+- 分支保护规则未配置，避免把配置文件存在写成保护规则已启用。

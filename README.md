@@ -48,5 +48,5 @@ npm run build
 | `npm run preview:local` | 启动本机试玩                                                |
 | `npm run hooks:install` | 安装当前仓库提交检查                                        |
 
-GitHub 指向 [用户指定仓库](https://github.com/XDwudi/snappy_bird1)。已确认账号有写权限，main 同步成功；此前是 HTTPS 传输超时/空响应，未观察到权限拒绝。
-微信 CLI 已登录，AppID 已配置；Nightly 模拟器启动及微信预览服务仍失败，详见 [TASK-003](docs/tasks/TASK-003-wechat-integration.md)。本地试玩和 mock 测试不代表微信真机验收，也不代表正式发布。
+GitHub 指向 [用户指定仓库](https://github.com/XDwudi/snappy_bird1)。已确认账号有写权限，main和首版开发分支已同步；此前是 HTTPS 传输超时/空响应，未观察到权限拒绝。远端Actions因GitHub账号账单问题未启动，本地检查通过。
+微信 CLI 已登录，AppID 已配置；Nightly 模拟器启动以及微信预览/上传服务仍失败，详见 [TASK-003](docs/tasks/TASK-003-wechat-integration.md)。本地试玩和 mock 测试不代表微信真机验收，也不代表正式发布。
