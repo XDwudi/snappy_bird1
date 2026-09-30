@@ -164,7 +164,12 @@ class Monster extends Obstacle {
     // HP 指示：多血怪物头顶显示血点（实心=剩余HP）
     if (this.maxHp > 1) {
       const cx = this.x + this.width / 2
-      for (let i = 0; i < this.maxHp; i++) {
+      if(this.maxHp>5) {
+        ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillRect(cx-18,this.y-this.height/2-10,36,4)
+        ctx.fillStyle='#e74c3c';ctx.fillRect(cx-18,this.y-this.height/2-10,36*this.hp/this.maxHp,4)
+      }
+      for (let i = 0; i < Math.min(5,this.maxHp); i++) {
+        if(this.maxHp>5)break
         ctx.fillStyle = i < this.hp ? '#e74c3c' : 'rgba(0, 0, 0, 0.3)'
         ctx.beginPath()
         ctx.arc(cx + (i - (this.maxHp - 1) / 2) * 8, this.y - this.height / 2 - 8, 3, 0, Math.PI * 2)

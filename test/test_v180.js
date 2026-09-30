@@ -154,7 +154,7 @@ test('召唤、反射、冰枪、暗影、收割和管道补盾具备实际效�
  assert.ok(g.monsters.some(x=>x.type==='monster'))
 })
 test('处决、熔核与雷链伤害生效；全场坍缩包含身后目标',()=>{
- const g=game();give(g,'cinder_execution',2);let b=fight(g,5);b.hp=100
+ const g=game();give(g,'cinder_execution',2);let b=fight(g,5);b.hp=100;b.mechanics.activeNode=3 // 火力算式独立于1.8.1机核护甲，机关另测
  g.combat.damageTarget(b,10,'test');assert.equal(b.hp,84)
  give(g,'singularity');const m=new Monster(10,200,'floater',587,{hpMult:10});g.monsters=[m];const hp=m.hp
  g.combat.updateCampaign();assert.ok(m.hp<hp)

@@ -1,0 +1,17 @@
+{
+  "mode": "early",
+  "runs": 100,
+  "groups": {
+    "balanced": {
+      "min": 23.2,
+      "median": 72.1,
+      "max": 180,
+      "dead": 84,
+      "within5to20": 0,
+      "reached": 25,
+      "kills": 0,
+      "survival": 11,
+      "maxHazards": 4
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "mode": "endless",
+  "runs": 30,
+  "groups": {
+    "balanced": {
+      "min": 140.4,
+      "median": 261,
+      "max": 354.2,
+      "dead": 30,
+      "within5to20": 3,
+      "reached": 30,
+      "kills": 20,
+      "survival": 10,
+      "maxHazards": 8
+    },
+    "offense": {
+      "min": 97.8,
+      "median": 213.6,
+      "max": 289.7,
+      "dead": 30,
+      "within5to20": 0,
+      "reached": 30,
+      "kills": 28,
+      "survival": 2,
+      "maxHazards": 8
+    },
+    "fortress": {
+      "min": 348.7,
+      "median": 438,
+      "max": 497.3,
+      "dead": 30,
+      "within5to20": 30,
+      "reached": 30,
+      "kills": 2,
+      "survival": 28,
+      "maxHazards": 10
+    },
+    "complete": {
+      "min": 81.4,
+      "median": 142.3,
+      "max": 272.6,
+      "dead": 30,
+      "within5to20": 0,
+      "reached": 30,
+      "kills": 25,
+      "survival": 1,
+      "maxHazards": 8
+    }
+  }
+}

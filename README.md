@@ -2,7 +2,7 @@
 
 Flappy Bird单指飞行 + roguelike成长的微信小游戏，CommonJS / Canvas 2D，无npm运行依赖。
 
-当前为 **1.8.0 测试候选**（2026-09-30，用户指定版本号）：六章、六个主题Boss、73张技能卡、六大派系、通关后无尽模式。手机验收尚未完成，微信上传由用户手动进行。
+当前为 **1.8.1 测试候选**（2026-09-30）：六种Boss破解机关、两种伴飞精英、73张技能卡、六大派系、图形红黄心与无尽恢复约束。手机验收尚未完成，微信上传由用户手动进行。
 
 ## 运行
 
@@ -12,11 +12,12 @@ Flappy Bird单指飞行 + roguelike成长的微信小游戏，CommonJS / Canvas 
 
 ## 玩法
 
-- 草地树灵、沙漠巨蝎、暗夜蛛后、冰川魔像、熔岩地龙、风暴机核：每个六招，后半程二/三连协。
+- 六个Boss各六招及P2连协，并有拆根、诱撞、破卵、蓄热、开阀、按序断路六种破解方式。
 - 每章同时满足管数与最低飞行时间后迎战。Boss可击杀或坚持倒计时通关；剧情战败20管后再挑战，不跳章。
 - 73张卡随章节开放；同派系不同卡达到2/4张提供实际增益，卡面显示来源。
 - 六章全部通关后进入无尽：得分双倍、等级无限、随机Boss按当前难度增强，直至死亡。
-- 无尽以5–20分钟为平衡目标：5分钟后防御恢复受压，10分钟后进一步加速。模拟大多数样本达标，不能保证真人最低存活时间。
+- 无尽两分钟后压缩回血/回盾/无敌时间，五分钟后加速增压；不再反复回满血。5–20分钟仍需手机验收。
+- 普通怪靠近管道出口；炮艇伴飞射击，天气精英促进多天气，击杀可快速驱散。普通生命红心，临时生命黄心。
 
 ## 验证
 
@@ -24,18 +25,22 @@ Flappy Bird单指飞行 + roguelike成长的微信小游戏，CommonJS / Canvas 
 node test/test_v160.js
 node test/test_v170.js
 node test/test_v180.js
-node test/sim_v180.js boss 12
-node test/sim_v180.js endless 30
+node test/test_v181.js
+node test/sim_v181.js boss 8
+node test/sim_v181.js endless 30
 ```
 
-48项机制回归；90局终盘构筑无尽模拟中位约7.0/8.2/12.2分钟，85局在5–20分钟内结束。模拟不等于手机测试。旧版本平衡脚本和历史结果保留作比较。
+71项机制回归；实际Canvas三屏画面检查通过。用户反馈已证明旧模拟不足以代表真人无尽时长；新版模拟仅作压力测试，具体结果与限制见迭代记录。
 
 ## 交接
 
+- [1.8.1玩法、数值与验收](docs/iterations/迭代_v1.8.1_Boss机关与精英.md)
+- [1.8.1六种机关](docs/audits/v181/six-chapters.png)
+- [1.8.1精英画面](docs/audits/v181/elites.png)
 - [项目现状](docs/STATE.md)
 - [1.8.0设计、数值与验证](docs/iterations/迭代_v1.8.0_六章与无尽.md)
-- [73张技能与六Boss审查](docs/audits/技能与Boss审查_1.8.0.md)
-- [六章画面](docs/audits/v180/six-chapters.png)
-- [无尽原始测量](docs/audits/v180/endless-simulation.json)
+- [1.8.0历史技能与Boss审查](docs/audits/技能与Boss审查_1.8.0.md)
+- [1.8.0历史画面](docs/audits/v180/six-chapters.png)
+- [1.8.0历史模拟](docs/audits/v180/endless-simulation.json)
 
 仓库：https://github.com/XDwudi/snappy_bird1.git 。当前参数入口：`game/config/CampaignConfig.js`、`CampaignAbilities.js`、`GameConfig.js`、`game/systems/EndlessScaling.js`。

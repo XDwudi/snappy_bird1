@@ -76,7 +76,7 @@ const BOSS_BLESSINGS = [
   {
     id: 'bless_growth', name: '成长祝福', icon: '🌱', rarity: 'rare', category: 'special',
     desc: '滚雪球向',
-    effectText: () => '经验获取+25%（本局永久，独立乘区）'
+    effectText: () => '经验获取+15%（祝福加算，高倍率递减）'
   },
   {
     id: 'bless_hunt', name: '狩猎祝福', icon: '🏹', rarity: 'rare', category: 'special',
@@ -140,6 +140,8 @@ class Game {
       getOwnedLevel: function (id) { return self.abilitySystem.owned.get(id) || 0 },
       getPipes: function () { return self.pipes },
       getMonsterCount: function () { return self.monsters.length },
+      getEliteCount: function () { return self.monsters.filter(m=>m.elite&&m.hp>0).length },
+      onHazard: function (h) { if(self.feathers.length<96)self.feathers.push(h) },
       // [v1.5.0 D21] Boss 战导弹保底供给：小鸟同高生成 + 场上查重
       getBirdY: function () { return self.bird.y },
       hasItemType: function (type) {
@@ -152,7 +154,10 @@ class Game {
         if (cs) pipe.setColorSet(cs)
         self.pipes.push(pipe)
       },
-      onSpawnMonster: function (monster) { self.monsters.push(monster) },
+      onSpawnMonster: function (monster) {
+        self.monsters.push(monster)
+        if(monster.elite)self._addFloatingText(self.screenW/2,190,monster.eliteKind==='gunship'?'护航炮艇 · 躲炮抢击杀':'唤天气灵 · 击杀驱散叠加天气','#ffdc87',100)
+      },
       onSpawnItem: function (item) { self.items.push(item) }
     })
 
@@ -193,6 +198,7 @@ class Game {
     this._bossDyingFrames = 0      // 死亡演出慢动作剩余帧（§4.11：30 帧 0.5×，复用速度包）
     this._bossRewardPending = false // 大礼包结算中（面板链：自选卡→祝福→经验升级→转场）
     this.bossFightFrames = 0
+    this._bossTimeAccumulator = 0
     this._bossClearMode = null
     this.bossClears = []
     this.bossBadges = []           // 本局已击败 Boss 徽章（章节 id，结算界面徽章行）
@@ -616,6 +622,7 @@ class Game {
 
     // [v1.2.0] 环境系统更新
     const gameCtx = this._buildGameCtx()
+    this.weatherSystem.setElitePressure(this.monsters.some(m=>m.hp>0&&m.eliteKind==='stormcaller'&&m.age>90&&!m.retreating))
     this.weatherSystem.update(this.gameTime, gameCtx)
 
     // [v1.2.0] 环境系统可能触发游戏结束或凤凰复活，需检查状态
@@ -642,12 +649,15 @@ class Game {
     }
     this._prevWeatherActive = weatherActiveNow
 
-    // 能力系统更新
+    // 能力系统更新：无尽同一补给闸门覆盖技能、道具和战斗结算。
+    this.abilitySystem.renewalInterval=this.chapterSystem.endless?this.chapterSystem.getMods().renewalInterval:0
     this.abilitySystem.tickCooldowns(this.chapterSystem.endless
-      ? this.chapterSystem.getMods().recoveryRate : 1)
+      ? this.chapterSystem.getMods().recoveryRate : (this.chapterSystem.isBossActive() ? .8 : 1))
     if (this.chapterSystem.endless) {
       const cap=this.chapterSystem.getMods().invincibleCap
       this.abilitySystem.invincibleFrames=Math.min(this.abilitySystem.invincibleFrames,cap)
+      this.abilitySystem.timeWarpActive=Math.min(this.abilitySystem.timeWarpActive,cap)
+      this.abilitySystem.timeCrystalFreezeFrames=Math.min(this.abilitySystem.timeCrystalFreezeFrames,cap)
     }
     this._applyAbilityStatsToBird()
     this._drainAbilityFx()        // [v1.2.2] N7 取出能力系统的特效事件
@@ -971,10 +981,10 @@ class Game {
         this._fireMissile({ silent: true })
       } else if (ev.type === 'temp_hp') {
         // [v1.4.0] 超载神盾质变：溢出护盾转临时HP 提示
-        this._addFloatingText(this.bird.x, this.bird.y - 40, '超载:临时HP+1!', '#ff9aa0', 50)
+        this._addFloatingText(this.bird.x, this.bird.y - 40, '超载:临时生命+1!', '#ffd54a', 50)
       } else if (ev.type === 'temp_hp_break') {
         // [v1.4.0] 临时HP被消耗提示
-        this._addFloatingText(this.bird.x, this.bird.y - 40, '临时HP-1', '#ff9aa0', 40)
+        this._addFloatingText(this.bird.x, this.bird.y - 40, '临时生命-1', '#ffd54a', 40)
       } else if (ev.type === 'feather_shield') {
         // [v1.4.0] 回响之翼：羽盾获得（羽毛色环+提示）
         this.abilityEffects.push({
@@ -1209,8 +1219,6 @@ class Game {
         restFrames:final.restFrames,recoverFrames:final.recoverFrames,warnFrames:final.warnFrames,
         bulletSpeed:final.bulletSpeed,gateGap:final.gateGap,combos:[[0,2,1],[3,4,5],[1,3,5],[5,0,4]]
       })
-      this.abilitySystem.healHP(1)
-      this.abilitySystem.addShieldLayer(1)
       this.boss.power=this.chapterSystem.getMods().bossPower
       this.boss.difficultyTier=5
       this.boss.survivalFrames=90*60
@@ -1249,7 +1257,6 @@ class Game {
    * @returns {boolean} true=游戏结束
    */
   _updateBossFight() {
-    if (!this.boss) return false
     const boss = this.boss
     // 死亡演出慢动作（§4.11：30 帧 0.5×，复用速度包比例；弹幕同步减速保持视觉一致）
     const timeScale = (this._bossDyingFrames > 0 || this.abilitySystem.timeWarpActive > 0) ? Config.ITEM.SPEED_PACK_SLOWDOWN : 1
@@ -1272,9 +1279,14 @@ class Game {
       if (f.isOffscreen(this.screenW, this.screenH)) feathers.splice(i, 1)
     }
 
+    if (!boss) return false
     // Boss 本体（dying 也继续 update 做坠落演出；leaving 同理加速离场）
     if(this.chapterSystem.endless) boss.power=this.chapterSystem.getMods().bossPower
-    if (!frozen) boss.update(this.bird, this.bossFightFrames + 1)
+    if (!frozen) {
+      this._bossTimeAccumulator=(this._bossTimeAccumulator||0)+timeScale
+      if(this._bossTimeAccumulator>=1){this._bossTimeAccumulator-=1;boss.update(this.bird,this.bossFightFrames+1)}
+    }
+    if (boss.hp <= 0 && !this._bossClearMode) this._onBossVictory('kill')
 
     // 本体接触伤害 1（entering/dying/leaving 态 Boss 内部已豁免碰撞）
     if (boss.checkCollision(this.bird)) {
@@ -1385,18 +1397,17 @@ class Game {
   }
 
   /**
-   * §4.10 章节大礼包（打赢四件套）：②+3 级所需经验 ③+100 分先行入账（浮动文字可见），
+   * §4.10 章节大礼包（打赢四件套）：②固定一级经验 ③+100 分先行入账（浮动文字可见），
    * ①特殊 3 选 1 面板（1 史诗+2 珍贵，满级卡已移出）→ ④章节祝福三选一 → 大礼包经验升级面板链
    * → _finishBossRewards 转场。面板链全程 UPGRADING 语义（世界冻结，无生存压力）。
    */
   _startBossRewards() {
     if (this.chapterSystem.endless) {
       this._addScore(Config.BOSS.GIFT_SCORE)
-      this.abilitySystem.healHP(this._bossClearMode==='kill'?this.abilitySystem.maxHp:1)
-      this.abilitySystem.addShieldLayer(2)
+      this.abilitySystem.healHP(1)
       this._gainExp(this.expSystem.getExpNeeded(this.expSystem.level), 'endless_boss', this.abilitySystem.getStats())
       this.chapterSystem.endBossFight(true)
-      this._addFloatingText(this.screenW/2,this.screenH*.35,'无尽补给 +200分 · '+(this._bossClearMode==='kill'?'回满HP':'HP+1')+' / 盾+2','#b6f6ff',90)
+      this._addFloatingText(this.screenW/2,this.screenH*.35,'无尽战利品 +200分 · 一份恢复补给','#b6f6ff',90)
       this._bossClearMode=null
       return
     }
@@ -1406,14 +1417,14 @@ class Game {
     // ③ +100 分
     this._addScore(Config.BOSS.GIFT_SCORE)
 
-    // ② +3 级所需经验（按当前等级曲线 18+12×Lv 逐级别累加；走统一 _gainExp 保持
+    // ② 固定一级经验（按当前等级曲线 18+12×Lv 逐级别累加；走统一 _gainExp 保持
     //    共鸣/顿悟/陈列/成长祝福全链路）
     let expSum = 0
     for (let i = 0; i < Config.BOSS.GIFT_LEVELS; i++) {
       expSum += this.expSystem.getExpNeeded(this.expSystem.level + i)
     }
     this._gainExp(expSum, 'boss_gift', stats)
-    this._addFloatingText(this.screenW / 2, this.screenH * 0.3, '章节大礼包！+100 分', '#ffd700', 90)
+    this._addFloatingText(this.screenW / 2, this.screenH * 0.3, '章节奖励 +1级经验 / 100分', '#ffd700', 90)
 
     // ① 特殊 3 选 1 面板（池空兜底：跳过卡片位直接进祝福）
     const choices = AbilityRegistry.rollBossRewardChoices(this.abilitySystem.owned, this.expSystem.level, this.chapterSystem.index+1)
@@ -1457,8 +1468,8 @@ class Game {
       ab.grantTempHp(Math.round(1 * masterMult))
       this._addFloatingText(this.bird.x, this.bird.y - 40, '活力祝福！', '#7fff7f', 75)
     } else if (id === 'bless_growth') {
-      // 成长：经验 +25%（独立乘区，本局永久）
-      ab.blessingExpMult *= (1 + Config.BOSS.BLESSING_GROWTH_EXP * masterMult)
+      // 成长：经验 +15%，多次祝福加算，高倍率仍递减
+      ab.blessingExpMult += Config.BOSS.BLESSING_GROWTH_EXP * masterMult
       this._addFloatingText(this.bird.x, this.bird.y - 40, '成长祝福！', '#ffd700', 75)
     } else if (id === 'bless_hunt') {
       // 狩猎：道具率 +8pp（本局永久）+ 立即前方生成 3 道具
@@ -1581,6 +1592,7 @@ class Game {
     if (monster._killRewarded) return
     monster._killRewarded=true
     this.combat.onKill()
+    this._addScore(monster.elite?25:3)
     const tint = monster.elite ? '255, 215, 0' : (monster.monsterType === 'bat' ? '176, 116, 238' : '110, 244, 166')
     this._spawnExplosion(monster.x + monster.width / 2, monster.y, tint, 12)
     this.abilityEffects.push({ kind: 'ring', x: monster.x + monster.width / 2, y: monster.y,
@@ -1593,6 +1605,7 @@ class Game {
 
     // [v1.5.0] 精英必掉：怪物位置掉 1 个随机道具（导弹权重×2）+ 高价值目标提示
     if (isElite) {
+      if(monster.eliteKind==='stormcaller')this.weatherSystem.dispelElite()
       this.spawnSystem.spawnEliteDrop(monster.x + monster.width / 2, monster.y)
       this._addFloatingText(monster.x + monster.width / 2, monster.y - 30, '精英击杀!', Config.MONSTER.ELITE_BORDER_COLOR, 55)
     }
@@ -1654,6 +1667,8 @@ class Game {
    * @returns {Object|null}
    */
   _pickMissileTarget() {
+    const nodes=this.combat.targets().filter(t=>t.isMechanic)
+    if(nodes.length)return nodes.sort((a,b)=>Math.abs(a.y-this.bird.y)-Math.abs(b.y-this.bird.y))[0]
     // [v1.5.0] Boss 绝对优先（在场且可受击时全部火力锁定 Boss——章节高潮的火力聚焦）
     if (this.boss && this.boss.hp > 0 && this.boss.state !== 'entering' &&
         this.boss.state !== 'dying' && this.boss.state !== 'leaving') {
@@ -1716,6 +1731,13 @@ class Game {
     // 本次伤害 = 基础 + 猎手标记 + 蜂群链路当前叠层
     const damage = Config.MISSILE.DAMAGE + hunterLv + this.abilitySystem.missileLinkStacks
 
+    for(const node of this.combat.targets().filter(t=>t.isMechanic)) {
+      if(missile.hitTest(node)) {
+        node.takeDamage(damage);this._spawnExplosion(node.x,node.y,'180,240,180',8)
+        if(this.boss && this.boss.hp<=0)this._onBossVictory('kill')
+        return true
+      }
+    }
     let hitSomething = false
     let killedMonster = null
 
@@ -2028,13 +2050,14 @@ class Game {
     let exp = baseExp
     let doubled = false
 
-    // 经验共鸣：概率双倍（针对所有经验获得）
-    if (this.abilitySystem.checkExpResonance()) {
+    // Boss礼包是固定额度，不再吃共鸣或经验倍率，防一次奖励连升几十级。
+    const fixed=source==='boss_gift'||source==='endless_boss'
+    if (!fixed && this.abilitySystem.checkExpResonance()) {
       exp = baseExp * 2
       doubled = true
     }
 
-    const multiplied = this.expSystem.addExp(exp, stats.expMultiplier * (extraMult || 1))
+    const multiplied = this.expSystem.addExp(exp, fixed?1:stats.expMultiplier * (extraMult || 1))
 
     // 浮动文字——堆叠不重叠
     const text = doubled ? `+${exp} EXP x2!` : `+${exp} EXP`
@@ -2073,8 +2096,8 @@ class Game {
       }
       case 'health_pack': {
         if (this.abilitySystem.hp < this.abilitySystem.maxHp) {
-          this.abilitySystem.healHP(1)
-          this._addFloatingText(this.bird.x, this.bird.y - 30, '+1 HP', '#e74c3c', 50)
+          if(this.abilitySystem.healHP(1)>0)this._addFloatingText(this.bird.x, this.bird.y - 30, '+1 HP', '#e74c3c', 50)
+          else this._addFloatingText(this.bird.x, this.bird.y - 30, '补给冷却中', '#ffe0a0', 35)
         } else {
           // 满血时转化为分数
           this._addScore(5)
@@ -2317,7 +2340,7 @@ class Game {
     // Boss 清场后没有管道；让时间扭曲/时之晶也能响应真正临近的怪物和弹幕。
     if (this.abilitySystem.invincibleFrames > 0 || this.abilitySystem.timeWarpActive > 0) return
     const b = this.bird
-    const threatened = this.feathers.some(f => f.kind === 'beam'
+    const threatened = this.feathers.some(f => f.age < (f.warn || 0)-8 ? false : f.kind === 'beam'
       ? f.age >= f.warn - 8 && Math.abs(b.y-f.y) < f.radius+20
       : f.isSandWall
       ? f.x < b.x + 45 && f.x + f.width > b.x - 20 && (b.y - 20 < f.topHeight || b.y + 20 > f.bottomY)
@@ -2788,7 +2811,7 @@ class Game {
     ctx.lineWidth = 3
     ctx.strokeStyle = '#000000'
     ctx.fillStyle = '#ffffff'
-    const label = boss.name + (boss.phase === 2 ? ' · 怒' : '') + ` ${Math.max(0, boss.hp)}/${boss.maxHp}`
+    const label = boss.name + (boss.phase === 2 ? ' · 怒' : '')
     ctx.strokeText(label, cx, barY + barH + 9)
     ctx.fillText(label, cx, barY + barH + 9)
     const seconds = Math.ceil(Math.max(0, this._getBossSurvivalFrames() - this.bossFightFrames) / 60)
@@ -2798,6 +2821,9 @@ class Game {
     ctx.fillStyle = boss.state === 'recover' ? '#fff5a6' : '#caffbd'
     ctx.strokeText(boss.getActionLabel(), cx, barY + barH + 40)
     ctx.fillText(boss.getActionLabel(), cx, barY + barH + 40)
+    ctx.fillStyle='#ffdf8f'
+    ctx.strokeText(boss.mechanics.label(),cx,barY+barH+55)
+    ctx.fillText(boss.mechanics.label(),cx,barY+barH+55)
   }
 
   // [v1.1.0] 速度包边框特效
@@ -3081,7 +3107,7 @@ class Game {
       const mods=this.chapterSystem.getMods(), need=Math.ceil(20*mods.pressure)
       ctx.font='10px sans-serif';ctx.textAlign='center';ctx.fillStyle='#b6f6ff'
       const recovery=Math.round(100*mods.recoveryRate)
-      ctx.fillText(`破敌护盾 ${Math.floor(this.combat.endlessCharge)}/${need} · 防御恢复${recovery}%`,
+      ctx.fillText(`破敌护盾 ${Math.floor(this.combat.endlessCharge)}/${need} · 恢复${recovery}% · 补给间隔${Math.round(mods.renewalInterval/60)}s`,
         this.screenW/2,this.screenH-Config.GROUND.HEIGHT+30)
     }
     // ----- 等级徽章（右上角）-----
@@ -3110,7 +3136,7 @@ class Game {
       ctx.lineWidth = 4
       ctx.strokeStyle = '#000000'
       ctx.fillStyle = '#ffffff'
-      ctx.fillText(this.score, this.screenW / 2, topY + 16)
+      ctx.fillText(this.score, this.screenW / 2, topY + 16, 64)
     }
 
     // ----- 经验条（居中，分数下方）-----
@@ -3144,7 +3170,7 @@ class Game {
       ctx.fillStyle = '#ffffff'
     }
     ctx.fillText(chapterHud.endless
-      ? `无尽 ${Math.floor(chapterHud.seconds/60)}:${String(chapterHud.seconds%60).padStart(2,'0')} · 得分×2${chapterHud.seconds>=300?' · 时空压缩':''}`
+      ? `无尽 ${Math.floor(chapterHud.seconds/60)}:${String(chapterHud.seconds%60).padStart(2,'0')} · 得分×2${chapterHud.seconds>=120?' · 时空压缩':''}`
       : chapterHud.rematch ? `Ch${chapterHud.id}/6 · 再战还需 ${chapterHud.remainingPipes} 管`
       : `Ch${chapterHud.id}/6 · ${chapterHud.pipes}/${chapterHud.target}${chapterHud.remaining?' · 最短还需'+chapterHud.remaining+'s':''}`, this.screenW / 2, chapterY)
     ctx.globalAlpha = 1.0
@@ -3194,8 +3220,8 @@ class Game {
     const phoenixLv = this.abilitySystem.owned.get('phoenix') || 0
     if (phoenixLv > 0) {
       const remaining = phoenixLv - this.abilitySystem.phoenixUsed
-      const phoenixX = 14
-      const phoenixY = topY + 32
+      const phoenixX = this.screenW - 128
+      const phoenixY = topY + 30
       ctx.font = '14px sans-serif'
       ctx.textAlign = 'left'
       ctx.textBaseline = 'middle'
@@ -3208,8 +3234,8 @@ class Game {
     // ----- [v1.4.0] 羽盾图标（回响之翼/铁羽）：心形区右侧羽毛+层数 -----
     const echoLv = this.abilitySystem.owned.get('echo_wing') || 0
     if (echoLv > 0) {
-      const featherX = 14 + (phoenixLv > 0 ? 44 : 0)
-      const featherY = topY + 32
+      const featherX = this.screenW - 128 + (phoenixLv > 0 ? 44 : 0)
+      const featherY = topY + 30
       ctx.font = '14px sans-serif'
       ctx.textAlign = 'left'
       ctx.textBaseline = 'middle'
@@ -3230,7 +3256,7 @@ class Game {
       const tamedIcons = { wind: '💨', rain: '🌧️', hail: '🧊' }
       const tamedX = this.screenW / 2
       const hasWeatherRow = weatherInfo.length > 0
-      const tamedY = hasWeatherRow ? barY + barH + 62 : barY + barH + 40
+      const tamedY = this.chapterSystem.isBossActive() ? this.screenH - Config.GROUND.HEIGHT + 45 : hasWeatherRow ? barY + barH + 62 : barY + barH + 40
       ctx.font = 'bold 10px monospace'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
@@ -3279,68 +3305,24 @@ class Game {
   }
 
   // [v1.1.1] HP 心形渲染——贝塞尔曲线心形，更大更清晰
-  // [v1.4.0] 超载神盾：临时HP 以空心心形接在普通心形之后（视觉必须区分：空心 vs 实心）
+  // [v1.4.0] 超载神盾：临时HP 以黄色实心心形接在普通红心之后
   _drawHPHearts(x, y, size, gap) {
     const ctx = this.ctx
-    const maxHp = this.abilitySystem.maxHp
-    const currentHp = this.abilitySystem.hp
-    if(maxHp+(this.abilitySystem.tempHp||0)>3) {
-      ctx.font='bold 12px sans-serif';ctx.fillStyle='#ffaaa4';ctx.textAlign='left';ctx.textBaseline='middle'
-      ctx.fillText(`HP ${currentHp}/${maxHp}${this.abilitySystem.tempHp?' +'+this.abilitySystem.tempHp:''}`,x,y)
-      return
-    }
-
-    for (let i = 0; i < maxHp; i++) {
-      const cx = x + i * (size + gap) + size / 2
-      const cy = y
-      const filled = i < currentHp
-      const s = size / 2
-
-      // 贝塞尔曲线心形
-      ctx.beginPath()
-      ctx.moveTo(cx, cy + s * 0.7)
-      ctx.bezierCurveTo(cx - s * 1.1, cy - s * 0.2, cx - s * 0.9, cy - s * 0.9, cx, cy - s * 0.2)
-      ctx.bezierCurveTo(cx + s * 0.9, cy - s * 0.9, cx + s * 1.1, cy - s * 0.2, cx, cy + s * 0.7)
-      ctx.closePath()
-
-      if (filled) {
-        ctx.fillStyle = '#ff4444'
-      } else {
-        ctx.fillStyle = 'rgba(60, 60, 60, 0.4)'
-      }
-      ctx.fill()
-
-      ctx.strokeStyle = '#000000'
-      ctx.lineWidth = 1.5
-      ctx.stroke()
-
-      // 高光效果
-      if (filled) {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)'
-        ctx.beginPath()
-        ctx.arc(cx - s * 0.3, cy - s * 0.3, s * 0.2, 0, Math.PI * 2)
-        ctx.fill()
-      }
-    }
-
-    // [v1.4.0] 临时HP：空心心形（粉色描边+透明填充），与普通HP视觉区分
-    const tempHp = this.abilitySystem.tempHp || 0
-    for (let i = 0; i < tempHp; i++) {
-      const cx = x + (maxHp + i) * (size + gap) + size / 2
-      const cy = y
-      const s = size / 2
-
-      ctx.beginPath()
-      ctx.moveTo(cx, cy + s * 0.7)
-      ctx.bezierCurveTo(cx - s * 1.1, cy - s * 0.2, cx - s * 0.9, cy - s * 0.9, cx, cy - s * 0.2)
-      ctx.bezierCurveTo(cx + s * 0.9, cy - s * 0.9, cx + s * 1.1, cy - s * 0.2, cx, cy + s * 0.7)
-      ctx.closePath()
-
-      ctx.fillStyle = 'rgba(255, 154, 160, 0.12)'
-      ctx.fill()
-      ctx.strokeStyle = '#ff9aa0'
-      ctx.lineWidth = 2
-      ctx.stroke()
+    const ab=this.abilitySystem
+    const capacity=ab.maxHp+Config.SHIELD.OVERDRIVE_TEMP_HP_CAP+ab.blessingTempHpCapBonus
+    // 预留分数和等级位置，按上限排两行；不会因当前血量变化切换样式。
+    const width=Math.max(74,this.screenW/2-50)
+    const cols=Math.ceil(capacity/2)
+    const step=Math.min(size+gap,width/cols)
+    const heartSize=Math.min(size,step-2,14)
+    for(let i=0;i<ab.maxHp+ab.tempHp;i++) {
+      const cx=x+(i%cols)*step+heartSize/2,cy=y+Math.floor(i/cols)*16
+      const r=heartSize/2, temporary=i>=ab.maxHp,filled=temporary||i<ab.hp
+      ctx.beginPath();ctx.moveTo(cx,cy+r*.7)
+      ctx.bezierCurveTo(cx-r*1.1,cy-r*.2,cx-r*.9,cy-r*.9,cx,cy-r*.2)
+      ctx.bezierCurveTo(cx+r*.9,cy-r*.9,cx+r*1.1,cy-r*.2,cx,cy+r*.7);ctx.closePath()
+      ctx.fillStyle=temporary?'#ffd54a':filled?'#ff4444':'rgba(60,60,60,0.4)';ctx.fill()
+      ctx.strokeStyle=temporary?'#8a601a':'#301a22';ctx.lineWidth=1;ctx.stroke()
     }
   }
 

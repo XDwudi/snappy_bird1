@@ -1,42 +1,13 @@
 /**
- * SpawnSystem.js - 生成系统 [v1.5.0]
- *
- * 职责：管道 / 道具 / 怪物的"生成决策"——时机、位置、类型 roll、保底计时。
- * 从 Game.js 拆出（审计 docs/audits/审计_v1.2.0.md §A3 优先级 4），
- * Game.js 只保留"把生成结果放进数组"的接线（onSpawnPipe / onSpawnMonster / onSpawnItem 回调）。
- *
- * 拆分范围（原 Game.js 方法 → 本系统）：
- *   _getSpawnDistance      → getSpawnDistance      （管道生成间隔 ramp，距离制）
- *   _spawnPipe             → spawnPipe             （管道实体生成，间隙/高度决策）
- *   _updateMonsterSpawn    → updateMonsterSpawn    （怪物生成时机：新手保护+距离节奏+同屏上限）
- *   _pickMonsterY          → pickMonsterY          （怪物生成 y：避开前方管道间隙中心）
- *   _spawnRandomItem       → spawnRandomItem       （随机道具生成：位置+类型 roll）
- *   _rollItemType          → rollItemType          （道具类型权重 roll）
- *   _updateSupplyLine      → updateSupplyLine      （补给线保底计时器，属道具生成职责）
- *   _onPipePass 内道具块    → maybeSpawnItemOnPipePass（过管 25% 道具掉落决策）
- * 移入状态：_distanceSinceSpawn → _pipeDistance、_monsterDistance、itemSpawnTimer、supplyLineTimer
- *
- * [v1.5.0] 预留接口（本章只留接口，不实现章节逻辑）：
- *   setBossActive(active)      —— Boss 战期间暂停管道/怪物的生成与距离累计（道具照常）。
- *                                  默认 false，行为与拆分前完全一致。
- *   [v1.5.0 D21] Boss 战导弹保底供给：bossActive 期间每 MISSILE_SUPPLY_INTERVAL_FRAMES
- *                                  检查一次，场上无导弹道具则在玩家前方同高生成 1 枚
- *                                  （updateBossMissileSupply；每场战斗结束计时清零）。
- *   setChapterModifiers(mods)  —— 章节系统覆写生成参数的注入点（步骤 B 起由 ChapterSystem 注入）：
- *                                  { pipeDistanceScale, monsterSpawnDistanceScale,
- *                                    monsterSpawnDistance, monsterMaxAlive,
- *                                    monsterHpMult, floaterTrackSpeed, batSineAmp, eliteChance }
- *                                  默认 null（不覆写），行为与拆分前完全一致。
- * [v1.5.0] 精英怪（§5.1）：45s 保护期后每 60s roll 一次（概率见 Config.MONSTER.ELITE_CHANCE，
- *   章节可覆写），命中则下一只怪物升级为精英（金边/体型×1.3/HP×3，移动参数不变）；
- *   精英必掉由 Game._onMonsterKilled 调 spawnEliteDrop（导弹权重×2）。
- *
- * 行为等价承诺：纯重构，零数值变化、零节奏变化、零随机数消耗顺序变化
- * （test_gameplay_sim / test_builds_sim 同 seed 输出逐局吻合为验收标准）。
+ * 生成管道、怪物、精英与道具。Game 通过回调接收实体。
+ * v1.8.1：普通怪靠近管道出口，保留水平绕行间隔；精英升级为伴飞炮艇/天气灵。
+ * 45秒保护期后按25秒周期尝试精英，最多同屏一只；Boss战暂停常规生成。
+ * 参数由 ChapterSystem 注入，reset 清除局内计时。
  */
 
 const Config = require('../config/GameConfig.js')
 const Pipe = require('../entities/Pipe.js')
+const EliteMonster = require('../entities/EliteMonster.js')
 const Monster = require('../entities/Monster.js')
 const Item = require('../entities/Item.js')
 const Logger = require('./GameLogger.js')
@@ -147,8 +118,8 @@ class SpawnSystem {
       // [v1.3.0] 怪物生成（45s 新手保护后，同样按滚动距离节奏）
       this.updateMonsterSpawn(scrollSpeed)
 
-      // [v1.5.0] 精英怪 roll（§5.1）：45s 保护期后每 60s 一次，命中则下一只升级为精英；
-      // 首次 roll 在 105s（SPAWN_DELAY+ELITE_ROLL_INTERVAL），此前不消耗随机数
+      // [v1.5.0] 精英怪 roll（§5.1）：45s 保护期后每 25s 一次，命中则下一只升级为精英；
+      // 首次 roll 在 70s（SPAWN_DELAY+ELITE_ROLL_INTERVAL），此前不消耗随机数
       this.updateEliteRoll()
     }
 
@@ -273,12 +244,20 @@ class SpawnSystem {
         sineAmp: this._chapterMods.batSineAmp
       }
     }
-    if (this._elitePending) {
+    if (this._elitePending && !(this._deps.getEliteCount && this._deps.getEliteCount())) {
       this._elitePending = false
       opts = opts || {}
       opts.elite = true
+      opts.eliteKind = Math.random()<.5?'gunship':'stormcaller'
+      opts.screenW=this._deps.screenW
+      opts.onHazard=this._deps.onHazard
+      opts.getPipes=this._deps.getPipes
     }
-    const monster = new Monster(this._deps.screenW + 30, y, type, groundY, opts)
+    const anchor=this._deps.getPipes().slice().sort((a,b)=>b.x-a.x)[0]
+    const spawnX=anchor && !(opts && opts.elite)?Math.max(this._deps.screenW+30,anchor.x+anchor.width+95):this._deps.screenW+30
+    if(!(opts&&opts.elite))opts=Object.assign({},opts,{sineAmp:18})
+    const Factory=opts&&opts.elite?EliteMonster:Monster
+    const monster = new Factory(spawnX, y, type, groundY, opts)
     this._deps.onSpawnMonster(monster)
     Logger.info('Monster', '生成怪物', {
       type: type, x: monster.x, y: monster.y, gameTime: this._deps.getGameTime(),
@@ -287,7 +266,7 @@ class SpawnSystem {
   }
 
   /**
-   * [v1.5.0] 精英怪 roll（§5.1）：45s 保护期（与怪物 SPAWN_DELAY 相同）后每 60s roll 一次，
+   * [v1.5.0] 精英怪 roll（§5.1）：45s 保护期（与怪物 SPAWN_DELAY 相同）后每 25s roll 一次，
    * 命中（25%，章节可覆写）则把下一只怪物升级为精英。
    * 计时暂停语义与怪物生成一致：Boss 战期间（bossActive）不累计（调用点在 bossActive 块内）。
    */
@@ -305,30 +284,15 @@ class SpawnSystem {
     }
   }
 
-  /**
-   * [v1.3.0] 选取怪物生成 y：避开前方管道间隙正中央（不堵死通路）。
-   * 随机尝试 SPAWN_Y_ATTEMPTS 次，取第一个与所有将至管道间隙中心
-   * 距离 >= SAFE_GAP_DIST 的候选；失败则用最后候选（概率极低）。
-   * @returns {number}
-   */
+  /** 管道出口附近的高度；与 spawnX 的95px间隔配套，不直接堵在管道内。 */
   pickMonsterY() {
-    const M = Config.MONSTER
-    const groundY = this._deps.screenH - Config.GROUND.HEIGHT
-    const minY = Config.PIPE.MIN_TOP + M.MIN_Y_MARGIN
-    const maxY = groundY - M.MIN_Y_MARGIN
-    let y = (minY + maxY) / 2
-    for (let attempt = 0; attempt < M.SPAWN_Y_ATTEMPTS; attempt++) {
-      y = minY + Math.random() * (maxY - minY)
-      let safe = true
-      for (const pipe of this._deps.getPipes()) {
-        // 只看即将到达小鸟的管道（屏幕右半部分之外的不参与避让）
-        if (pipe.x + pipe.width < this._deps.screenW * 0.5) continue
-        const gapCenter = pipe.topHeight + pipe.gap / 2
-        if (Math.abs(y - gapCenter) < M.SAFE_GAP_DIST) { safe = false; break }
-      }
-      if (safe) break
+    const groundY=this._deps.screenH-Config.GROUND.HEIGHT
+    const pipe=this._deps.getPipes().slice().sort((a,b)=>b.x-a.x)[0]
+    if(pipe) {
+      const side=Math.random()<.5?-1:1
+      return Math.max(150,Math.min(groundY-40,pipe.topHeight+pipe.gap/2+side*Math.min(45,pipe.gap*.2)))
     }
-    return y
+    return Math.max(150,Math.min(groundY-40,this._deps.getBirdY()+ (Math.random()<.5?-55:55)))
   }
 
   // ==================== 道具生成 ====================

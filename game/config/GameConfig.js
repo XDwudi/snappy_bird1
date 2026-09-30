@@ -8,7 +8,7 @@
 const Campaign = require('./CampaignConfig.js')
 
 module.exports = {
-  VERSION: '1.8.0',
+  VERSION: '1.8.1',
   // ==================== 小鸟参数 ====================
   BIRD: {
     WIDTH: 34,              // 小鸟视觉宽度
@@ -57,7 +57,7 @@ module.exports = {
 
   // ==================== 游戏全局参数 ====================
   GAME: {
-    SCROLL_SPEED: 3.08,      // 初始滚动速度
+    SCROLL_SPEED: 3.18,      // 初始滚动速度
     SPEED_RAMP_TIME: 5400, // 第一段速度增长周期=90秒
     SPEED_RAMP_MAX: 0.9,    // 最大速度增量
     GAP_RAMP_TIME: 5400,    // 间隙缩小周期
@@ -74,8 +74,8 @@ module.exports = {
     // [v1.7.0] 前90秒减压：间距325→295，间隙222→180；保留基础飞行物理。
     // 第二段从90秒开始，210秒封顶；配合相邻中心变化上限，不再独立全屏随机跳变。
     EARLY_EASE_RAMP_TIME: 5400,   // 减压回归周期（帧）=90s
-    EARLY_EASE_SPAWN_BONUS: 24, // 开局间距额外+30px，90秒归零
-    EARLY_EASE_GAP_BONUS: 16, // 开局间隙额外+22px，90秒归零
+    EARLY_EASE_SPAWN_BONUS: 18, // 开局间距额外+30px，90秒归零
+    EARLY_EASE_GAP_BONUS: 12, // 开局间隙额外+22px，90秒归零
 
     STATE: {
       READY: 'ready',
@@ -230,7 +230,7 @@ module.exports = {
 
     // [v1.5.0] 精英怪（§5.1）：45s 保护期后每 60s roll 一次，25% 概率把下一只升级为精英
     // 金色描边 + 体型×1.3 + HP×3，移动参数不变；击杀必掉 1 个随机道具（导弹权重×2）+ 经验×5
-    ELITE_ROLL_INTERVAL: 3600,     // 精英 roll 间隔（帧）=60s（计时起点与 SPAWN_DELAY 相同）
+    ELITE_ROLL_INTERVAL: 1500,     // 精英 roll 间隔（帧）=60s（计时起点与 SPAWN_DELAY 相同）
     ELITE_CHANCE: 0.25,            // 精英化概率（Ch3 30%/Ch4 35% 由章节修正覆写，见 CHAPTERS）
     ELITE_SIZE_MULT: 1.3,          // 体型倍率
     ELITE_HP_MULT: 3,              // HP 倍率
@@ -442,7 +442,7 @@ module.exports = {
 
     // [v1.5.0] C7 坚韧外皮（thick_skin）：怪物/弹幕伤害 30%/级 概率格挡（对管道无效）；
     // §2.6 受击链最前置防御节点（格挡 → 羽盾 → 护盾层 → HP），格挡成功白色弹开粒子（与护盾蓝色区分）
-    THICK_SKIN_BLOCK_PER_LV: 0.3,
+    THICK_SKIN_BLOCK_PER_LV: 0.18,
 
     // [v1.5.0] U8 屠龙者（boss_slayer）：导弹对 Boss 伤害 +lv（与猎手标记加算，非乘算防 DPS 爆炸）；
     // Boss 战受击无敌 +0.5s/级（帧）
@@ -638,12 +638,12 @@ module.exports = {
     // 防弹幕级 DPS 秒杀（满配蜂群+屠龙者 10.2s 破 ≥20s 红线，D20）；间隔 >0.75s 的
     // 持续火力（无卡保底 ~6s/发、火力覆盖 10-14s/轮）完全不受影响
     HIT_GATE_FRAMES: 45,
-    // §4.10 章节大礼包定额：+100 分 + 3 级所需经验（按当前等级曲线 18+12×Lv 逐级别累加）
+    // §4.10 章节大礼包定额：+100 分 + 固定一级所需经验（按当前等级曲线 18+12×Lv 逐级别累加）
     GIFT_SCORE: 100,
-    GIFT_LEVELS: 3,
+    GIFT_LEVELS: 1,
     // 章节祝福（§4.10 三选一，本局永久）；E7 章节之主对祝福效果 +50% 走 BLESSING_MASTER_MULT
     BLESSING_MASTER_MULT: 1.5,
-    BLESSING_GROWTH_EXP: 0.25,      // 成长祝福：经验 +25%/层（独立乘区）
+    BLESSING_GROWTH_EXP: 0.15,      // 成长祝福：经验 +15%/层（祝福加算）
     BLESSING_HUNT_ITEM_PP: 0.08,    // 狩猎祝福：道具生成率 +8pp/层
     BLESSING_HUNT_SPAWN_ITEMS: 3,   // 狩猎祝福：立即在前方生成道具数
     // 章节外观/主题，行为节奏使用上面的 BOSS 参数。

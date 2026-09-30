@@ -33,7 +33,8 @@ class Missile {
    */
   update(speedFactor) {
     const M = Config.MISSILE
-    const speed = M.SPEED * (speedFactor > 0 ? speedFactor : 1)
+    // 无尽世界加速不应让导弹一帧越过小型机关的命中盒。
+    const speed = M.SPEED * Math.min(2.5, speedFactor > 0 ? speedFactor : 1)
 
     // 目标失效（HP 归零/飞出屏幕）→ 直飞
     if (this.target && (this.target.hp <= 0 || this.target.x + this.target.width < 0)) {
@@ -69,7 +70,7 @@ class Missile {
    */
   _targetPoint() {
     const t = this.target
-    if (t.type === 'monster' || t.isBoss) {
+    if (t.type === 'monster' || t.isBoss || t.isMechanic) {
       return { x: t.x + t.width / 2, y: t.y }
     }
     // 管道：瞄准上管底部或下管顶部（取较近者），保证命中判定稳定
@@ -89,7 +90,7 @@ class Missile {
     const M = Config.MISSILE
     // [v1.5.0] isBoss 并入中心盒分支：Boss 与 Monster 同为"左缘 x + 中心 y"约定；
     // 走管道分支会用 topHeight/bottomY 间隙判定导致永远打不中本体（管道分支是"打管身避间隙"语义）
-    if (ob.type === 'monster' || ob.isBoss) {
+    if (ob.type === 'monster' || ob.isBoss || ob.isMechanic) {
       return Math.abs(this.x - (ob.x + ob.width / 2)) < ob.width / 2 + M.WIDTH / 2 &&
              Math.abs(this.y - ob.y) < ob.height / 2 + M.HEIGHT / 2
     }

@@ -1,4 +1,5 @@
 // 六章主题招式与P2连协：观察预警 → 躲避 → 破绽反击。行为计时不消耗随机数。
+const BossMechanics = require('./BossMechanics.js')
 const castPattern = require('./BossPatterns.js')
 const drawBossArt = require('./BossArt.js')
 const Config = require('../config/GameConfig.js')
@@ -62,6 +63,7 @@ class Boss extends Obstacle {
     this._trail = []
     this._hitFlash = 0               // 受击白闪反馈（帧）
     this._hitGate = 0                // [v1.5.0 D21] 受击间隔门剩余帧（>0 时导弹命中不扣血，白闪照常）
+    this.mechanics = new BossMechanics(this)
     this._syncBox()
   }
 
@@ -74,7 +76,9 @@ class Boss extends Obstacle {
 
   update(bird, combatFrames) {
     const B = Config.BOSS
+    bird=bird || {x:this.screenW*Config.BIRD.X_RATIO,y:this.baseY}
     this.stateT++
+    this.mechanics.update(bird)
     if (this._hitFlash > 0) this._hitFlash--
     if (this._hitGate > 0) this._hitGate--
     for (const key of Object.keys(this._weaponGates)) if (this._weaponGates[key] > 0) this._weaponGates[key]--
@@ -142,6 +146,7 @@ class Boss extends Obstacle {
     const idx=this.comboQueue.shift()
     this.skill=this.variant.skills[idx]
     this.action=this.skill.kind
+    this.mechanics.onAttack()
     this.attackIndex++
     this.comboStep++
     this.aimY=bird.y
@@ -165,7 +170,7 @@ class Boss extends Obstacle {
     if (['entering', 'dying', 'leaving'].includes(this.state) || this.hp <= 0) return false
     const gate = source === 'missile' ? this._hitGate : (this._weaponGates[source] || 0)
     if (gate > 0) return false
-    const damage = n + (this.state === 'recover' ? 1 : 0)
+    const damage = Math.max(1, Math.round((n + (this.state === 'recover' ? 1 : 0)) * this.mechanics.damageScale()))
     this.hp = Math.max(0, this.hp - damage)
     this._hitFlash = 8
     if (source === 'missile') this._hitGate = Config.BOSS.HIT_GATE_FRAMES
@@ -181,7 +186,7 @@ class Boss extends Obstacle {
       const hint={gate:'穿绿框',beam:'离开横线',pincer:'留在两线中间',dash:'离开红带',
         rain:'避开落点',columns:'避开雷轨',eruption:'避开地火',seek:'提前变向',
         split:'留意分裂',summon:'击退召唤',fan:'离开瞄线',burst:'持续变向',spiral:'绕开扇面'}
-      return `${this.skill.name} · ${hint[this.action]}${this.comboLength>1?' · 连协'+this.comboStep+'/'+this.comboLength:''}`
+      return `${this.skill.name} · ${(this.skill.hint || hint[this.action] || '观察预警')}${this.comboLength>1?' · 连协'+this.comboStep+'/'+this.comboLength:''}`
     }
     return '观察起手 · 等待反击'
   }
@@ -219,6 +224,7 @@ class Boss extends Obstacle {
   _doRender(ctx) {
     const cfg = this.variant
     const c = cfg.colors
+    this.mechanics.render(ctx, this.screenW * Config.BIRD.X_RATIO)
     const cx = this.x + this.width / 2
     const cy = this.y
     const flap = Math.sin(this.roamT * 0.12 + this.stateT * 0.08) * 10  // 翅膀扇动

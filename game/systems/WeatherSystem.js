@@ -41,6 +41,7 @@ class WeatherSystem {
   }
 
   reset() {
+    this.elitePressure=false
     this.activeEffects = []         // 当前活跃的效果
     this.triggerCooldown = 0        // 触发冷却计时器
     this.effectCooldowns = {}       // 各效果独立冷却 { wind: 0, rain: 0, hail: 0 }
@@ -63,6 +64,13 @@ class WeatherSystem {
    * Boss 战结束（胜/败）解冻，从冻结点继续（不补偿性快进）。
    * @param {boolean} f
    */
+  setElitePressure(active) { this.elitePressure=!!active }
+  dispelElite() {
+    this.elitePressure=false
+    // 击杀将现有天气压到最后三秒，走原有退场/干燥流程，避免残留属性。
+    for(const effect of this.activeEffects)effect.elapsed=Math.max(effect.elapsed,effect.duration-180)
+  }
+
   setFrozen(f) {
     f = !!f
     if (this.frozen !== f) {
@@ -90,11 +98,12 @@ class WeatherSystem {
 
     // 1. 检查触发
     this.checkTimer++
-    if (gameTime >= Config.WEATHER.START_TIME && this.checkTimer >= Config.WEATHER.CHECK_INTERVAL) {
+    if (gameTime >= Config.WEATHER.START_TIME && this.checkTimer >= (this.elitePressure?120:Config.WEATHER.CHECK_INTERVAL)) {
       this.checkTimer = 0
       this._tryTrigger(gameTime, gameCtx)
     }
 
+    gameCtx.eliteWeatherPressure=this.elitePressure
     // 2. 更新活跃效果
     for (let i = this.activeEffects.length - 1; i >= 0; i--) {
       const effect = this.activeEffects[i]
@@ -117,7 +126,7 @@ class WeatherSystem {
     }
 
     // 3. 更新冷却
-    if (this.triggerCooldown > 0) this.triggerCooldown--
+    if (this.triggerCooldown > 0) this.triggerCooldown-=this.elitePressure?4:1
     for (const t of ALL_TYPES) {
       if (this.effectCooldowns[t] > 0) this.effectCooldowns[t]--
     }
@@ -165,14 +174,14 @@ class WeatherSystem {
     if (this.triggerCooldown > 0) return
     // 检查最大同时效果数
     // [v1.2.2] N5 终局加压：240s后并发上限 2→3（按游戏时长动态取上限）
-    const maxSimultaneous = gameTime >= Config.WEATHER.LATE_GAME_TIME
+    const maxSimultaneous = this.elitePressure ? 3 : gameTime >= Config.WEATHER.LATE_GAME_TIME
       ? Config.WEATHER.MAX_SIMULTANEOUS_LATE
       : Config.WEATHER.MAX_SIMULTANEOUS
     if (this.activeEffects.length >= maxSimultaneous) return
 
     // 计算触发概率
     const W = Config.WEATHER
-    const chance = W.BASE_CHANCE +
+    const chance = (this.elitePressure ? .45 : 0) + W.BASE_CHANCE +
       (W.MAX_CHANCE - W.BASE_CHANCE) * Math.min(1, gameTime / W.CHANCE_RAMP_TIME)
 
     if (Math.random() > chance) return

@@ -47,7 +47,8 @@ test('破绽+1伤害，独立武器门防止新武器吞导弹，同批反击不
   const {b}=boss();b._setState('recover');const hp=b.hp
   b.takeDamage(4);b.takeDamage(2,'blade');b.takeDamage(2,'revenge');b.takeDamage(2,'revenge')
   assert.equal(b.hp,hp-5-3-3)
-  for(let i=0;i<45;i++)b.update();b.takeDamage(2,'revenge');assert.equal(b.hp,hp-14)
+  // 隔离1.8.1机关护甲，此用例只检查独立武器伤害门。
+  for(let i=0;i<45;i++)b.update();b.mechanics.nodes=[];b._setState('recover');b.takeDamage(2,'revenge');assert.equal(b.hp,hp-14)
 })
 test('直射羽刃确实击杀小怪、发经验且有界回收',()=>{
   const g=game();select(g,'feather_blade');g.bird.y=300

@@ -60,6 +60,8 @@ class AbilitySystem {
 
     // 全属性加成
     this.recoveryRate = 1
+    this.renewalInterval = 0
+    this.renewalCD = 0
     this.chapter = 1
     this.breakthroughLevel = 0
     this.allBuffLevel = 0
@@ -402,6 +404,9 @@ class AbilitySystem {
     s.scrollSpeedMultiplier *= 1-(factions['霜脉']||0)*0.03
     s.weaponBonus = (factions['熔核']||0) + Math.log2(1+this.breakthroughLevel)*0.5
     s.weaponCadence = 1-(factions['天枢']||0)*0.06
+    // 高倍率经验收益递减；保留构筑差异，阻断经验乘区滚雪球到满池。
+    if(s.expMultiplier>3)s.expMultiplier=3+2*(Math.sqrt(1+(s.expMultiplier-3)/2)-1)
+    s.itemSpawnBonus=Math.min(.35,s.itemSpawnBonus)
     return s
   }
 
@@ -442,6 +447,7 @@ class AbilitySystem {
 
   tickCooldowns(recoveryRate = 1) {
     this.recoveryRate = recoveryRate
+    if(this.renewalCD>0)this.renewalCD--
     if (this.timeWarpCD > 0) this.timeWarpCD -= recoveryRate
     if (this.teleportCD > 0) this.teleportCD -= recoveryRate
     if (this.timeWarpActive > 0) this.timeWarpActive--
@@ -484,8 +490,8 @@ class AbilitySystem {
     if (this.hasStat('hasShieldBurst')) {
       this.shieldBurstTimer -= recoveryRate
       if (this.shieldBurstTimer <= 0) {
-        this.addShieldLayer(1)
-        this.shieldBurstTimer = this._getShieldBurstCD()
+        if(this.addShieldLayer(1)>0)this.shieldBurstTimer = this._getShieldBurstCD()
+        else if(!this.renewalInterval)this.shieldBurstTimer = this._getShieldBurstCD()
         Logger.info('Shield', '护盾爆发获得护盾', { layers: this.shieldLayers, max: this.maxShieldLayers })
       }
     }
@@ -496,8 +502,7 @@ class AbilitySystem {
       this.shieldRecoverTimer += recoveryRate
       // [v1.4.0] 超载神盾：护盾恢复CD缩短
       if (this.shieldRecoverTimer >= Config.SHIELD.TOUGHNESS_RECOVER_CD * this._getOverdriveCDScale()) {
-        this.addShieldLayer(1)
-        this.shieldRecoverTimer = 0
+        if(this.addShieldLayer(1)>0)this.shieldRecoverTimer = 0
         Logger.info('Shield', '坚韧护盾恢复', { layers: this.shieldLayers, max: this.maxShieldLayers })
       }
     }
@@ -508,8 +513,7 @@ class AbilitySystem {
       this.bounceShieldRecoverTimer += recoveryRate
       const cd = this._getBounceShieldRecoverCD()
       if (this.bounceShieldRecoverTimer >= cd) {
-        this.addShieldLayer(1)
-        this.bounceShieldRecoverTimer = 0
+        if(this.addShieldLayer(1)>0)this.bounceShieldRecoverTimer = 0
         Logger.info('Shield', '弹力护盾恢复', { layers: this.shieldLayers, max: this.maxShieldLayers })
       }
     }
@@ -518,9 +522,9 @@ class AbilitySystem {
     if (this.hasStat('hasRegeneration') && this.hp < this.maxHp) {
       this.regenerationTimer -= recoveryRate
       if (this.regenerationTimer <= 0) {
-        this.hp = Math.min(this.hp + 1, this.maxHp)
-        this.regenerationTimer = this._getRegenerationCD()
-        this._emitFx('regen')  // [v1.2.2] N7 自愈特效
+        const restored=this.healHP(1)
+        if(restored>0)this.regenerationTimer = this._getRegenerationCD()
+        if(restored>0)this._emitFx('regen')  // [v1.2.2] N7 自愈特效
         Logger.info('Ability', '自愈恢复HP', { hp: this.hp, maxHp: this.maxHp, nextCD: this.regenerationTimer })
         this.invalidateStats()  // [v1.1.2] HP变化刷新缓存
       }
@@ -653,11 +657,22 @@ class AbilitySystem {
   /**
    * 恢复HP
    */
+  // 无尽所有补血/补盾/溢出临时生命共享补给间隔，不能靠多来源轮流绕过。
+  limitRenewal(amount) {
+    if(!this.renewalInterval)return amount
+    if(this.renewalCD>0 || amount<=0)return 0
+    this.renewalCD=this.renewalInterval
+    return Math.min(1,amount)
+  }
+
   healHP(amount) {
+    if(this.hp>=this.maxHp)return 0
+    amount=this.limitRenewal(amount)
     const before = this.hp
     this.hp = Math.min(this.hp + amount, this.maxHp)
     Logger.info('HP', '恢复HP', { before, after: this.hp, maxHp: this.maxHp })
-    this.invalidateStats()  // [v1.1.2] HP变化刷新缓存
+    this.invalidateStats()
+    return this.hp-before
   }
 
   /**
@@ -705,7 +720,10 @@ class AbilitySystem {
    * [v1.5.0] 活力祝福：临时HP 上限 +1/次（blessingTempHpCapBonus，§4.10"临时HP+1（上限+1）"）
    */
   addShieldLayer(amount) {
+    if(this.shieldLayers>=this.maxShieldLayers && ((this.owned.get('aegis_overdrive')||0)<3 || this.tempHp>=Config.SHIELD.OVERDRIVE_TEMP_HP_CAP+this.blessingTempHpCapBonus))return 0
+    amount=this.limitRenewal(amount)
     const before = this.shieldLayers
+    const oldTemp=this.tempHp
     const room = Math.max(0, this.maxShieldLayers - this.shieldLayers)
     const applied = Math.min(amount, room)
     this.shieldLayers += applied
@@ -723,6 +741,7 @@ class AbilitySystem {
 
     if (this.shieldLayers > before) this._emitFx('shield')  // [v1.2.2] N7 护盾获得特效
     Logger.info('Shield', '获得护盾层', { before, after: this.shieldLayers, max: this.maxShieldLayers })
+    return this.shieldLayers-before+this.tempHp-oldTemp
   }
 
   /**
@@ -730,6 +749,7 @@ class AbilitySystem {
    * @param {number} n
    */
   grantTempHp(n) {
+    n=this.limitRenewal(n)
     const tempCap = Config.SHIELD.OVERDRIVE_TEMP_HP_CAP + this.blessingTempHpCapBonus
     const gained = Math.min(n, Math.max(0, tempCap - this.tempHp))
     if (gained > 0) {

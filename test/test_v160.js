@@ -72,7 +72,7 @@ test('左飞导弹离屏回收',()=>{
 })
 test('第一章注入减压怪物配置，重开仍生效',()=>{
   const g=make();assert.equal(g.spawnSystem._chapterMods.monsterMaxAlive,1)
-  g.chapterSystem.index=1;g.start();assert.equal(g.spawnSystem._chapterMods.monsterSpawnDistance,650)
+  g.chapterSystem.index=1;g.start();assert.equal(g.spawnSystem._chapterMods.monsterSpawnDistance,Config.CHAPTERS.LIST[0].mods.monsterSpawnDistance)
 })
 test('随机管道相邻高度受限，短屏/长屏/缩小射线不越界',()=>{
   for(const h of [568,667,844]) {
@@ -149,7 +149,8 @@ test('Canvas 各主要状态渲染可执行，HUD 显示血量与生存目标',(
   const g=new Game({},ctx,375,667,null);g.render();g.start();g.render()
   g._spawnBoss();g.boss._setState('roam');g.chapterSystem.startBossFight();g.render()
   assert.ok(texts.some(t=>t.includes('再坚持 '+Config.BOSS.VARIANTS[0].survivalFrames/60+' 秒')))
-  assert.ok(texts.some(t=>t.includes(`${Config.CHAPTERS.LIST[0].mods.bossHp}/${Config.CHAPTERS.LIST[0].mods.bossHp}`)))
+  assert.ok(texts.some(t=>t.includes(Config.BOSS.VARIANTS[0].name)))
+  assert.ok(!texts.some(t=>t.includes(`${Config.CHAPTERS.LIST[0].mods.bossHp}/${Config.CHAPTERS.LIST[0].mods.bossHp}`))) // 1.8.1图形血条
   g._onBossVictory('survival');g.render();rewards(g);g.render()
   g.state='gameover';g.render();assert.ok(texts.some(t=>t.includes('Ch1 生存')))
 })

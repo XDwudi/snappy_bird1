@@ -39,14 +39,14 @@ class HailEffect extends WeatherEffect {
     // 生成冰雹（sin曲线密度）
     // [v1.4.0] 风暴之眼：并发≥2 时生成间隔按 debuff 缩放倒数放大（密度降低，伤害不可缩放故降频率）
     const scale = this.getDebuffScale(gameCtx)
-    this.spawnTimer++
+    this.spawnTimer+=gameCtx.eliteWeatherPressure?1.5:1
     const interval = Math.max(
       Config.WEATHER.HAIL.SPAWN_INTERVAL_PEAK / Math.max(0.1, this.sinIntensity) / Math.max(0.2, scale),
       5
     )
     if (this.spawnTimer >= interval) {
       this.spawnTimer = 0
-      this._spawnHailstone(gameCtx.screenW)
+      if(this.hailstones.length<24)this._spawnHailstone(gameCtx.screenW)
     }
 
     // 更新冰雹

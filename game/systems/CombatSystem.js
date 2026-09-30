@@ -18,6 +18,12 @@ class CombatSystem {
     this.endlessCharge = 0
     this.endlessGuardCD = 0
   }
+  targets() {
+    const g=this.game, b=g.boss
+    const nodes=b && b.mechanics && !['entering','dying','leaving'].includes(b.state)
+      ? b.mechanics.nodes.filter(n=>n.hp>0 && (n.kind!=='relay'||n.index===b.mechanics.activeNode)) : []
+    return nodes.concat(g.monsters.filter(m=>m.hp>0), b && b.hp>0?[b]:[])
+  }
   level(id) { return this.game.abilitySystem.owned.get(id) || 0 }
   clearShots() { this.shots.length = 0 }
   fire(damage = 1, bossDamage = 2, angles = [0], source = 'blade') {
@@ -52,7 +58,7 @@ class CombatSystem {
   update() {
     if (this.game._bossDyingFrames > 0) { this.clearShots(); return }
     this.age++
-    const recovery=this.game.chapterSystem.endless?this.game.chapterSystem.getMods().recoveryRate:1
+    const recovery=this.game.abilitySystem.recoveryRate
     for (const key of ['bladeCD', 'guardCD', 'revengeCD', 'flash', 'harvestCD', 'chainCD', 'endlessGuardCD']) if (this[key] > 0) this[key]-=(key==='guardCD'||key==='harvestCD'?recovery:1)
     const lv = this.level('feather_blade')
     if (lv && this.bladeCD <= 0) {
@@ -64,7 +70,7 @@ class CombatSystem {
     for (let i = this.shots.length - 1; i >= 0; i--) {
       const s = this.shots[i]
       if (s.source === 'seed') {
-        const target=g.monsters.find(m=>m.hp>0) || (g.boss && g.boss.hp>0 ? g.boss : null)
+        const target=this.targets()[0]
         if(target) {
           const desired=Math.atan2(target.y-s.y,target.x-s.x)
           let delta=Math.atan2(Math.sin(desired-s.angle),Math.cos(desired-s.angle))
@@ -74,15 +80,13 @@ class CombatSystem {
       s.x += Math.cos(s.angle) * Config.COMBAT.BLADE_SPEED
       s.y += Math.sin(s.angle) * Config.COMBAT.BLADE_SPEED
       s.life++
-      let hit = null
       const boss = g.boss
-      if (boss && boss.hp > 0 && !['entering', 'dying', 'leaving'].includes(boss.state) && !s.hits.has(boss) && this.hit(s, boss)) hit = boss
-      if (!hit) hit = g.monsters.find(m => m.hp > 0 && !s.hits.has(m) && this.hit(s, m))
+      const hit=this.targets().find(m=>!s.hits.has(m) && this.hit(s,m))
       if (hit) {
         s.hits.add(hit)
         this.damageTarget(hit,hit.isBoss?s.bossDamage:s.damage,s.source)
         if (s.source === 'frost' && !hit.isBoss) hit.frostFrames=120
-        if(this.level('venom_thread') && hit.hp>0) hit.venom={remaining:180,tick:60,damage:this.level('venom_thread')}
+        if(!hit.isMechanic && this.level('venom_thread') && hit.hp>0) hit.venom={remaining:180,tick:60,damage:this.level('venom_thread')}
         if (!hit.isBoss && this.level('storm_chain') && this.chainCD===0) {
           const next=g.monsters.find(m=>m!==hit && m.hp>0)
           if(next) {this.chainCD=60;this.damageTarget(next,this.level('storm_chain')+2,'chain');g._spawnExplosion(next.x,next.y,'180,240,255',8)}
@@ -101,11 +105,12 @@ class CombatSystem {
     damage=Math.max(1,Math.round(damage))
     const before=target.hp
     const dead=target.takeDamage(damage,source)
-    this.chargeEndless(Math.max(0,before-Math.max(0,target.hp)))
+    if(target.isMechanic && this.game.boss && this.game.boss.hp<=0)this.game._onBossVictory('kill')
+    if(!target.isMechanic)this.chargeEndless(Math.max(0,before-Math.max(0,target.hp)))
     if(target.hp<before) this.game._addFloatingText(target.x+target.width/2,target.y-30,'-'+(before-target.hp),'#c6ffff',24)
     if(dead) {
       if(target.isBoss)this.game._onBossVictory('kill')
-      else this.game._onMonsterKilled(target)
+      else if(!target.isMechanic)this.game._onMonsterKilled(target)
     }
   }
   chargeEndless(amount) {
@@ -114,21 +119,24 @@ class CombatSystem {
     const need=20*g.chapterSystem.getMods().pressure
     this.endlessCharge=Math.min(need,this.endlessCharge+amount)
     if(this.endlessCharge>=need && this.endlessGuardCD<=0 && g.abilitySystem.shieldLayers<g.abilitySystem.maxShieldLayers) {
-      this.endlessCharge=0;this.endlessGuardCD=360;g.abilitySystem.addShieldLayer(1)
+      if(!g.abilitySystem.addShieldLayer(1))return
+      this.endlessCharge=0;this.endlessGuardCD=360
       g._addFloatingText(g.bird.x,g.bird.y-40,'破敌护盾 +1','#b6f6ff',40)
     }
   }
   onKill() {
     const lv=this.level('seed_harvest')
     if(lv && ++this.harvestKills>=9-lv*2 && this.harvestCD<=0) {
-      this.harvestKills=0;this.harvestCD=720;this.game.abilitySystem.healHP(1)
+      if(!this.game.abilitySystem.healHP(1))return
+      this.harvestKills=0;this.harvestCD=720
       this.game._addFloatingText(this.game.bird.x,this.game.bird.y-32,'生机 +1HP','#b6ff98',45)
     }
   }
   onPipe() {
     const lv=this.level('dune_cache')
     if(lv && (this.pipeCount+=this.game.abilitySystem.recoveryRate)>=16-lv*3) {
-      this.pipeCount=0;this.game.abilitySystem.addShieldLayer(1)
+      if(!this.game.abilitySystem.addShieldLayer(1))return
+      this.pipeCount=0
       this.game._addFloatingText(this.game.bird.x,this.game.bird.y-32,'沙丘护盾','#ffdb91',40)
     }
   }
@@ -150,7 +158,7 @@ class CombatSystem {
     }
     auto('frost_shell',lv=>(12-lv*2)*60,lv=>{clear(80);this.fire(lv+2,lv+3,[0],'frost_shell')})
     const area=(lv,bossDamage,source)=>{
-      for(const m of g.monsters.slice())if(m.hp>0 && (source==='singularity' || m.x>g.bird.x))this.damageTarget(m,lv+2,source)
+      for(const m of this.targets().filter(t=>!t.isBoss))if(m.hp>0 && (source==='singularity' || m.x>g.bird.x))this.damageTarget(m,lv+2,source)
       if(g.boss && g.boss.hp>0 && (source==='singularity' || g.boss.x+g.boss.width>g.bird.x))this.damageTarget(g.boss,bossDamage,source)
     }
     auto('magma_core',()=>240,lv=>{area(lv,lv+4,'magma');g._spawnExplosionRing(g.bird.x+80,g.bird.y,90)})

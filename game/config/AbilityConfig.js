@@ -319,7 +319,7 @@ const Abilities = [
     category: ABILITY.CATEGORY.SPECIAL,
     rarity: 'rare',          // [v1.1.3]
     maxLevel: 3,
-    effectText: (lv) => `${20 * lv}%概率获得双倍经验`
+    effectText: (lv) => `${20 * lv}%概率获得双倍经验（不含Boss定额）`
   },
   // [v1.1.0新增]
   {
@@ -496,7 +496,7 @@ const Abilities = [
     rarity: 'rare',
     maxLevel: 3,
     effectText: (lv) => lv >= 3
-      ? '护盾满层时新护盾转+1临时HP(上限+2)'
+      ? '护盾满层时新护盾转+1黄色临时心(上限+2)'
       : `护盾恢复CD-${15 * lv}%`
   },
   // R3 猎手标记：导弹弹头端；连锁爆炸击杀不再触发二次连锁（防指数回路硬规则）
@@ -648,7 +648,7 @@ const Abilities = [
     category: ABILITY.CATEGORY.PASSIVE,
     rarity: 'common',
     maxLevel: 2,
-    effectText: (lv) => `怪物/弹幕伤害${30 * lv}%概率格挡（对管道无效）`
+    effectText: (lv) => `怪物/弹幕伤害${18 * lv}%概率格挡（对管道无效）`
   },
   // U8 屠龙者：Boss 战专精卡；与猎手标记加算（非乘算）；平时零收益写明"对Boss生效"
   {
