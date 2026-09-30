@@ -150,7 +150,7 @@ function pilotTick(game, pilot) {
       // 反应式躲弹（中等水平）：240px≈0.8-1s 预判、容差 46px≈1.5 倍碰撞半径，
       // 向首个威胁羽刃穿越点的反方向避让（不拍翅=下落）
       for (const fth of game.feathers) {
-        if (fth.vx >= 0) continue
+        if (fth.isSandWall || fth.vx >= 0) continue
         const fdx = fth.x - bird.x
         if (fdx < -10 || fdx > 260) continue
         const yCross = fth.y + fth.vy * (fdx / -fth.vx)
@@ -160,6 +160,10 @@ function pilotTick(game, pilot) {
         }
       }
     }
+    // v1.7.0：沙墙明示的安全缺口优先于散弹避让；模拟器不读取隐藏未来状态。
+    const wall = game.feathers.find(f => f.isSandWall && f.x + f.width > bird.x - 15)
+    if (wall) target = wall.topHeight + wall.gap / 2
+    else if (boss && boss.state === 'telegraph' && boss.action === 'wall') target = boss.wallCenter
     const groundY = SCREEN_H - Config.GROUND.HEIGHT
     target = Math.max(50, Math.min(groundY - 50, target))
   } else {

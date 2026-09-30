@@ -45,8 +45,6 @@ class AbilitySystem {
     this.teleportCD = 0
     this.shieldBurstTimer = 0
     this.regenerationTimer = 0      // [v1.1.0] 自愈计时器
-    this.doubleJumpCD = 0           // [v1.1.0] 二段跳CD
-    this.lastFlapFrame = -999       // [v1.1.0] 上次拍翅帧（二段跳检测）
     this.iceCrystalCD = 0           // [v1.2.0] 冰晶护体CD
 
     // 主动技能状态
@@ -69,7 +67,6 @@ class AbilitySystem {
     // [v1.4.0] 批次1新卡状态
     this.survivorUsed = 0          // 求生本能：本局已触发次数（上限=等级）
     this.edgeFocusFrames = 0       // 锐利目光：擦边后碰撞箱缩小剩余帧
-    this.featherDanceFrames = 0    // 羽舞：二段跳后擦边窗口扩大剩余帧
     this.mirrorShockCD = 0         // 镜面护盾：冲击波CD（3s 内最多触发 1 次，硬刹车）
     this.weatherImmuneUntil = 0    // 定风珠：天气 debuff 免疫截止帧（由 WeatherSystem 触发/结束事件写入）
 
@@ -256,7 +253,6 @@ class AbilitySystem {
       maxHpBonus: 0,
       invincibleBonus: 0,
       hasRegeneration: false,
-      hasDoubleJump: false,
       expResonanceChance: 0,
       berserkMultiplier: 1.0,
       hasBounceShield: false,  // [v1.1.5] 弹力护盾
@@ -381,7 +377,6 @@ class AbilitySystem {
     s.hasRegeneration = lv('regeneration') > 0
     // [v1.1.5] 弹力护盾（统一护盾系统，不再有独立充能）
     s.hasBounceShield = lv('bounce_shield') > 0
-    s.hasDoubleJump = lv('double_jump') > 0
     // [v1.2.0] 冰晶护体
     s.hasIceCrystal = lv('ice_crystal') > 0
 
@@ -427,14 +422,12 @@ class AbilitySystem {
     if (this.timeWarpCD > 0) this.timeWarpCD--
     if (this.teleportCD > 0) this.teleportCD--
     if (this.timeWarpActive > 0) this.timeWarpActive--
-    if (this.doubleJumpCD > 0) this.doubleJumpCD--
     if (this.iceCrystalCD > 0) this.iceCrystalCD--  // [v1.2.0] 冰晶护体CD
     if (this.invincibleFrames > 0) this.invincibleFrames--
     if (this.speedPackFrames > 0) this.speedPackFrames--
 
     // [v1.4.0] 批次1新卡计时器
     if (this.edgeFocusFrames > 0) this.edgeFocusFrames--       // 锐利目光
-    if (this.featherDanceFrames > 0) this.featherDanceFrames-- // 羽舞
     if (this.mirrorShockCD > 0) this.mirrorShockCD--           // 镜面护盾冲击波CD
 
     // [v1.4.0] 批次2新卡计时器
@@ -592,12 +585,6 @@ class AbilitySystem {
     this.shieldLayers = Math.min(this.shieldLayers, this.maxShieldLayers)
   }
 
-  // [v1.1.0] 二段跳CD
-  _getDoubleJumpCD() {
-    const lv = this.owned.get('double_jump') || 0
-    return (15 - 5 * (lv - 1)) * 60
-  }
-
   // ==================== HP 系统 [v1.1.0] ====================
 
   /**
@@ -608,6 +595,7 @@ class AbilitySystem {
   takeDamage() {
     // [v1.4.0] 临时HP优先吸收伤害（超载神盾 Lv3 质变产物；消耗也断连击，与护盾语义一致 N1）
     if (this.tempHp > 0) {
+      this._emitFx('retaliate')
       this.tempHp--
       this.resetCombo()
       this._emitFx('temp_hp_break')
@@ -615,6 +603,7 @@ class AbilitySystem {
       return false
     }
 
+    this._emitFx('retaliate')
     this.hp -= Config.HP.COLLISION_DAMAGE
     this.resetCombo()
     Logger.warn('HP', '受到伤害', { hp: this.hp, maxHp: this.maxHp })
@@ -665,6 +654,7 @@ class AbilitySystem {
    */
   consumeShield() {
     if (this.shieldLayers > 0) {
+      this._emitFx('retaliate')
       this.shieldLayers--
       this.shieldRecoverTimer = 0
       this.bounceShieldRecoverTimer = 0
@@ -774,6 +764,7 @@ class AbilitySystem {
    */
   consumeFeatherShield() {
     if (this.featherShields <= 0) return false
+    this._emitFx('retaliate')
     this.featherShields--
     this.resetCombo()
     const ironLv = this.owned.get('iron_feather') || 0
@@ -847,28 +838,6 @@ class AbilitySystem {
     this.invalidateStats()
     Logger.info('Ability', '凤凰复活触发', { phoenixUsed: this.phoenixUsed, hp: this.hp })
     return true
-  }
-
-  // [v1.1.0] 二段跳检测
-  /**
-   * 检查是否触发二段跳
-   * @param {number} currentFrame - 当前帧
-   * @returns {boolean}
-   */
-  tryDoubleJump(currentFrame) {
-    if (!this.getStat('hasDoubleJump') || this.doubleJumpCD > 0) return false
-    // [v1.2.1] 触发窗口 2~8帧 → 3~18帧（配置化，约50~300ms，人类可触发）
-    const minW = Config.ABILITY.DOUBLE_JUMP_MIN_WINDOW
-    const maxW = Config.ABILITY.DOUBLE_JUMP_MAX_WINDOW
-    const dt = currentFrame - this.lastFlapFrame
-    if (dt <= maxW && dt >= minW) {
-      this.doubleJumpCD = this._getDoubleJumpCD()
-      this.lastFlapFrame = -999
-      Logger.info('Ability', '二段跳触发', { cd: this.doubleJumpCD })
-      return true
-    }
-    this.lastFlapFrame = currentFrame
-    return false
   }
 
   // ==================== 道具效果 [v1.1.0] ====================

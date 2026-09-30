@@ -29,6 +29,21 @@ const ABILITY = require('./GameConfig.js').ABILITY
  */
 
 const Abilities = [
+  {
+    id: 'feather_blade', name: '疾风羽刃', icon: '🪶', desc: '对准敌人，自动直射',
+    category: ABILITY.CATEGORY.ACTIVE, rarity: 'uncommon', maxLevel: 3,
+    effectText: lv => `${(150 - 30 * (lv - 1)) / 60}秒直射：怪物1伤/Boss2伤，破绽+1`
+  },
+  {
+    id: 'orbit_guard', name: '风环护卫', icon: '🌀', desc: '拦截弹幕并反射羽刃',
+    category: ABILITY.CATEGORY.PASSIVE, rarity: 'uncommon', maxLevel: 3,
+    effectText: lv => `挡1枚弹幕/冰雹并反射，${8 - 2 * (lv - 1)}秒恢复；不挡碰撞/沙墙`
+  },
+  {
+    id: 'revenge_pulse', name: '逆羽反击', icon: '⚡', desc: '破盾或受伤时扇形反击',
+    category: ABILITY.CATEGORY.PASSIVE, rarity: 'uncommon', maxLevel: 3,
+    effectText: lv => `失盾/伤发3刃：怪物${lv}伤；Boss每轮${lv + 1}伤，4秒冷却`
+  },
   // ==================== 被动强化类 (8) ====================
   {
     id: 'light_feather',
@@ -223,16 +238,7 @@ const Abilities = [
     effectText: (lv) => `最大护盾+${lv}，${20 - 5 * (lv - 1)}s恢复1层，碰撞弹开`
   },
   // [v1.1.0新增]
-  {
-    id: 'double_jump',
-    name: '二段跳',
-    icon: '⏫',
-    desc: '快速双击触发额外上升',
-    category: ABILITY.CATEGORY.ACTIVE,
-    rarity: 'uncommon',     // [v1.1.3]
-    maxLevel: 2,
-    effectText: (lv) => `二段跳，CD ${15 - 5 * (lv - 1)}s`
-  },
+
   // [v1.2.0新增] 冰晶护体
   {
     id: 'ice_crystal',
@@ -430,16 +436,7 @@ const Abilities = [
     effectText: (lv) => `无敌期碰撞怪物：反杀且免伤（伤害${lv}）`
   },
   // U3 经验银行：双刹车（上限=升级所需×2、升级时全额转入）；生息对齐天气 10s 检查节奏
-  {
-    id: 'exp_bank',
-    name: '经验银行',
-    icon: '🏦',
-    desc: '额外储蓄经验，下次升级提取',
-    category: ABILITY.CATEGORY.SPECIAL,
-    rarity: 'uncommon',
-    maxLevel: 3,
-    effectText: (lv) => `额外经验存${5 * lv}%，升级取出，10s息${5 * lv}%`
-  },
+
   // U4 定风珠：只免疫负面 debuff（增益保留），免疫判定在 debuff 应用点
   {
     id: 'steady_charm',
@@ -474,16 +471,7 @@ const Abilities = [
     effectText: (lv) => `天气期间经验获取+${25 * lv}%`
   },
   // U7 羽舞：二段跳接入擦边流，不改二段跳位移参数，buff 期尾迹金色
-  {
-    id: 'feather_dance',
-    name: '羽舞',
-    icon: '💃',
-    desc: '二段跳后擦边窗口扩大',
-    category: ABILITY.CATEGORY.SPECIAL,
-    rarity: 'uncommon',
-    maxLevel: 3,
-    effectText: (lv) => `二段跳后3s内擦边窗口+${8 * lv}px`
-  },
+
 
   // ==================== [v1.4.0] 能力扩展包·批次2：rare ×8 ====================
   // R1 火力覆盖：猎杀火力流核心引擎；自动导弹用独立枪口闪光，不得用道具拾取特效

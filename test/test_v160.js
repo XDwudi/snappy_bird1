@@ -124,20 +124,12 @@ test('Boss 入场清除存量管道和怪物，结算演出免受伤害',()=>{
   g.chapterSystem.startBossFight();g._onBossVictory('survival')
   const hp=g.abilitySystem.hp;g._handleCollision();assert.equal(g.abilitySystem.hp,hp)
 })
-test('银行保留本金并生息，不吞正常经验或压制顿悟',()=>{
+test('退休银行后正常经验与顿悟仍可跨级',()=>{
   const Exp=require('../game/systems/ExpSystem.js')
-  const e=new Exp();e.configureBank(3);e.addExp(100,1)
-  assert.equal(e.bankBalance,15);assert.ok(e.tickBankInterest()>0)
-  const balance=e.bankBalance;e.addExp(e.getExpNeeded(e.level),1)
-  assert.equal(e.lastBankWithdraw,Math.floor(balance));assert.ok(e.lastBankDeposit>0)
-  for(let amount=1;amount<=1000;amount++) {
-    const normal=new Exp(),bank=new Exp()
-    normal.configureEnlighten(1);bank.configureEnlighten(1);bank.configureBank(3)
-    normal.addExp(amount,1);bank.addExp(amount,1)
-    assert.equal(bank.level,normal.level);assert.equal(bank.exp,normal.exp)
-    assert.equal(bank.enlightenUsed,normal.enlightenUsed)
-  }
-  e.reset();assert.equal(e.bankBalance,0);assert.equal(e.bankDepositRate,0)
+  const e=new Exp();e.addExp(100,1)
+  assert.equal(e.level,4);assert.equal(e.exp,10);assert.equal(e.pendingLevelUps,3)
+  const f=new Exp();f.configureEnlighten(1);f.addExp(36,1)
+  assert.equal(f.level,3);assert.equal(f.enlightenUsed,1)
 })
 test('满级雨衣积水和重力修正不变成负数',()=>{
   const Rain=require('../game/weather/RainEffect.js')
@@ -157,7 +149,7 @@ test('Canvas 各主要状态渲染可执行，HUD 显示血量与生存目标',(
   const g=new Game({},ctx,375,667,null);g.render();g.start();g.render()
   g._spawnBoss();g.boss._setState('roam');g.chapterSystem.startBossFight();g.render()
   assert.ok(texts.some(t=>t.includes('再坚持 45 秒')))
-  assert.ok(texts.some(t=>t.includes('36/36')))
+  assert.ok(texts.some(t=>t.includes(`${Config.CHAPTERS.LIST[0].mods.bossHp}/${Config.CHAPTERS.LIST[0].mods.bossHp}`)))
   g._onBossVictory('survival');g.render();rewards(g);g.render()
   g.state='gameover';g.render();assert.ok(texts.some(t=>t.includes('Ch1 生存')))
 })

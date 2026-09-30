@@ -50,6 +50,9 @@ class Monster extends Obstacle {
     // [v1.5.0] 章节移动参数覆写点（§4.4）；缺省取配置基准值，行为与 v1.4.0 完全一致
     this._trackSpeed = (opts && opts.trackSpeed) || Config.MONSTER.FLOATER.TRACK_SPEED
     this._sineAmp = (opts && opts.sineAmp) || Config.MONSTER.BAT.SINE_AMP
+    this.age = 0
+    this.hitFlash = 0
+    this.trail = []
     this._syncBox()
   }
 
@@ -76,6 +79,12 @@ class Monster extends Obstacle {
    * 子类实现：位置更新
    */
   _doUpdate(speed) {
+    this.age++
+    if (this.hitFlash > 0) this.hitFlash--
+    if (this.age % 4 === 0) {
+      this.trail.push({ x: this.x + this.width / 2, y: this.y })
+      if (this.trail.length > 4) this.trail.shift()
+    }
     this.x -= speed
     const M = Config.MONSTER
 
@@ -114,17 +123,43 @@ class Monster extends Obstacle {
   /**
    * 子类实现：渲染
    */
+  takeDamage(n) {
+    if (this.hp <= 0) return false
+    this.hitFlash = 8
+    return super.takeDamage(n)
+  }
+
   _doRender(ctx) {
+    ctx.save()
+    for (let i = 0; i < this.trail.length; i++) {
+      const t = this.trail[i]
+      ctx.fillStyle = this.monsterType === 'bat' ? 'rgba(121,80,174,0.14)' : 'rgba(84,221,145,0.16)'
+      ctx.beginPath(); ctx.arc(t.x, t.y, 2 + i, 0, Math.PI * 2); ctx.fill()
+    }
+    const cx = this.x + this.width / 2
+    const pulse = Math.sin(this.age * (this.monsterType === 'bat' ? 0.18 : 0.10)) * 0.055
+    ctx.translate(cx, this.y)
+    ctx.scale(1 + pulse, 1 - pulse)
+    ctx.translate(-cx + (this.hitFlash ? Math.sin(this.hitFlash * 2) * 2 : 0), -this.y)
     if (this.monsterType === 'bat') {
       this._renderBat(ctx)
     } else {
       this._renderFloater(ctx)
     }
+    if (this.hitFlash) {
+      ctx.fillStyle = 'rgba(255,255,255,' + this.hitFlash / 10 + ')'
+      ctx.beginPath(); ctx.ellipse(cx, this.y, this.width * 0.36, this.height * 0.42, 0, 0, Math.PI * 2); ctx.fill()
+    }
+    ctx.restore()
     // [v1.5.0] 精英怪：金色描边（§5.1 高价值目标视觉承诺，区别于普通怪黑描边）
     if (this.elite) {
       ctx.strokeStyle = Config.MONSTER.ELITE_BORDER_COLOR
       ctx.lineWidth = 2.5
-      ctx.strokeRect(this.x - 3, this.y - this.height / 2 - 3, this.width + 6, this.height + 6)
+      const crownY = this.y - this.height / 2 - 16
+      ctx.fillStyle = '#ffd700'
+      ctx.beginPath(); ctx.moveTo(cx - 10, crownY); ctx.lineTo(cx - 5, crownY + 4)
+      ctx.lineTo(cx, crownY - 4); ctx.lineTo(cx + 5, crownY + 4); ctx.lineTo(cx + 10, crownY)
+      ctx.lineTo(cx + 7, crownY + 8); ctx.lineTo(cx - 7, crownY + 8); ctx.closePath(); ctx.fill()
     }
     // HP 指示：多血怪物头顶显示血点（实心=剩余HP）
     if (this.maxHp > 1) {
@@ -144,7 +179,7 @@ class Monster extends Obstacle {
   _renderBat(ctx) {
     const cx = this.x + this.width / 2
     const cy = this.y
-    const flap = Math.sin(this.phase * 3) * 5  // 翅膀扇动偏移
+    const flap = Math.sin(this.age * 0.28) * 8  // 翅膀扇动偏移
 
     // 双翼（随相位扇动的三角形）
     ctx.fillStyle = '#4a2a75'

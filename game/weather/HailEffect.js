@@ -54,6 +54,12 @@ class HailEffect extends WeatherEffect {
       const h = this.hailstones[i]
       h.update()
 
+      // 已驯化/免疫的冰雹不浪费风环充能。
+      if (!this.isTamed(gameCtx) && !this.isDebuffImmune(gameCtx) &&
+          gameCtx.interceptProjectile && gameCtx.interceptProjectile(h)) {
+        this.hailstones.splice(i, 1)
+        continue
+      }
       // 碰撞检测
       if (h.checkCollision(gameCtx.bird)) {
         this._handleHailCollision(h, gameCtx)

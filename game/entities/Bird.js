@@ -61,14 +61,6 @@ class Bird {
     this.wingTimer = 0
   }
 
-  /**
-   * [v1.1.0] 二段跳——施加额外上升速度
-   */
-  doubleJump() {
-    this.velocity = this.flapForce * 0.85
-    this.wingFrame = 0
-    this.wingTimer = 0
-  }
 
   /**
    * 物理更新（游玩态）

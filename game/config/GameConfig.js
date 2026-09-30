@@ -1,6 +1,6 @@
 /**
  * GameConfig.js - 全局游戏参数配置
- * 
+ *
  * 所有可调参数集中管理，策划调参只需修改此文件。
  * 数值单位均为「每帧」（假设60fps），与开发方案一致。
  */
@@ -24,16 +24,16 @@ module.exports = {
   // ==================== 管道参数 ====================
   PIPE: {
     WIDTH: 60,              // 管道宽度
-    GAP: 205,               // 管道间隙基础值
+    GAP: 200,               // 管道间隙基础值
     MIN_GAP: 160,           // 最小间隙
     // [v1.3.0] 生成改为距离制（修复减速 bug）：原 SPAWN_INTERVAL:90(帧) × SCROLL_SPEED:3.0 = 270px
     // 旧配置 SPAWN_INTERVAL:90 / SPAWN_INTERVAL_MIN:75 已废弃删除，引用处全部清理
-    SPAWN_DISTANCE: 300, // 生成间隔（滚动像素），保持减速时空间密度不变
-    // [v1.2.2] N5 终局加压：120s起生成间隔线性收紧，至300s达下限；v1.6.0 为300→275px
+    SPAWN_DISTANCE: 295, // 生成间隔（滚动像素），保持减速时空间密度不变
+    // [v1.2.2] N5 终局加压：120s起生成间隔线性收紧，至300s达下限；v1.7.0 为295→275px
     SPAWN_RAMP_START: 7200,   // 间隔收紧起点（帧）=120s
     SPAWN_RAMP_TIME: 10800,   // 收紧周期（帧），120s→300s
     SPAWN_DISTANCE_MIN: 275, // 120秒后收紧，300秒到达下限
-    CENTER_STEP_START: 65,  // 相邻间隙中心最大变化，防止随机生成陡峭折返
+    CENTER_STEP_START: 68,  // 相邻间隙中心最大变化，防止随机生成陡峭折返
     CENTER_STEP_END: 95,
     CENTER_STEP_RAMP: 10800, // 180秒平滑增加
     CAP_HEIGHT: 26,         // 管道帽高度
@@ -56,7 +56,7 @@ module.exports = {
   GAME: {
     SCROLL_SPEED: 3.0,      // 初始滚动速度
     SPEED_RAMP_TIME: 5400, // 第一段速度增长周期=90秒
-    SPEED_RAMP_MAX: 0.8,    // 最大速度增量
+    SPEED_RAMP_MAX: 0.9,    // 最大速度增量
     GAP_RAMP_TIME: 5400,    // 间隙缩小周期
     GAP_RAMP_MAX: 20,       // 最大间隙缩小量
 
@@ -68,11 +68,11 @@ module.exports = {
     GAP_RAMP2_TIME: 7200, // 第二段周期=120秒
     GAP_RAMP2_MAX: 15, // 第二段间隙缩小量
 
-    // [v1.6.0] 前90秒减压：间距330→300，间隙230→185；保留基础飞行物理。
+    // [v1.7.0] 前90秒减压：间距325→295，间隙222→180；保留基础飞行物理。
     // 第二段从90秒开始，210秒封顶；配合相邻中心变化上限，不再独立全屏随机跳变。
     EARLY_EASE_RAMP_TIME: 5400,   // 减压回归周期（帧）=90s
     EARLY_EASE_SPAWN_BONUS: 30, // 开局间距额外+30px，90秒归零
-    EARLY_EASE_GAP_BONUS: 25, // 开局间隙额外+25px，90秒归零
+    EARLY_EASE_GAP_BONUS: 22, // 开局间隙额外+22px，90秒归零
 
     STATE: {
       READY: 'ready',
@@ -130,12 +130,6 @@ module.exports = {
     SCORE_NEAR_MISS: 3,    // 擦边额外得分
     SCORE_SURVIVAL_INTERVAL: 300, // 存活时间得分间隔(帧)，300=5s
 
-    // [v1.6.0] 经验银行：额外储蓄，下一次升级提取（先历史提款，后本次存入）
-    BANK: {
-      DEPOSIT_PER_LV: 0.05,    // 每次经验额外存入5%/级，正常经验不扣减
-      CAP_RATIO: 2, // 余额上限=当前升级所需×2，额外储蓄超限部分不再增加
-      INTEREST_PER_LV: 0.05    // 每 10s 生息 5%/级（生息节奏对齐 WEATHER.CHECK_INTERVAL，不新增逐帧计时器）
-    },
 
     // [v1.4.0] 顿悟（enlightenment）：经验达升级所需 200% 时一次升 2 级（消耗 200% 额度），
     // 每局限 3 次硬刹车（防"全程双升"等级失控）；双面板连弹由既有 B2 保护覆盖，不另写
@@ -318,17 +312,11 @@ module.exports = {
     CHOICE_COUNT: 3,       // 默认可选数量
     MAX_ALL_BUFF_LEVEL: 10, // 全属性加成最大等级
 
-    // [v1.2.1] 二段跳触发窗口（帧）：上次拍翅后 3~18 帧（≈50~300ms）内再次拍翅触发
-    DOUBLE_JUMP_MIN_WINDOW: 3,
-    DOUBLE_JUMP_MAX_WINDOW: 18,
 
     // [v1.4.0] 锐利目光（edge_focus）：擦边后 60 帧碰撞箱 -15%/级（与灵巧乘算，0.3 下限钳制兜底）
     EDGE_FOCUS_FRAMES: 60,
     EDGE_FOCUS_SHRINK_PER_LV: 0.15,
 
-    // [v1.4.0] 羽舞（feather_dance）：二段跳后 3s 擦边窗口 +8px/级（不改二段跳位移参数，手感原则）
-    FEATHER_DANCE_FRAMES: 180,
-    FEATHER_DANCE_NEAR_MISS_BONUS: 8,
 
     // [v1.4.0] 连击种子（combo_seed）：断连击保留 lv 层；
     // 硬刹车：持连击之心时保留 ≤ 无敌阈值-1（防"保留3层+阈值2"变相永动，N1 教训），未持时上限 4
@@ -373,6 +361,7 @@ module.exports = {
     ],
     // 🔗 协同对（节选主流派官方搭档，与设计 §3.1 流派表一致）
     ORACLE_SYNERGY_PAIRS: [
+      ['revenge_pulse', 'toughness'], ['revenge_pulse', 'echo_wing'],
       ['missile_barrage', 'missile_rack'], ['missile_barrage', 'hunter_mark'],
       ['missile_rack', 'missile_storm'], ['missile_link', 'missile_storm'],
       ['missile_link', 'missile_barrage'], ['hunter_mark', 'scavenger'],
@@ -380,10 +369,10 @@ module.exports = {
       ['echo_wing', 'iron_feather'], ['echo_wing', 'shrink_ray'], ['echo_wing', 'slow_world'],
       ['time_crystal', 'time_warp'], ['time_crystal', 'iron_beak'],
       ['iron_beak', 'physique'], ['iron_beak', 'blood_pact'], ['iron_beak', 'survivor_instinct'],
-      ['exp_bank', 'enlightenment'], ['exp_bank', 'greed'], ['exp_bank', 'exp_resonance'],
+
       ['enlightenment', 'greed'], ['enlightenment', 'exp_resonance'],
-      ['combo_seed', 'combo_heart'], ['feather_dance', 'double_jump'], ['feather_dance', 'combo_heart'],
-      ['phantom_edge', 'edge_focus'], ['phantom_edge', 'feather_dance'], ['phantom_edge', 'combo_heart'],
+      ['combo_seed', 'combo_heart'],
+      ['phantom_edge', 'edge_focus'], ['phantom_edge', 'combo_heart'],
       ['edge_focus', 'combo_heart'], ['edge_focus', 'shrink_ray'],
       ['bounce_shield', 'mirror_shield'], ['mirror_shield', 'aegis_overdrive'],
       ['aegis_overdrive', 'toughness'], ['aegis_overdrive', 'bounce_shield'],
@@ -392,21 +381,23 @@ module.exports = {
       ['wind_rider', 'storm_child'], ['ice_crystal', 'storm_child'],
       ['exp_tide', 'storm_child'], ['exp_tide', 'steady_charm'],
       ['blood_pact', 'regeneration'], ['blood_pact', 'echo_wing'],
-      ['survivor_instinct', 'phoenix'], ['lucky', 'oracle'], ['lucky', 'exp_bank'],
-      ['pipe_sense', 'oracle'], ['shrink_ray', 'combo_heart'], ['double_jump', 'combo_heart']
+      ['survivor_instinct', 'phoenix'], ['lucky', 'oracle'],
+      ['pipe_sense', 'oracle'], ['shrink_ray', 'combo_heart'],
     ],
     // ⭐ 核心判定：流派核心卡 + 已持该流派 ≥1 张其他核心 或 ≥2 张协同件（流派划分同设计 §3.1）
     ORACLE_ARCHETYPES: [
       { core: ['toughness', 'bounce_shield', 'shield_burst'],
         support: ['aegis_overdrive', 'mirror_shield', 'echo_wing', 'iron_feather', 'vitality', 'regeneration', 'phoenix'] },
       { core: ['combo_heart', 'shrink_ray'],
-        support: ['edge_focus', 'phantom_edge', 'feather_dance', 'combo_seed', 'double_jump'] },
+        support: ['edge_focus', 'phantom_edge', 'combo_seed'] },
       { core: ['greed', 'exp_resonance', 'lucky'],
-        support: ['exp_bank', 'enlightenment', 'double_score', 'supply_line', 'oracle'] },
+        support: ['enlightenment', 'double_score', 'supply_line', 'oracle'] },
       { core: ['storm_child', 'wind_rider', 'ice_crystal'],
         support: ['steady_charm', 'chaos_dice', 'climate_adapt', 'exp_tide', 'eye_of_storm'] },
       { core: ['missile_barrage', 'missile_rack'],
         support: ['scavenger', 'hunter_mark', 'missile_link', 'missile_storm', 'magnet', 'supply_line'] },
+      { core: ['feather_blade', 'revenge_pulse'],
+        support: ['orbit_guard', 'toughness', 'echo_wing', 'scavenger'] },
       { core: ['iron_beak', 'physique'],
         support: ['survivor_instinct', 'blood_pact', 'time_crystal', 'combo_heart'] },
       { core: ['blood_pact', 'berserk'],
@@ -437,7 +428,7 @@ module.exports = {
     // 核心卡（未拥有）权重额外 ×1.5，抬"尚未成型"局的流派成型率；成型后恢复正常（防滚雪球）
     // （第2轮 ×1.3/阈值0 实测 ①2.6倍 不足，第3轮调整为 ×1.5/阈值<2——单核心即断供仍难成套）
     ARCHETYPE_CORE_IDS: ['bounce_shield', 'toughness', 'combo_heart', 'shrink_ray', 'greed',
-      'exp_resonance', 'storm_child', 'missile_barrage', 'missile_rack', 'iron_beak'],
+      'exp_resonance', 'storm_child', 'missile_barrage', 'missile_rack', 'iron_beak', 'feather_blade'],
     ARCHETYPE_CORE_WEIGHT: 1.5,
     ARCHETYPE_CORE_BOOST_MAX_OWNED: 2,  // 持有核心数 < 此值时加权生效
 
@@ -600,9 +591,7 @@ module.exports = {
           floaterTrackSpeed: 0.65,    // 浮游追踪速度(px/帧)
           batSineAmp: 40,            // 蝙蝠正弦振幅(px)
           eliteChance: 0.25,         // §5.1 精英怪概率
-          bossHp: 36                 // §4.6 关底 Boss HP；[v1.5.0 D21] 30→36（数值闭环：让
-                                     // 成型火力需 6 发/满配 5 发/无卡保底 9 发，击杀时长三档分离，
-                                     // 见 DECISIONS D21 与 test_boss_sim 文件头实测）
+          bossHp: 44 // 新武器与破绽加伤下，保留数轮招式学习时间
         },
         // §4.2 视觉（Ch1 = 现有 VISUAL 段色值原样录入，渲染零变化）
         visual: {
@@ -625,7 +614,7 @@ module.exports = {
           floaterTrackSpeed: 1.3,
           batSineAmp: 55,
           eliteChance: 0.25,
-          bossHp: 45                 // 沙暴巨鹰（步骤 C 使用）
+          bossHp: 54                 // 沙暴巨鹰（步骤 C 使用）
         },
         // §4.2 Ch2 沙漠：橙黄天空 + 太阳 + 远景沙丘 + 热浪粒子 + 沙色地面 + 岩柱管道
         visual: {
@@ -649,21 +638,25 @@ module.exports = {
   // ==================== [v1.5.0] Boss 系统（步骤 C） ====================
   // 设计依据：docs/开发方案_v1.4.0.md §4.6-4.11；同框架变体制（§4.6 结论），
   // 变体数值全部入 VARIANTS 表（HP 单一事实源在 CHAPTERS.mods.bossHp，变体行只写行为参数）。
+  COMBAT: {
+    BLADE_INTERVAL: [150, 120, 90], BLADE_SPEED: 8, MAX_BLADES: 12,
+    GUARD_CD: [480, 360, 240], GUARD_RADIUS: 34, REVENGE_CD: 240
+  },
   BOSS: {
+    REST_FRAMES: [95, 70], WARN_FRAMES: 66, RECOVER_FRAMES: 100,
+    LEAF_COUNT: [3, 5], LEAF_SPEED: [3.2, 3.8], LEAF_SPREAD: 0.24,
+    WALL_GAP: [156, 140], WALL_SPEED: 3.2, WALL_WIDTH: 28,
+    WALL_WARN_FRAMES: 78, DIVE_WARN_FRAMES: 72,
+
     WIDTH: 90,                  // Boss 视觉宽度（碰撞箱为视觉 0.8）
     HEIGHT: 64,                 // Boss 视觉高度
     HOME_X_RATIO: 0.70,         // §4.8 巡游 x = 屏宽 70%
     ROAM_AMP: 120,              // §4.8 正弦巡游 y 振幅(px)
-    ROAM_PERIOD: 240,           // 巡游周期（帧）=4s
     PHASE2_HP_RATIO: 0.5,       // §4.8 P1→P2 阈值（HP<50%）：爆闪30帧+血条变红+弹幕加密
     PHASE2_FLASH_FRAMES: 30,    // P2 入场闪电粒子爆闪帧数
-    FAN_ANGLE_STEP: 0.35,       // §4.8 扇形弹幕间隔角(rad)
     FEATHER_RADIUS: 5,          // 羽刃弹幕半径(px)
     FEATHER_DAMAGE: 1,          // 弹幕伤害（固定 1，走统一受击链）
-    CHARGE_BACK_PX: 30,         // §4.8 冲锋蓄力后退(px)
-    CHARGE_WINDUP_FRAMES: 48,   // 蓄力 0.8s（泛白预警+红色警示带；=二段跳窗口×2.5 反应余量）
     CHARGE_SPEED: 8,            // 冲刺速度(px/帧)
-    CHARGE_TARGET_X_RATIO: 0.15,// 冲至屏 15% 处返回
     CONTACT_DAMAGE: 1,          // 本体接触伤害（走统一受击链）
     // §4.11 出场演出：暗角收拢30帧 → "雷云聚集……"1s → Boss 右侧飞入至70%（60帧）→ 血条展开
     INTRO_VIGNETTE_FRAMES: 30,
@@ -708,29 +701,20 @@ module.exports = {
     BLESSING_GROWTH_EXP: 0.25,      // 成长祝福：经验 +25%/层（独立乘区）
     BLESSING_HUNT_ITEM_PP: 0.08,    // 狩猎祝福：道具生成率 +8pp/层
     BLESSING_HUNT_SPAWN_ITEMS: 3,   // 狩猎祝福：立即在前方生成道具数
-    // §4.6 变体表：p1/p2 = 弹幕参数（volley=每轮发数 / volleyInterval=间隔帧 / bulletSpeed=弹速 px/f）
+    // 章节外观/主题，行为节奏使用上面的 BOSS 参数。
     VARIANTS: [
-      { // Ch1 雷羽巨鹰（基准框架）：3发/4s → 5发/2.5s，弹速 4.5→5.5；冲锋 CD12s；召唤蝙蝠×2/15s
-        name: '雷羽巨鹰',
+      { // 草地：瞄准叶刃与俯冲交替；每招结束均有破绽。
+        name: '青岚守卫', theme: 'meadow',
         survivalFrames: 2700, // 有效战斗45秒，暂停和演出不计时
-        gatherText: '雷云聚集……',
-        p1: { volley: 3, volleyInterval: 240, bulletSpeed: 4.5 },
-        p2: { volley: 5, volleyInterval: 150, bulletSpeed: 5.5 },
-        chargeCD: 720,
-        summon: { type: 'bat', count: 2, interval: 900 },
-        colors: { body: '#5b6b8c', wing: '#42506e', belly: '#c8d2e8', beak: '#f5b83d', eye: '#ffe066', outline: '#1c2333' },
-        bulletColor: '#aee6ff',     // 羽刃=闪电蓝
+        gatherText: '林间起风……',
+        colors: { body: '#4d936a', wing: '#286b50', belly: '#d5efb4', beak: '#f5b83d', eye: '#ffe066', outline: '#1c2333' },
+        bulletColor: '#86ef79',     // 绿色叶刃
         trailColor: null            // 无尾迹
       },
-      { // Ch2 沙暴巨鹰：4发/3.5s → 6发/2.2s，弹速 5.0→6.0；冲锋 CD10s；召唤浮游×1/15s（追踪压力替代数量）；
-        // 配色 #c98f3f + 沙粒尾迹；弹幕视觉为沙锥
-        name: '沙暴巨鹰',
+      { // 沙漠：沙墙与沙锥交替，整面墙出屏后才开始下一招。
+        name: '沙暴巨鹰', theme: 'desert',
         survivalFrames: 3600, // 有效战斗60秒
         gatherText: '沙暴逼近……',
-        p1: { volley: 4, volleyInterval: 210, bulletSpeed: 5.0 },
-        p2: { volley: 6, volleyInterval: 132, bulletSpeed: 6.0 },
-        chargeCD: 600,
-        summon: { type: 'floater', count: 1, interval: 900 },
         colors: { body: '#c98f3f', wing: '#a8742c', belly: '#e8c98a', beak: '#8a5a1e', eye: '#fff3d6', outline: '#5e3f14' },
         bulletColor: '#e0aa5e',     // 沙锥
         trailColor: '224, 170, 94'  // 沙粒尾迹

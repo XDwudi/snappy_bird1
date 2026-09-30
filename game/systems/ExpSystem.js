@@ -17,14 +17,6 @@ class ExpSystem {
     this.level = 1
     this.pendingLevelUps = 0  // 待处理的升级次数（一次获得大量经验可能跨级）
 
-    // [v1.4.0] 经验银行（exp_bank）：由 Game 根据持卡情况调用 configureBank 同步
-    this.bankEnabled = false   // 是否持有经验银行
-    this.bankBalance = 0       // 银行余额
-    this.bankDepositRate = 0
-    this.bankRate = 0          // 每 10s 生息比例（0.05/级）
-    this.lastBankDeposit = 0   // 最近一次 addExp 存入银行的量（Game 取走后清零）
-    this.lastBankWithdraw = 0  // 最近一次升级时银行转入经验池的量
-
     // [v1.4.0] 顿悟（enlightenment）：由 Game 根据持卡情况调用 configureEnlighten 同步
     this.enlightenEnabled = false
     this.enlightenUsed = 0     // 本局已触发次数（每局限 ENLIGHTEN_MAX_PER_RUN=3 次，硬刹车）
@@ -42,29 +34,16 @@ class ExpSystem {
 
   /**
    * 添加经验
-   * [v1.6.0] 正常经验不扣减；额外储蓄每级5%，下次升级取整提取，余数保留。
-   *           余额上限为当前升级所需×2；每10秒生息每级5%。
    * @param {number} amount - 基础经验值（未乘倍率）
    * @param {number} multiplier - 经验倍率
    * @returns {number} 实际增加的经验
    */
   addExp(amount, multiplier) {
     const actual = Math.round(amount * multiplier)
-    this.lastBankDeposit = 0
-    this.lastBankWithdraw = 0
-
-    // 正常经验全额入池；先取历史储蓄，再检查顿悟，防止银行反而压低成长。
-    if (this.bankEnabled && this.exp + actual >= this.getExpNeeded(this.level)) {
-      const withdraw = Math.floor(this.bankBalance)
-      this.exp += withdraw
-      this.bankBalance = Math.round((this.bankBalance - withdraw) * 100) / 100
-      this.lastBankWithdraw = withdraw
-    }
-
     this.exp += actual
 
     // [v1.4.0] 顿悟：入账后经验 ≥ 升级所需×200% 时一次升 2 级（消耗 200% 额度作为代价），
-    // 每局限 3 次硬刹车（防"全程双升"等级失控）；顿悟算升级——银行同样全额取出；
+    // 每局限 3 次硬刹车（防"全程双升"等级失控）；
     // 双面板连弹由 Game 侧既有 B2 保护覆盖（关板 45 帧无敌对第二块同样生效），勿另写
     if (this.enlightenEnabled && this.enlightenUsed < Config.EXP.ENLIGHTEN_MAX_PER_RUN) {
       const neededNow = this.getExpNeeded(this.level)
@@ -83,39 +62,7 @@ class ExpSystem {
       this.pendingLevelUps++
     }
 
-    // 本次新增储蓄留到下一次升级，余额允许小数以免低额经验损失收益。
-    if (this.bankEnabled && actual > 0) {
-      const cap = this.getExpNeeded(this.level) * Config.EXP.BANK.CAP_RATIO
-      const deposit = Math.min(Math.round(actual * this.bankDepositRate * 100) / 100, Math.max(0, cap - this.bankBalance))
-      this.bankBalance = Math.round((this.bankBalance + deposit) * 100) / 100
-      this.lastBankDeposit = deposit
-    }
-
     return actual
-  }
-
-  /**
-   * [v1.4.0] 经验银行生息：由 Game 按 10s 周期调用（对齐 WEATHER.CHECK_INTERVAL 节奏，
-   *           不新增逐帧计时器）；余额封顶 = 当前升级所需 ×2
-   * @returns {number} 本次实际生息量（0=未生息）
-   */
-  tickBankInterest() {
-    if (!this.bankEnabled || this.bankBalance <= 0 || this.bankRate <= 0) return 0
-    const cap = this.getExpNeeded(this.level) * Config.EXP.BANK.CAP_RATIO
-    const added = Math.min(Math.round(this.bankBalance * this.bankRate), Math.max(0, cap - this.bankBalance))
-    if (added <= 0) return 0
-    this.bankBalance += added
-    return added
-  }
-
-  /**
-   * [v1.4.0] 同步经验银行开关与生息率（由 Game 在选卡后调用）
-   * @param {number} lv - 经验银行等级（0=未持有）
-   */
-  configureBank(lv) {
-    this.bankEnabled = lv > 0
-    this.bankRate = Config.EXP.BANK.INTEREST_PER_LV * lv
-    this.bankDepositRate = Config.EXP.BANK.DEPOSIT_PER_LV * lv
   }
 
   /**

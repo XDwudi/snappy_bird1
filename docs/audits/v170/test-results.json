@@ -1,0 +1,94 @@
+{
+  "version": "v1.7.0-candidate",
+  "date": "2026-09-30",
+  "baselineCommit": "4550f92",
+  "mechanisms": {
+    "v160": 15,
+    "v170": 15,
+    "passed": 30
+  },
+  "pipePilot": {
+    "375x667": {
+      "runs": 300,
+      "seeds": [
+        20260151,
+        42,
+        8675309
+      ],
+      "survival": {
+        "mean": 83.54516666666665,
+        "median": 85.9,
+        "p25": 54.65,
+        "p75": 105.9,
+        "min": 14.1,
+        "max": 289.8333333333333
+      },
+      "bossReachedPercent": 61.66666666666667,
+      "pre30DeathPercent": 5.333333333333334,
+      "chapterClears": 21,
+      "note": "该模型不主动躲避 Boss 弹幕，通关数仅作观察，Boss 战另测 test_boss_sim.js"
+    },
+    "390x844": {
+      "runs": 300,
+      "seeds": [
+        20260151,
+        42,
+        8675309
+      ],
+      "survival": {
+        "mean": 88.12366666666667,
+        "median": 87.45,
+        "p25": 57.35,
+        "p75": 108.95,
+        "min": 8.833333333333334,
+        "max": 289.8333333333333
+      },
+      "bossReachedPercent": 66,
+      "pre30DeathPercent": 4,
+      "chapterClears": 13,
+      "note": "该模型不主动躲避 Boss 弹幕，通关数仅作观察，Boss 战另测 test_boss_sim.js"
+    },
+    "320x568": {
+      "runs": 300,
+      "seeds": [
+        20260151,
+        42,
+        8675309
+      ],
+      "survival": {
+        "mean": 87.21933333333341,
+        "median": 88.28333333333333,
+        "p25": 61.81666666666667,
+        "p75": 104.88333333333334,
+        "min": 20.583333333333332,
+        "max": 292.3333333333333
+      },
+      "bossReachedPercent": 67.33333333333333,
+      "pre30DeathPercent": 3.6666666666666665,
+      "chapterClears": 20,
+      "note": "该模型不主动躲避 Boss 弹幕，通关数仅作观察，Boss 战另测 test_boss_sim.js"
+    }
+  },
+  "bossPilot": {
+    "seed": 20250612,
+    "runsPerBuild": 30,
+    "fireMedianKillSeconds": 24.3,
+    "maxFireMedianKillSeconds": 17.8,
+    "noCardFirstClearPercent": 50,
+    "noCardSurvivalClears": 15,
+    "randomClearIncludingRematchPercent": 66.7,
+    "noCardTwoChapterPercent": 0
+  },
+  "legacyBuilds": {
+    "exitCode": 1,
+    "strongWeakRatio": 1.4,
+    "bloodMedianSeconds": 76.6,
+    "bloodP75P25": 1.91,
+    "randomMedianSeconds": 115.3
+  },
+  "wechat": {
+    "uploaded": false,
+    "interactiveValidation": "blocked by developer-tools compiler/jsbridge startup errors"
+  },
+  "note": "Simulated results, not human phone success rates. Offline Canvas snapshots use real rendering code."
+}

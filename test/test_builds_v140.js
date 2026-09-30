@@ -113,7 +113,7 @@ const BUILDS = [
     //           管道感知(纯信息)/先知(纯标注)/风暴骰子(驯化收益看天)
     priority: ['eye_of_storm', 'time_crystal', 'iron_feather', 'pipe_sense', 'oracle', 'chaos_dice',
       'wind_reader', 'double_score', 'storm_child', 'berserk', 'tailwind',
-      'light_feather', 'climate_adapt', 'raincoat', 'wind_rider', 'double_jump'],
+      'light_feather', 'climate_adapt', 'raincoat', 'wind_rider', 'feather_blade'],
     fallback: 'avoid_core'
   }
 ]

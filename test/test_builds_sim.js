@@ -94,7 +94,7 @@ const BUILDS = [
     // 优先拿对生存几乎无帮助/情境受限/相互冲突的卡；
     // 兜底时也避开核心卡（模拟"发牌员不给核心"的霉运局）
     priority: ['wind_reader', 'double_score', 'storm_child', 'berserk', 'tailwind',
-      'light_feather', 'climate_adapt', 'raincoat', 'wind_rider', 'double_jump'],
+      'light_feather', 'climate_adapt', 'raincoat', 'wind_rider', 'feather_blade'],
     fallback: 'avoid_core'
   },
   {
