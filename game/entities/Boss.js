@@ -1,4 +1,6 @@
-// 两章主题招式：观察预警 → 躲避 → 破绽反击。行为计时不消耗随机数。
+// 六章主题招式与P2连协：观察预警 → 躲避 → 破绽反击。行为计时不消耗随机数。
+const castPattern = require('./BossPatterns.js')
+const drawBossArt = require('./BossArt.js')
 const Config = require('../config/GameConfig.js')
 const Obstacle = require('./Obstacle.js')
 const MathUtil = require('../core/MathUtil.js')
@@ -16,6 +18,14 @@ class Boss extends Obstacle {
     this.isBoss = true               // isBoss 分支：铁喙/镜面/猎手连锁对 Boss 无效
     this.destructible = true         // 可被导弹锁定/命中（takeDamage）
     this.variant = cfg
+    this.difficultyTier = cfg.tier
+    this.power = 1
+    this.survivalFrames = cfg.survivalFrames
+    this.comboQueue = []
+    this.comboStep = 0
+    this.comboLength = 1
+    this.warnFrames = cfg.warnFrames
+    this.pendingSummon = null
     this.name = cfg.name
     this.hp = hp
     this.maxHp = hp
@@ -71,7 +81,7 @@ class Boss extends Obstacle {
     if (this.phase2Flash > 0) this.phase2Flash--
     if (!['entering', 'dying', 'leaving'].includes(this.state)) {
       this.combatAge = combatFrames == null ? this.combatAge + 1 : combatFrames
-      if (this.combatAge >= this.variant.survivalFrames / 2) this._enterPhase2()
+      if (this.combatAge >= this.survivalFrames / 2) this._enterPhase2()
     }
     if (this.state === 'entering') {
       const t = Math.min(1, this.stateT / B.INTRO_ENTER_FRAMES)
@@ -81,35 +91,32 @@ class Boss extends Obstacle {
       this.roamT++
       this.x = this.homeX
       this.y += MathUtil.clamp(this.baseY + Math.sin(this.roamT * 0.025) * 80 - this.y, -2, 2)
-      if (this.stateT >= B.REST_FRAMES[this.phase - 1]) this._beginAttack(bird)
+      if (this.stateT >= this.variant.restFrames / Math.sqrt(this.power)) this._beginAttack(bird)
     } else if (this.state === 'windup') {
-      const windupProgress = Math.min(1, this.stateT / B.DIVE_WARN_FRAMES)
+      const windupProgress = Math.min(1, this.stateT / this.warnFrames)
       this.y = this._windupStartY + (this.chargeY - this._windupStartY) * windupProgress
-      this.x = this.homeX + Math.min(1, this.stateT / B.DIVE_WARN_FRAMES) * 20
-      if (this.stateT >= B.DIVE_WARN_FRAMES) this._setState('charging')
+      this.x = this.homeX + Math.min(1, this.stateT / this.warnFrames) * 20
+      if (this.stateT >= this.warnFrames) this._setState('charging')
     } else if (this.state === 'charging') {
       this._trail.push({ x: this.x, y: this.y })
       if (this._trail.length > 5) this._trail.shift()
-      this.x -= B.CHARGE_SPEED
+      this.x -= B.CHARGE_SPEED * Math.min(2.8, this.power)
       if (this.x <= this.screenW * 0.04) this._setState('return')
     } else if (this.state === 'return') {
       // 收翼返回无接触伤害，避免俯冲后堵住玩家位置。
       this.x += 5
-      if (this.x >= this.homeX) { this.x = this.homeX; this._setState('recover') }
+      if (this.x >= this.homeX) { this.x = this.homeX; this._finishAttack(bird) }
     } else if (this.state === 'telegraph') {
-      const warn = this.action === 'wall' ? B.WALL_WARN_FRAMES : B.WARN_FRAMES
-      if (this.stateT >= warn) {
-        this._setState('attack')
-        if (this.action === 'wall') this._deps.onSandWall(this.wallCenter, this.wallGap)
-        else this._fireLeaves()
+      if (this.pendingSummon && this.stateT >= this.pendingSummon.at) {
+        this._deps.onSummon('floater', this.screenW + 20, this.pendingSummon.y)
+        this.pendingSummon = null
       }
+      if (this.stateT >= this.warnFrames) this._setState('attack')
     } else if (this.state === 'attack') {
-      // 墙完整出屏后才出下一招，不叠加封路；第二阶段弹幕只加密同一波。
-      const duration = this.action === 'wall' ? Math.ceil((this.screenW + B.WALL_WIDTH + 24) / B.WALL_SPEED) : 95
-      if (this.stateT >= duration) this._setState('recover')
+      if (this.stateT >= this.attackDuration) this._finishAttack(bird)
     } else if (this.state === 'recover') {
       this.y += Math.sin(this.stateT * 0.1) * 0.25
-      if (this.stateT >= B.RECOVER_FRAMES) this._setState('roam')
+      if (this.stateT >= this.variant.recoverFrames / Math.sqrt(this.power)) this._setState('roam')
     } else if (this.state === 'dying') {
       this.y += 1.2; this.x += 0.6
     } else if (this.state === 'leaving') {
@@ -122,32 +129,29 @@ class Boss extends Obstacle {
 
   _setState(s) { this.state = s; this.stateT = 0 }
 
-  _beginAttack(bird) {
-    const B = Config.BOSS
-    const targetY = bird ? bird.y : this.baseY
-    this.aimY = MathUtil.clamp(targetY, 140, this.groundY - 65)
-    this.attackIndex++
+  _beginAttack(bird, chained = false) {
     this._attackPhase = this.phase
-    this._windupStartY = this.y
-    if (this.variant.theme === 'meadow' && this.attackIndex % 2 === 0) {
-      this.action = 'dive'; this.chargeY = this.aimY; this._setState('windup')
-    } else {
-      this.action = this.variant.theme === 'desert' && this.attackIndex % 2 === 1 ? 'wall' : 'leaves'
-      this.aimAngle = Math.atan2(this.aimY - this.y, (bird ? bird.x : this.screenW * 0.3) - this.x)
-      this.wallGap = B.WALL_GAP[this.phase - 1]
-      // 缺口锁定后不追踪；基于玩家高度偏移，再限制到 HUD 与地面之间。
-      this.wallCenter = MathUtil.clamp(this.aimY + (this.attackIndex % 4 === 1 ? -45 : 45), 140 + this.wallGap / 2, this.groundY - this.wallGap / 2 - 25)
-      this._setState('telegraph')
+    if (!chained) {
+      if (this.phase === 2) {
+        const combos=this.variant.combos
+        this.comboQueue=combos[this.attackIndex % combos.length].slice()
+      } else this.comboQueue=[this.attackIndex % this.variant.skills.length]
+      this.comboLength=this.comboQueue.length
+      this.comboStep=0
     }
+    const idx=this.comboQueue.shift()
+    this.skill=this.variant.skills[idx]
+    this.action=this.skill.kind
+    this.attackIndex++
+    this.comboStep++
+    this.aimY=bird.y
+    this._setState('telegraph')
+    this.warnFrames=castPattern(this,bird,this.skill)
   }
 
-  _fireLeaves() {
-    const B = Config.BOSS
-    const count = B.LEAF_COUNT[this._attackPhase - 1]
-    for (let i = 0; i < count; i++) {
-      const angle = this.aimAngle + (i - (count - 1) / 2) * B.LEAF_SPREAD
-      this._deps.onFireFeather(this.x, this.y, angle, B.LEAF_SPEED[this._attackPhase - 1], this.variant.bulletColor)
-    }
+  _finishAttack(bird) {
+    if(this.comboQueue.length) this._beginAttack(bird,true)
+    else this._setState('recover')
   }
 
   _enterPhase2() {
@@ -172,12 +176,12 @@ class Boss extends Obstacle {
 
   getActionLabel() {
     if (this.state === 'recover') return '破绽！命中伤害 +1'
-    if (this.state === 'windup') return '俯冲锁定 · 离开红色带'
-    if (this.state === 'charging') return '疾风俯冲！'
-    if (this.state === 'return') return '收翼返回 · 可以穿过'
-    if (['telegraph', 'attack'].includes(this.state)) {
-      if (this.action === 'wall') return '流沙屏障 · 穿过绿色缺口'
-      return this.variant.theme === 'meadow' ? '追风叶刃 · 离开瞄准线' : '沙锥散射 · 离开瞄准线'
+    if (this.state === 'return') return '撤回 · 可穿过本体'
+    if (this.skill && ['windup','charging','telegraph','attack'].includes(this.state)) {
+      const hint={gate:'穿绿框',beam:'离开横线',pincer:'留在两线中间',dash:'离开红带',
+        rain:'避开落点',columns:'避开雷轨',eruption:'避开地火',seek:'提前变向',
+        split:'留意分裂',summon:'击退召唤',fan:'离开瞄线',burst:'持续变向',spiral:'绕开扇面'}
+      return `${this.skill.name} · ${hint[this.action]}${this.comboLength>1?' · 连协'+this.comboStep+'/'+this.comboLength:''}`
     }
     return '观察起手 · 等待反击'
   }
@@ -222,11 +226,16 @@ class Boss extends Obstacle {
     // 冲锋蓄力预警（§4.8 预警规范：≥0.5s 前摇+独立视觉语言）
     if (this.state === 'windup') this._renderChargeWarning(ctx)
 
-    this._renderTelegraph(ctx)
+    // 环境招式由 BossHazard 绘制实际判定区域的预警。
     for (let i = 0; i < this._trail.length; i++) {
       const t = this._trail[i]
       ctx.fillStyle = 'rgba(190,255,210,' + (0.04 + i * 0.03) + ')'
       ctx.beginPath(); ctx.ellipse(t.x + this.width / 2, t.y, 40, 22, 0, 0, Math.PI * 2); ctx.fill()
+    }
+
+    if(this.pendingSummon) {
+      ctx.save();ctx.strokeStyle=this.variant.bulletColor;ctx.lineWidth=3
+      ctx.setLineDash([4,5]);ctx.beginPath();ctx.arc(this.screenW-18,this.pendingSummon.y,20+Math.sin(this.stateT*.2)*4,0,Math.PI*2);ctx.stroke();ctx.restore()
     }
 
     // P2 暴怒红晕（血条变红在 HUD；本体给红色气场）
@@ -250,90 +259,7 @@ class Boss extends Obstacle {
       ctx.globalAlpha = Math.max(0, 1 - this.stateT / Config.BOSS.DEATH_SLOWMO_FRAMES)
     }
 
-    const u = this.width / 90  // 尺寸归一系数（贴图坐标按 90px 宽基准绘制）
-
-    // 草叶冠 / 沙晶冠：轮廓直接区分两章。
-    ctx.fillStyle = cfg.theme === 'meadow' ? '#b9ef77' : '#ffdb91'
-    for (let i = 0; i < 3; i++) {
-      ctx.beginPath(); ctx.moveTo(-40 + i * 10, -17)
-      ctx.lineTo(-44 + i * 12, -34 - (i === 1 ? 8 : 0)); ctx.lineTo(-28 + i * 10, -18); ctx.closePath(); ctx.fill()
-    }
-    // 尾羽（三片，朝右后方）
-    ctx.fillStyle = c.wing
-    for (let i = -1; i <= 1; i++) {
-      ctx.beginPath()
-      ctx.moveTo(30 * u, i * 6 * u)
-      ctx.lineTo((52 + Math.abs(i) * 4) * u, (i * 12 - 4) * u)
-      ctx.lineTo((52 + Math.abs(i) * 4) * u, (i * 12 + 4) * u)
-      ctx.closePath()
-      ctx.fill()
-    }
-
-    // 翅膀（上下扇动的大三角，面向左侧玩家）
-    ctx.fillStyle = c.wing
-    ctx.beginPath()
-    ctx.moveTo(-6 * u, -4 * u)
-    ctx.lineTo(14 * u, (-34 - flap) * u)
-    ctx.lineTo(30 * u, -6 * u)
-    ctx.closePath()
-    ctx.fill()
-    ctx.beginPath()
-    ctx.moveTo(-6 * u, 4 * u)
-    ctx.lineTo(14 * u, (34 + flap) * u)
-    ctx.lineTo(30 * u, 6 * u)
-    ctx.closePath()
-    ctx.fill()
-
-    // 身体（横向椭圆）+ 腹部
-    ctx.fillStyle = c.body
-    ctx.beginPath()
-    ctx.ellipse(0, 0, 34 * u, 22 * u, 0, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.strokeStyle = c.outline
-    ctx.lineWidth = 2
-    ctx.stroke()
-    ctx.fillStyle = c.belly
-    ctx.beginPath()
-    ctx.ellipse(-6 * u, 6 * u, 20 * u, 12 * u, 0, 0, Math.PI * 2)
-    ctx.fill()
-
-    if (this.state === 'recover') {
-      ctx.strokeStyle = '#fff5a6'; ctx.lineWidth = 3
-      ctx.beginPath(); ctx.arc(-5, 4, 15 + Math.sin(this.stateT * 0.18) * 3, 0, Math.PI * 2); ctx.stroke()
-      ctx.fillStyle = '#fff5a6'; ctx.beginPath(); ctx.arc(-5, 4, 5, 0, Math.PI * 2); ctx.fill()
-    }
-
-    // 头（左前）+ 喙 + 眼（P2 红眼）
-    ctx.fillStyle = c.body
-    ctx.beginPath()
-    ctx.arc(-32 * u, -8 * u, 14 * u, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.strokeStyle = c.outline
-    ctx.stroke()
-    ctx.fillStyle = c.beak
-    ctx.beginPath()
-    ctx.moveTo(-42 * u, -10 * u)
-    ctx.lineTo(-58 * u, -4 * u)
-    ctx.lineTo(-42 * u, 0)
-    ctx.closePath()
-    ctx.fill()
-    ctx.fillStyle = this.phase === 2 ? '#ff3b3b' : c.eye
-    ctx.beginPath()
-    ctx.arc(-34 * u, -11 * u, 3.5 * u, 0, Math.PI * 2)
-    ctx.fill()
-
-    // 受击白闪 / 蓄力泛白预警（§4.8：泛白=冲锋前摇视觉语言）
-    if (this._hitFlash > 0 || this.state === 'windup') {
-      const a = this.state === 'windup'
-        ? 0.25 + 0.25 * Math.sin(this.stateT * 0.5)   // 蓄力呼吸泛白
-        : this._hitFlash / 6 * 0.5                    // 受击短闪
-      ctx.globalAlpha = Math.max(0, a)
-      ctx.fillStyle = '#ffffff'
-      ctx.beginPath()
-      ctx.ellipse(0, 0, 36 * u, 24 * u, 0, 0, Math.PI * 2)
-      ctx.fill()
-      ctx.globalAlpha = this.state === 'dying' ? Math.max(0, 1 - this.stateT / Config.BOSS.DEATH_SLOWMO_FRAMES) : 1
-    }
+    drawBossArt(ctx, this)
 
     ctx.restore()
 
@@ -370,32 +296,5 @@ class Boss extends Obstacle {
     ctx.restore()
   }
 
-  _renderTelegraph(ctx) {
-    if (this.state !== 'telegraph') return
-    ctx.save()
-    if (this.action === 'wall') {
-      const top = this.wallCenter - this.wallGap / 2
-      const bottom = this.wallCenter + this.wallGap / 2
-      ctx.fillStyle = 'rgba(132,74,24,0.15)'
-      ctx.fillRect(0, 130, this.screenW, Math.max(0, top - 130))
-      ctx.fillRect(0, bottom, this.screenW, this.groundY - bottom)
-      ctx.strokeStyle = '#caffbd'; ctx.lineWidth = 3
-      ctx.strokeRect(2, top, this.screenW - 4, this.wallGap)
-      ctx.fillStyle = '#e9ffd9'; ctx.font = 'bold 13px sans-serif'; ctx.textAlign = 'center'
-      ctx.fillText('← 安全缺口', this.screenW / 2, this.wallCenter)
-      ctx.fillStyle = '#bd7734'
-      ctx.fillRect(this.screenW - 8, 130, 8, Math.max(0, top - 130))
-      ctx.fillRect(this.screenW - 8, bottom, 8, this.groundY - bottom)
-    } else {
-      const count = Config.BOSS.LEAF_COUNT[this._attackPhase - 1]
-      ctx.strokeStyle = 'rgba(255,85,50,0.65)'; ctx.lineWidth = 2
-      for (let i = 0; i < count; i++) {
-        const angle = this.aimAngle + (i - (count - 1) / 2) * Config.BOSS.LEAF_SPREAD
-        ctx.beginPath(); ctx.moveTo(this.x, this.y)
-        ctx.lineTo(this.x + Math.cos(angle) * this.screenW, this.y + Math.sin(angle) * this.screenW); ctx.stroke()
-      }
-    }
-    ctx.restore()
-  }
 }
 module.exports = Boss

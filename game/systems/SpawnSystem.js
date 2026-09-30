@@ -208,9 +208,9 @@ class SpawnSystem {
    */
   spawnPipe() {
     const stats = this._deps.getStats()
-    const gapBonus = stats.gapBonus || 0
     // [v1.1.5] 管道以基础间隙生成，动画缩回至最终间隙(baseGap + gapBonus)
     const finalGap = this._deps.getGapSize()  // 含 gapBonus 的最终间隙
+    const gapBonus = Math.min(stats.gapBonus || 0, Math.max(0, finalGap - 80))
     const baseGap = finalGap - gapBonus       // 不含 gapBonus 的基础间隙
     const groundY = this._deps.screenH - Config.GROUND.HEIGHT
     const minTop = Config.PIPE.MIN_TOP

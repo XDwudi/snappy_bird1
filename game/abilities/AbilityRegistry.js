@@ -106,7 +106,8 @@ class AbilityRegistry {
    * @param {Map} owned - 当前已拥有的能力 Map<id, level>
    * @returns {boolean} true=无依赖或前置已持有
    */
-  _meetsPrerequisite(ability, owned) {
+  _meetsPrerequisite(ability, owned, chapter = 1) {
+    if ((ability.unlockChapter || 1) > chapter) return false
     const prereq = Config.ABILITY.PREREQUISITES[ability.id]
     if (!prereq) return true
     return (owned.get(prereq) || 0) > 0
@@ -120,7 +121,7 @@ class AbilityRegistry {
    * @param {number} playerLevel - 玩家当前等级（影响稀有度权重）
    * @returns {Object[]} 被选中的能力定义数组
    */
-  rollChoices(owned, count, playerLevel) {
+  rollChoices(owned, count, playerLevel, chapter = 1) {
     const candidates = []
     // [v1.4.0] §8-R1：持有核心数不足阈值时启用核心卡加权（抬未成型局的成型率）
     const coreBoost = this._coreBoostActive(owned)
@@ -130,9 +131,9 @@ class AbilityRegistry {
       // 已满级的能力不参与抽取
       if (currentLevel >= ab.maxLevel) continue
       // [v1.5.1] 前置未持有：依赖卡不进池
-      if (!this._meetsPrerequisite(ab, owned)) continue
+      if (!this._meetsPrerequisite(ab, owned, chapter)) continue
 
-      const weight = this.getWeight(ab, currentLevel, playerLevel, coreBoost)
+      const weight = this.getWeight(ab, currentLevel, playerLevel, coreBoost) * (ab.unlockChapter === chapter && !currentLevel ? 1.6 : 1)
       candidates.push({ ability: ab, weight })
     }
 
@@ -213,7 +214,7 @@ class AbilityRegistry {
    * @param {number} playerLevel
    * @returns {Object|null} 能力定义或 null（无候选）
    */
-  rollRarePlus(owned, excludeIds, playerLevel) {
+  rollRarePlus(owned, excludeIds, playerLevel, chapter = 1) {
     const excluded = {}
     for (const id of excludeIds) excluded[id] = true
     const pool = []
@@ -224,7 +225,7 @@ class AbilityRegistry {
       if (excluded[ab.id]) continue
       const currentLevel = owned.get(ab.id) || 0
       if (currentLevel >= ab.maxLevel) continue
-      if (!this._meetsPrerequisite(ab, owned)) continue  // [v1.5.1] 前置未持有不进池
+      if (!this._meetsPrerequisite(ab, owned, chapter)) continue  // [v1.5.1] 前置未持有不进池
       pool.push({ ability: ab, weight: this.getWeight(ab, currentLevel, playerLevel, coreBoost) })
     }
     if (pool.length === 0) return null
@@ -245,7 +246,7 @@ class AbilityRegistry {
    * @param {number} playerLevel
    * @returns {Object|null} 能力定义或 null（无可选史诗）
    */
-  rollEpic(owned, excludeIds, playerLevel) {
+  rollEpic(owned, excludeIds, playerLevel, chapter = 1) {
     const excluded = {}
     for (const id of excludeIds) excluded[id] = true
     const pool = []
@@ -255,7 +256,7 @@ class AbilityRegistry {
       if (excluded[ab.id]) continue
       const currentLevel = owned.get(ab.id) || 0
       if (currentLevel >= ab.maxLevel) continue
-      if (!this._meetsPrerequisite(ab, owned)) continue  // [v1.5.1] 前置未持有不进池
+      if (!this._meetsPrerequisite(ab, owned, chapter)) continue  // [v1.5.1] 前置未持有不进池
       pool.push({ ability: ab, weight: this.getWeight(ab, currentLevel, playerLevel, coreBoost) })
     }
     if (pool.length === 0) return null
@@ -276,7 +277,7 @@ class AbilityRegistry {
    * @param {number} playerLevel
    * @returns {Object[]|null}
    */
-  rollBossRewardChoices(owned, playerLevel) {
+  rollBossRewardChoices(owned, playerLevel, chapter = 1) {
     const picked = []
     const pickedIds = {}
     const pickFrom = (rarityId) => {
@@ -287,7 +288,7 @@ class AbilityRegistry {
         if (pickedIds[ab.id]) continue
         const currentLevel = owned.get(ab.id) || 0
         if (currentLevel >= ab.maxLevel) continue
-        if (!this._meetsPrerequisite(ab, owned)) continue  // [v1.5.1] 前置未持有不进池
+        if (!this._meetsPrerequisite(ab, owned, chapter)) continue  // [v1.5.1] 前置未持有不进池
         pool.push({ ability: ab, weight: this.getWeight(ab, currentLevel, playerLevel, coreBoost) })
       }
       if (pool.length === 0) return null

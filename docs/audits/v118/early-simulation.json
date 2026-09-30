@@ -1,0 +1,26 @@
+[
+  {
+    "seed": 20260151,
+    "runs": 100,
+    "median": 98.2,
+    "earlyDeaths": 9,
+    "bossReached": 43,
+    "firstCleared": 24
+  },
+  {
+    "seed": 42,
+    "runs": 100,
+    "median": 75.38333333333334,
+    "earlyDeaths": 11,
+    "bossReached": 28,
+    "firstCleared": 11
+  },
+  {
+    "seed": 8675309,
+    "runs": 100,
+    "median": 87.81666666666666,
+    "earlyDeaths": 5,
+    "bossReached": 40,
+    "firstCleared": 20
+  }
+]

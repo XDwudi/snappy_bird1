@@ -70,15 +70,15 @@ class Monster extends Obstacle {
    * @param {number} speed - 世界滚动速度
    * @param {Object} [bird] - 小鸟实体（浮游怪追踪其 y）
    */
-  update(speed, bird) {
+  update(speed, bird, timeScale = 1) {
     if (bird) this._targetY = bird.y
-    this._doUpdate(speed)
+    this._doUpdate(speed, timeScale)
   }
 
   /**
    * 子类实现：位置更新
    */
-  _doUpdate(speed) {
+  _doUpdate(speed, timeScale = 1) {
     this.age++
     if (this.hitFlash > 0) this.hitFlash--
     if (this.age % 4 === 0) {
@@ -90,13 +90,13 @@ class Monster extends Obstacle {
 
     if (this.monsterType === 'bat') {
       // 蝙蝠怪：正弦垂直波动（[v1.5.0] 振幅走实例字段，章节修正可覆写，默认=配置值）
-      this.phase += M.BAT.SINE_FREQ
+      this.phase += M.BAT.SINE_FREQ * timeScale
       this.y = this.baseY + Math.sin(this.phase) * this._sineAmp
     } else {
       // 浮游怪：滞后追踪小鸟 y，速度设上限保证可躲避（[v1.5.0] 追踪速度走实例字段）
-      this.phase += 0.08  // 触须摆动相位
+      this.phase += 0.08 * timeScale  // 触须摆动相位
       const dy = this._targetY - this.y
-      const maxStep = this._trackSpeed
+      const maxStep = this._trackSpeed * timeScale
       if (Math.abs(dy) > maxStep) {
         this.y += dy > 0 ? maxStep : -maxStep
       } else {

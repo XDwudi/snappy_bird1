@@ -1,27 +1,11 @@
 /**
- * ChapterSystem.js - 章节系统 [v1.5.0]
- *
- * 职责（步骤 B：章节系统核心；步骤 C：Boss 全流程接入）：
- *   1. 章内进度（§4.5）：过管计数 40 管触发 Boss + 150s 迟到兜底（章内计时，过章清零）。
- *   2. 转场演出（§4.3）：白闪10帧 → 色带擦除60帧（新章底色从左推入）→ 标题卡90帧
- *      → 恢复飞行并给 60 帧无敌。转场期间世界冻结（UPGRADING 同款暂停语义：
- *      gameTime/实体/生成全停，只推进转场计时与管道换色 lerp）。
- *   3. 难度修正（§4.4 叠加制）：章节切换时把生成参数注入 SpawnSystem.setChapterModifiers；
- *      滚动速度加算/间隙加算由 Game._getScrollSpeed/_getGapSize 读 getMods()（Ch1 全零=零变化）。
- *   4. 视觉参数出口（§4.2）：getVisual() 供 Game 渲染天空/地面/章节元素；
- *      存量管道颜色 30 帧 lerp 平滑过渡（getPipeColorSet）。
- *   5. [步骤C] Boss 全流程：
- *      - 出场演出（§4.11）：暗角收拢30帧 → "雷云聚集……"1s → Boss 右侧飞入（60帧，deps.spawnBoss）
- *        → startBossFight（管道/普通怪物停生成 deps.setBossActive、天气冻结 deps.setWeatherFrozen）。
- *      - 战败方案A（§4.10/D1/D19）：onBossDefeat() —— 一战失败：进度保留，再过 20 管 Boss 满血回归；
- *        二战失败：本章 Boss 不再出现，章节正常推进（转场，无奖励）。扣 1HP 受击链在 Game 侧。
- *      - 胜利：Game 结算大礼包后调 endBossFight(true) → deps.onChapterEnd（回响消散）→ 转场。
- *
- * 零随机承诺：本系统默认路径（Ch1）不消耗任何随机数，update 序列与 v1.4.0 逐帧一致；
- * Boss 触发/演出/战败流程全部为确定性计时（不新增随机源）。
+ * 1.1.8 六章进度：每章同时达到管数与最低有效时间后迎战。
+ * 剧情战败只重赛，不跳章；六章分别获胜（生存或击杀）后进入无尽。
+ * 无尽独立计时、随机Boss，章节/出场/选卡期间世界与难度钟冻结。
  */
 
 const Config = require('../config/GameConfig.js')
+const endlessScaling = require('./EndlessScaling.js')
 const Logger = require('./GameLogger.js')
 
 class ChapterSystem {
@@ -41,13 +25,18 @@ class ChapterSystem {
    */
   constructor(deps) {
     this._deps = deps
+    this.endless = false
+    this.endlessFrames = 0
+    this.nextBossAt = 35 * 60
+    this.endlessBossIndex = 0
+    this.cleared = new Set()
     this.index = 0                 // 当前章节下标（CHAPTERS.LIST，0=Ch1）
     this.pipesPassed = 0           // 章内过管计数（过章清零）
     this.chapterTime = 0           // 章内计时（帧，过章清零）
     this._bossTriggered = false    // 本章 Boss 触发点已触发（每章一次）
     this._bossActive = false       // Boss 战进行中（出场演出结束→Boss 离场/死亡）
     this._bossIntro = null         // null | { phase:'vignette'|'gather'|'enter', frame }（§4.11 出场演出）
-    this._bossDefeatCount = 0      // [步骤C] 本章 Boss 战失败次数（方案A：0→回归一次，≥1 再败→跳章）
+    this._bossDefeatCount = 0      // 本章失败次数；失败不会跳章
     this._awaitingRematch = false  // [步骤C] 等待 20 管后 Boss 回归
     this._bossReturnAt = 0         // [步骤C] 回归触发管数（章内计数）
     this._transition = null        // null | { phase:'flash'|'wipe'|'title', frame, toIndex }
@@ -58,6 +47,11 @@ class ChapterSystem {
 
   /** 重置到 Ch1（Game.start / backToReady 时调用）；注入第一章生成配置 */
   reset() {
+    this.endless = false
+    this.endlessFrames = 0
+    this.nextBossAt = 35 * 60
+    this.endlessBossIndex = 0
+    this.cleared = new Set()
     this.index = 0
     this.pipesPassed = 0
     this.chapterTime = 0
@@ -80,7 +74,9 @@ class ChapterSystem {
   getChapter() { return Config.CHAPTERS.LIST[this.index] }
 
   /** 章节难度修正（Game._getScrollSpeed/_getGapSize 每帧读取；Ch1 全零，加 0 精确无差） */
-  getMods() { return this.getChapter().mods }
+  getMods() { return this.endless ? endlessScaling(this.endlessFrames) : this.getChapter().mods }
+
+  getBossIndex() { return this.endless ? this.endlessBossIndex : this.index }
 
   /** 章节视觉参数（Game 背景/地面/章节元素渲染读取） */
   getVisual() { return this.getChapter().visual }
@@ -99,13 +95,16 @@ class ChapterSystem {
    * @returns {{id:number, name:string, pipes:number, target:number, pulse:boolean}}
    */
   getHudData() {
-    const target = Config.CHAPTERS.TRIGGER_PIPES
+    const target = this.getChapter().triggerPipes
     return {
+      endless: this.endless, seconds: Math.floor(this.endlessFrames / 60),
+      rematch:this._awaitingRematch, remainingPipes:Math.max(0,this._bossReturnAt-this.pipesPassed),
+      remaining: Math.max(0, Math.ceil((this.getChapter().minFrames - this.chapterTime) / 60)),
       id: this.getChapter().id,
       name: this.getChapter().name,
       pipes: Math.min(this.pipesPassed, target),
       target: target,
-      pulse: this.pipesPassed >= Config.CHAPTERS.HUD_PULSE_PIPES
+      pulse: this.pipesPassed >= target - 5
     }
   }
 
@@ -140,16 +139,23 @@ class ChapterSystem {
   update() {
     this.chapterTime++
     this._advancePipeLerp()
-    // §4.5 迟到兜底：章内 150s 未达 40 管强制触发（占位逻辑同过管触发）
-    if (!this._bossTriggered && this.chapterTime >= Config.CHAPTERS.TRIGGER_TIMEOUT) {
-      this._triggerBossPoint('timeout')
+    if (this.endless) {
+      this.endlessFrames++
+      if (this.endlessFrames % 60 === 0) this._deps.setSpawnMods(this.getMods())
+      if (!this._bossActive && !this._bossIntro && this.endlessFrames >= this.nextBossAt) {
+        this.endlessBossIndex = Math.floor(Math.random() * Config.BOSS.VARIANTS.length)
+        this._triggerBossPoint('endless')
+      }
+    } else if (!this._bossTriggered && this.chapterTime >= this.getChapter().minFrames &&
+        this.pipesPassed >= this.getChapter().triggerPipes) {
+      this._triggerBossPoint('progress')
     }
   }
 
-  /** 章内过管计数（Game._onPipePass 调用）；达 40 管触发 Boss 触发点；战败后 20 管触发回归战 */
+  /** 章内过管计数（Game._onPipePass 调用）；同时满足本章管数/最短时间后触发；战败后 20 管触发回归战 */
   onPipePassed() {
     this.pipesPassed++
-    if (!this._bossTriggered && this.pipesPassed >= Config.CHAPTERS.TRIGGER_PIPES) {
+    if (!this.endless && !this._bossTriggered && this.chapterTime >= this.getChapter().minFrames && this.pipesPassed >= this.getChapter().triggerPipes) {
       this._triggerBossPoint('pipes')
     } else if (this._awaitingRematch && this.pipesPassed >= this._bossReturnAt) {
       // [步骤C] §4.10 方案A：一战失败后再过 20 管，Boss 满血回归一次
@@ -181,9 +187,16 @@ class ChapterSystem {
     if (this._deps.setWeatherFrozen) this._deps.setWeatherFrozen(false)
     Logger.info('Chapter', 'Boss 战结束', { chapter: this.getChapter().id, win: !!win })
     if (win) {
+      if (this.endless) {
+        this.nextBossAt = this.endlessFrames + this.getMods().bossInterval
+        return
+      }
+      this.cleared.add(this.index)
       if (this._deps.onChapterEnd) this._deps.onChapterEnd()
       if (this.index + 1 < Config.CHAPTERS.LIST.length) {
         this._startTransition()
+      } else if (this.cleared.size === Config.CHAPTERS.LIST.length) {
+        this.enterEndless()
       }
     }
   }
@@ -191,8 +204,8 @@ class ChapterSystem {
   /**
    * [步骤C] 玩家战败（§4.10 方案A，D1/D19）：Boss 长鸣离场（实体动作在 Game 侧）。
    * 一战失败：章内进度保留，20 管后 Boss 满血回归一次（返回 'rematch'）；
-   * 二战失败：本章 Boss 不再出现，章节正常推进（转场，无奖励，返回 'skip'）。
-   * @returns {string} 'rematch' | 'skip'
+   * 后续战败也重复再挑战，只有生存/击杀胜利才能推进。
+   * @returns {string} 'rematch'
    */
   onBossDefeat() {
     this._bossActive = false
@@ -202,18 +215,23 @@ class ChapterSystem {
     Logger.warn('Chapter', 'Boss 战失败（方案A）', {
       chapter: this.getChapter().id, defeatCount: this._bossDefeatCount, pipes: this.pipesPassed
     })
-    if (this._bossDefeatCount >= 2) {
-      // 二战失败：本章 Boss 不再出现，章节正常推进（无奖励）
-      if (this._deps.onChapterEnd) this._deps.onChapterEnd()
-      if (this.index + 1 < Config.CHAPTERS.LIST.length) {
-        this._startTransition()
-      }
-      return 'skip'
-    }
-    // 一战失败：进度保留，20 管后回归
     this._awaitingRematch = true
     this._bossReturnAt = this.pipesPassed + Config.BOSS.DEFEAT_RETURN_PIPES
     return 'rematch'
+  }
+
+  enterEndless() {
+    if (this.cleared.size !== Config.CHAPTERS.LIST.length || this.endless) return false
+    this.endless = true
+    if(this._deps.onEndlessEnter)this._deps.onEndlessEnter()
+    this.endlessFrames = 0
+    this.nextBossAt = 35 * 60
+    this._bossTriggered = false
+    this._deps.setSpawnMods(this.getMods())
+    this._deps.grantInvincible(120)
+    this._deps.addFloatingText(this._deps.screenW / 2, this._deps.screenH * 0.35,
+      '六章通关 · 无尽模式！得分×2', '#b6f6ff', 180)
+    return true
   }
 
   /**
@@ -253,7 +271,7 @@ class ChapterSystem {
   /** 当前章 Boss 变体配置（越界防御：回落到最后一个已实装变体） */
   _getBossVariant() {
     const V = Config.BOSS.VARIANTS
-    return V[this.index] || V[V.length - 1]
+    return V[this.getBossIndex()] || V[V.length - 1]
   }
 
   // ==================== 内部：触发点 / 转场 ====================
@@ -320,14 +338,7 @@ class ChapterSystem {
     this._bossReturnAt = 0
     const mods = this.getMods()
     // §4.4 生成参数注入（速度/间隙加算由 Game 侧读 getMods()，不在此处）
-    this._deps.setSpawnMods({
-      monsterSpawnDistance: mods.monsterSpawnDistance,
-      monsterMaxAlive: mods.monsterMaxAlive,
-      monsterHpMult: mods.monsterHpMult,
-      floaterTrackSpeed: mods.floaterTrackSpeed,
-      batSineAmp: mods.batSineAmp,
-      eliteChance: mods.eliteChance
-    })
+    this._deps.setSpawnMods(mods)
     // §4.3 存量管道颜色 lerp 30 帧平滑过渡（新管由 Game 生成接线处直接给新章色）
     this._pipeLerp = { frame: 0, from: fromVisual.pipe, to: this.getVisual().pipe }
     // [步骤C] 进入新章钩子（旅者补给/章节回响/章节之主首面板保底）

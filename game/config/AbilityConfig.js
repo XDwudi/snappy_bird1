@@ -709,4 +709,4 @@ const Abilities = [
   }
 ]
 
-module.exports = Abilities
+module.exports = require('./CampaignAbilities.js')(Abilities)

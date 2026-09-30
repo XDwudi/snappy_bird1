@@ -103,7 +103,7 @@ for(const chapter of [0,1])test(`第${chapter+1}章生存倒计时、暂停、�
   assert.ok(g.boss.hp>0);assert.equal(g.bossBadges.length,0);assert.equal(g.abilitySystem.bossesDefeated,0)
   g._onBossVictory();assert.equal(g.bossClears.length,1)
   rewards(g);assert.equal(g.chapterSystem.isBossActive(),false)
-  assert.equal(g.chapterSystem.isTransitioning(),chapter===0)
+  assert.equal(g.chapterSystem.isTransitioning(),chapter<Config.CHAPTERS.LIST.length-1)
   g.start();assert.equal(g.bossClears.length,0);assert.equal(g.bossFightFrames,0);assert.equal(g._bossClearMode,null)
 })
 test('击杀提前通关且只计一次战利品和奖励',()=>{
@@ -148,7 +148,7 @@ test('Canvas 各主要状态渲染可执行，HUD 显示血量与生存目标',(
   },set(o,k,v){o[k]=v;return true}})
   const g=new Game({},ctx,375,667,null);g.render();g.start();g.render()
   g._spawnBoss();g.boss._setState('roam');g.chapterSystem.startBossFight();g.render()
-  assert.ok(texts.some(t=>t.includes('再坚持 45 秒')))
+  assert.ok(texts.some(t=>t.includes('再坚持 '+Config.BOSS.VARIANTS[0].survivalFrames/60+' 秒')))
   assert.ok(texts.some(t=>t.includes(`${Config.CHAPTERS.LIST[0].mods.bossHp}/${Config.CHAPTERS.LIST[0].mods.bossHp}`)))
   g._onBossVictory('survival');g.render();rewards(g);g.render()
   g.state='gameover';g.render();assert.ok(texts.some(t=>t.includes('Ch1 生存')))

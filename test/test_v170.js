@@ -14,12 +14,12 @@ function select(g,id,n=1) { for(let i=0;i<n;i++) g.abilitySystem.selectAbility(i
 function boss(ch=0,w=375,h=667) {
   const shots=[], walls=[]
   const b=new Boss(ch,w,h,Config.CHAPTERS.LIST[ch].mods.bossHp,{
-    onFireFeather(...a){shots.push(a)},onSandWall(...a){walls.push(a)},onPhase2(){}
+    onHazard(p){shots.push(p)},onSummon(){},onFireFeather(...a){shots.push(a)},onSandWall(...a){walls.push(a)},onPhase2(){}
   })
   b.x=b.homeX;b._setState('roam');return {b,shots,walls}
 }
-test('61张卡去掉三张旧卡，先知和前置表均可解析',()=>{
-  assert.equal(Registry.getAll().length,61)
+test('73张卡保留旧卡退休约束，先知和前置表均可解析',()=>{
+  assert.equal(Registry.getAll().length,73)
   for(const id of ['exp_bank','double_jump','feather_dance']) assert.equal(Registry.get(id),null)
   for(const pair of [...Config.ABILITY.ORACLE_SYNERGY_PAIRS,...Config.ABILITY.ORACLE_ANTI_PAIRS]) {
     assert.equal(pair.length,2);for(const id of pair)assert.ok(Registry.get(id),id)
@@ -37,43 +37,11 @@ test('两章满血存活半程也进入P2，演出不计攻击时间',()=>{
     b.startLeaving();const age=b.combatAge;b.update();assert.equal(b.combatAge,age)
   }
 })
-test('叶刃先预警后发射，瞄准锁定不跟随玩家',()=>{
-  const {b,shots}=boss();b._beginAttack({x:112,y:300});const angle=b.aimAngle
-  assert.equal(b.state,'telegraph')
-  for(let i=0;i<Config.BOSS.WARN_FRAMES-1;i++)b.update({x:112,y:450})
-  assert.equal(shots.length,0);assert.equal(b.aimAngle,angle)
-  b.update();assert.equal(shots.length,3)
-})
-test('预警中转P2不改变已预告的弹幕；长屏俯冲落点与警示带一致',()=>{
-  const {b,shots}=boss();b._beginAttack({x:112,y:300});b._enterPhase2()
-  for(let i=0;i<Config.BOSS.WARN_FRAMES;i++)b.update()
-  assert.equal(shots.length,3)
-  for(const y of [140,699]) {
-    const {b}=boss(0,390,844);b.y=y===140?690:140;b.attackIndex=1;b._beginAttack({x:117,y})
-    for(let i=0;i<Config.BOSS.DIVE_WARN_FRAMES;i++)b.update()
-    assert.equal(b.state,'charging');assert.equal(b.y,b.chargeY)
-  }
-})
-test('草地俯冲预警完整、返程无伤害、随后出现破绽',()=>{
-  const {b}=boss();b.attackIndex=1;b._beginAttack({x:112,y:300})
-  const bird={x:b.x+45,y:b.y,collisionWidth:24,collisionHeight:17}
-  assert.equal(b.state,'windup');assert.equal(b.checkCollision(bird),false)
-  for(let i=0;i<Config.BOSS.DIVE_WARN_FRAMES;i++)b.update(bird)
-  assert.equal(b.state,'charging');assert.equal(b.y,b.chargeY)
-  let guard=0;while(b.state!=='recover'&&guard++<150){b.update(bird);if(b.state==='return')assert.equal(b.checkCollision({ ...bird,x:b.x+45,y:b.y }),false)}
-  assert.equal(b.state,'recover')
-})
-test('沙墙在三种屏幕均保留缺口，预警与碰撞一致',()=>{
-  for(const [w,h] of [[320,568],[375,667],[390,844]])for(const phase of [1,2])for(const y of [40,300,h-90]){
-    const {b,walls}=boss(1,w,h);b.phase=phase;b._beginAttack({x:w*.3,y})
-    assert.equal(b.action,'wall');assert.ok(b.wallCenter-b.wallGap/2>=140)
-    assert.ok(b.wallCenter+b.wallGap/2<=h-80-25)
-    for(let i=0;i<Config.BOSS.WALL_WARN_FRAMES;i++)b.update()
-    assert.deepEqual(walls,[[b.wallCenter,b.wallGap]])
-    const wall=new Wall(100,h-80,...walls[0]);const bird={x:110,y:b.wallCenter,collisionWidth:24,collisionHeight:17}
-    assert.equal(wall.checkCollision(bird),false)
-    bird.y=wall.topHeight;assert.equal(wall.checkCollision(bird),true)
-  }
+// 1.1.8 的36招/墙/连协几何验证见 test_v118.js；这里保留旧伤害链回归。
+test('普通弹幕预警期间不伤人，P2不扩大已经生成的预警',()=>{
+  const {b,shots}=boss();const bird={x:112,y:300,collisionWidth:24,collisionHeight:17}
+  b._beginAttack(bird);const count=shots.length;b._enterPhase2();assert.equal(shots.length,count)
+  for(const p of shots)assert.equal(p.checkCollision({...bird,x:p.x,y:p.y}),false)
 })
 test('破绽+1伤害，独立武器门防止新武器吞导弹，同批反击不多算',()=>{
   const {b}=boss();b._setState('recover');const hp=b.hp

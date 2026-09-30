@@ -5,7 +5,10 @@
  * 数值单位均为「每帧」（假设60fps），与开发方案一致。
  */
 
+const Campaign = require('./CampaignConfig.js')
+
 module.exports = {
+  VERSION: '1.1.8',
   // ==================== 小鸟参数 ====================
   BIRD: {
     WIDTH: 34,              // 小鸟视觉宽度
@@ -54,7 +57,7 @@ module.exports = {
 
   // ==================== 游戏全局参数 ====================
   GAME: {
-    SCROLL_SPEED: 3.0,      // 初始滚动速度
+    SCROLL_SPEED: 3.08,      // 初始滚动速度
     SPEED_RAMP_TIME: 5400, // 第一段速度增长周期=90秒
     SPEED_RAMP_MAX: 0.9,    // 最大速度增量
     GAP_RAMP_TIME: 5400,    // 间隙缩小周期
@@ -71,8 +74,8 @@ module.exports = {
     // [v1.7.0] 前90秒减压：间距325→295，间隙222→180；保留基础飞行物理。
     // 第二段从90秒开始，210秒封顶；配合相邻中心变化上限，不再独立全屏随机跳变。
     EARLY_EASE_RAMP_TIME: 5400,   // 减压回归周期（帧）=90s
-    EARLY_EASE_SPAWN_BONUS: 30, // 开局间距额外+30px，90秒归零
-    EARLY_EASE_GAP_BONUS: 22, // 开局间隙额外+22px，90秒归零
+    EARLY_EASE_SPAWN_BONUS: 24, // 开局间距额外+30px，90秒归零
+    EARLY_EASE_GAP_BONUS: 16, // 开局间隙额外+22px，90秒归零
 
     STATE: {
       READY: 'ready',
@@ -456,7 +459,7 @@ module.exports = {
     // （本局永久，按已击败数线性叠乘，4 章封顶 4 层；第一章未过 Boss 前零收益）
     TROPHY_EXP_PER_LV: 0.15,
     TROPHY_ITEM_PP_PER_LV: 0.05,
-    TROPHY_MAX_STACKS: 4
+    TROPHY_MAX_STACKS: 6
   },
 
   // ==================== [v1.2.2] 升级面板保护（B2） ====================
@@ -563,11 +566,8 @@ module.exports = {
   // 设计依据：docs/开发方案_v1.4.0.md §4.1-4.5；视觉色值（§4.2）与难度修正（§4.4）同表管理。
   // 难度为叠加制：现有时间 ramp（60s 拉满 + 60→180s 二段坡）完全不变、跨章连续不重置，
   // 章节修正作为第三段压力曲线叠加其上（Ch1 全零 = 基准，默认体验零变化）。
-  // Ch3 夜空 / Ch4 雪原为 v1.6.0 占位（见 LIST 末尾注释），本版本不实现。
+  // 1.1.8 六章的进度、修正与视觉在 CampaignConfig 中统一定义。
   CHAPTERS: {
-    TRIGGER_PIPES: 40,        // §4.5 章内过管数触发 Boss（章内计数，过章清零）
-    TRIGGER_TIMEOUT: 9000,    // §4.5 迟到兜底（帧）=150s，未达 40 管强制触发
-    HUD_PULSE_PIPES: 35,      // §4.5 Boss 临近（≥35/40）章节进度脉冲阈值
 
     // §4.3 转场演出帧数：白闪10 → 横向色带擦除60 → 标题卡90 →（恢复飞行后）60帧无敌
     TRANSITION: {
@@ -578,61 +578,7 @@ module.exports = {
     },
     PIPE_COLOR_LERP_FRAMES: 30,  // §4.3 存量管道换色平滑过渡帧数
 
-    LIST: [
-      {
-        id: 1, name: '蓝天草地', title: '第一章 · 蓝天草地', subtitle: '',
-        // §4.4 难度修正（Ch1 全零 = 基准）
-        mods: {
-          scrollSpeedAdd: 0,         // 滚动速度加算
-          gapAdd: 0,                 // 管道间隙加算(px)
-          monsterSpawnDistance: 650, // 怪物生成距离(px)
-          monsterMaxAlive: 1,        // 同屏怪物上限
-          monsterHpMult: 1,          // 怪物 HP 倍率
-          floaterTrackSpeed: 0.65,    // 浮游追踪速度(px/帧)
-          batSineAmp: 40,            // 蝙蝠正弦振幅(px)
-          eliteChance: 0.25,         // §5.1 精英怪概率
-          bossHp: 44 // 新武器与破绽加伤下，保留数轮招式学习时间
-        },
-        // §4.2 视觉（Ch1 = 现有 VISUAL 段色值原样录入，渲染零变化）
-        visual: {
-          theme: 'meadow',
-          skyTop: '#4ec0ca', skyBottom: '#71c5cf',
-          clouds: true,              // 白云 ×4（沿用现有 _drawClouds）
-          ground: { base: '#ded895', strip: '#5ee270', tileA: '#8ed24e', tileB: '#c9c179' },
-          pipe: { body: '#73bf2e', highlight: '#9adf4e', shadow: '#558022' }
-        }
-      },
-      {
-        id: 2, name: '沙漠', title: '第二章 · 沙漠', subtitle: '难度提升',
-        // §4.4 Ch2：速度+0.3 / 间隙-10 / 怪物距离400 / 上限2 / HP×1 / 追踪1.3 / 振幅55 / 精英25%
-        mods: {
-          scrollSpeedAdd: 0.3,
-          gapAdd: -10,
-          monsterSpawnDistance: 400,
-          monsterMaxAlive: 2,
-          monsterHpMult: 1,
-          floaterTrackSpeed: 1.3,
-          batSineAmp: 55,
-          eliteChance: 0.25,
-          bossHp: 54                 // 沙暴巨鹰（步骤 C 使用）
-        },
-        // §4.2 Ch2 沙漠：橙黄天空 + 太阳 + 远景沙丘 + 热浪粒子 + 沙色地面 + 岩柱管道
-        visual: {
-          theme: 'desert',
-          skyTop: '#f5c06a', skyBottom: '#f7dfa0',
-          clouds: false,                     // 沙漠章无云
-          sun: { color: '#ffd93b', radius: 40 },  // 右上 40px 太阳 + radial 光晕
-          duneColor: '#e0aa5e',              // 远景沙丘 3 条抛物线弧（0.5× 视差）
-          heatParticles: 12,                 // 热浪粒子（上升透明条），性能预算 +12
-          ground: { base: '#e6c27a', strip: '#d4a955', tileA: '#d4a955', tileB: '#d4a955' }, // 沙色+沙纹线
-          pipe: { body: '#c98f3f', highlight: '#a8742c', shadow: '#a8742c' }  // 岩柱
-        }
-      }
-      // [v1.6.0 占位·不实现] Ch3 夜空：天空 #141c33→#2a3a5f，星星×30+弯月+云#3a4a6b+萤火虫；
-      //   地面 #33415c；金属管 #6b7fa3；修正 速度+0.3/间隙-8/怪物距离360/上限3/HP×1.5/追踪1.4/振幅70/精英30%/Boss HP60
-      // [v1.6.0 占位·不实现] Ch4 雪原：天空 #b9d4ea→#e8f2fa，雪山×2+雪花粒子(≤40,复用冰雹实体,无伤害)；
-      //   地面 #eef4f8+冰面高光；冰柱 #8fc1e0；修正 速度+0.3/间隙-7/怪物距离320/上限3/HP×2/追踪1.5/振幅70/精英35%/Boss HP80
-    ]
+    LIST: Campaign.chapters
   },
 
   // ==================== [v1.5.0] Boss 系统（步骤 C） ====================
@@ -666,8 +612,7 @@ module.exports = {
     DEATH_SLOWMO_FRAMES: 30,
     EXPLOSION_RING_RADIUS: 120,
     // §4.10 战败方案A（D1/D19）：HP 归零不结束游戏，扣 1 HP 走完整受击链（可被格挡/羽盾/护盾减免），
-    // Boss 长鸣离场、章内进度保留、再过 20 管 Boss 满血回归一次；二战失败本章 Boss 不再出现、
-    // 章节正常推进无奖励。血契流 maxHp=1 战败=死（无血可扣，自选极限属性）
+    // 剧情章失败保留进度，20管后再挑战，不跳章；无尽与maxHp=1致死即结束。
     DEFEAT_RETURN_PIPES: 20,
     DEFEAT_INVINCIBLE_FRAMES: 120,  // 战败恢复飞行保护（2s）
     // §4.11 Boss 血条：顶部居中、宽60%、高10px；左 Boss 名右 HP 数字；P2 变红
@@ -702,26 +647,7 @@ module.exports = {
     BLESSING_HUNT_ITEM_PP: 0.08,    // 狩猎祝福：道具生成率 +8pp/层
     BLESSING_HUNT_SPAWN_ITEMS: 3,   // 狩猎祝福：立即在前方生成道具数
     // 章节外观/主题，行为节奏使用上面的 BOSS 参数。
-    VARIANTS: [
-      { // 草地：瞄准叶刃与俯冲交替；每招结束均有破绽。
-        name: '青岚守卫', theme: 'meadow',
-        survivalFrames: 2700, // 有效战斗45秒，暂停和演出不计时
-        gatherText: '林间起风……',
-        colors: { body: '#4d936a', wing: '#286b50', belly: '#d5efb4', beak: '#f5b83d', eye: '#ffe066', outline: '#1c2333' },
-        bulletColor: '#86ef79',     // 绿色叶刃
-        trailColor: null            // 无尾迹
-      },
-      { // 沙漠：沙墙与沙锥交替，整面墙出屏后才开始下一招。
-        name: '沙暴巨鹰', theme: 'desert',
-        survivalFrames: 3600, // 有效战斗60秒
-        gatherText: '沙暴逼近……',
-        colors: { body: '#c98f3f', wing: '#a8742c', belly: '#e8c98a', beak: '#8a5a1e', eye: '#fff3d6', outline: '#5e3f14' },
-        bulletColor: '#e0aa5e',     // 沙锥
-        trailColor: '224, 170, 94'  // 沙粒尾迹
-      }
-      // [v1.6.0 占位] Ch3 暗夜巨鹰 HP60（+每轮1发弱追踪弹，复用 Missile.TURN_RATE）；
-      // Ch4 霜羽巨鹰 HP80（弹幕过中线分裂为2，冲锋 CD8s，召唤 浮游×1+蝙蝠×1）
-    ]
+    VARIANTS: Campaign.bosses
   },
 
   // ==================== 云朵参数 ====================

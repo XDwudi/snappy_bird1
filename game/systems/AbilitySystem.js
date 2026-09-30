@@ -59,6 +59,9 @@ class AbilitySystem {
     this.speedPackFrames = 0        // 速度包减速剩余帧
 
     // 全属性加成
+    this.recoveryRate = 1
+    this.chapter = 1
+    this.breakthroughLevel = 0
     this.allBuffLevel = 0
 
     // [v1.2.0] 环境状态（由WeatherSystem更新，供风暴之子计算）
@@ -118,7 +121,7 @@ class AbilitySystem {
 
     if (allMaxed) return []
 
-    const choices = Registry.rollChoices(this.owned, count, playerLevel || 1)
+    const choices = Registry.rollChoices(this.owned, count, playerLevel || 1, this.chapter)
 
     // [v1.4.0] 幸运光环 Lv3 质变：面板必含 1 张稀有及以上（无则替换最后一张）
     // 与 N9 软保底的关系：两机制同向不冲突——N9 计数在 Registry.rollChoices 内已结算
@@ -126,7 +129,7 @@ class AbilitySystem {
     const luckyLv = this.owned.get('lucky') || 0
     if (luckyLv >= 3 && choices.length > 0 &&
         !choices.some(ab => (ab.rarity || 'common') !== 'common')) {
-      const guaranteed = Registry.rollRarePlus(this.owned, choices.map(c => c.id), playerLevel || 1)
+      const guaranteed = Registry.rollRarePlus(this.owned, choices.map(c => c.id), playerLevel || 1, this.chapter)
       if (guaranteed) {
         choices[choices.length - 1] = guaranteed
         Logger.info('Ability', '幸运光环Lv3质变：保底稀有+', { guaranteed: guaranteed.id })
@@ -140,7 +143,7 @@ class AbilitySystem {
       this.chapterFirstPanelDue = false
       if ((this.owned.get('chapter_master') || 0) > 0 && choices.length > 0 &&
           !choices.some(ab => (ab.rarity || 'common') === 'epic')) {
-        const epic = Registry.rollEpic(this.owned, choices.map(c => c.id), playerLevel || 1)
+        const epic = Registry.rollEpic(this.owned, choices.map(c => c.id), playerLevel || 1, this.chapter)
         if (epic) {
           choices[choices.length - 1] = epic
           Registry.resetPity()  // 消耗当次软保底计数（不叠加）
@@ -211,17 +214,28 @@ class AbilitySystem {
       })
     }
 
-    // 凤凰 → 重置使用次数
-    if (id === 'phoenix') {
+    // 首次获得凤凰初始化次数，升级保留已消耗次数
+    if (id === 'phoenix' && this.owned.get(id) === 1) {
       this.phoenixUsed = 0
     }
   }
 
   selectAllBuff() {
-    this.allBuffLevel = Math.min(this.allBuffLevel + 1, Config.ABILITY.MAX_ALL_BUFF_LEVEL)
+    if (this.allBuffLevel < Config.ABILITY.MAX_ALL_BUFF_LEVEL) this.allBuffLevel++
+    else this.breakthroughLevel++
+    this.invalidateStats()
   }
 
   // ==================== 属性计算 ====================
+
+  getFactions() {
+    const counts={}
+    for (const [id,lv] of this.owned) {
+      const def=Registry.get(id)
+      if(lv>0 && def && def.faction) counts[def.faction]=(counts[def.faction]||0)+1
+    }
+    return Object.keys(counts).map(name=>({name,count:counts[name],tier:counts[name]>=4?2:counts[name]>=2?1:0}))
+  }
 
   getStat(key) {
     if (!this._statsCache) {
@@ -380,6 +394,14 @@ class AbilitySystem {
     // [v1.2.0] 冰晶护体
     s.hasIceCrystal = lv('ice_crystal') > 0
 
+    const factions={}
+    for(const f of this.getFactions()) factions[f.name]=f.tier
+    s.expMultiplier *= 1 + (factions['森芽']||0)*0.08
+    s.gapBonus += (factions['沙铸']||0)*6
+    s.collisionScale = Math.max(0.3,s.collisionScale-(factions['织影']||0)*0.04)
+    s.scrollSpeedMultiplier *= 1-(factions['霜脉']||0)*0.03
+    s.weaponBonus = (factions['熔核']||0) + Math.log2(1+this.breakthroughLevel)*0.5
+    s.weaponCadence = 1-(factions['天枢']||0)*0.06
     return s
   }
 
@@ -418,11 +440,12 @@ class AbilitySystem {
 
   // ==================== 每帧更新 ====================
 
-  tickCooldowns() {
-    if (this.timeWarpCD > 0) this.timeWarpCD--
-    if (this.teleportCD > 0) this.teleportCD--
+  tickCooldowns(recoveryRate = 1) {
+    this.recoveryRate = recoveryRate
+    if (this.timeWarpCD > 0) this.timeWarpCD -= recoveryRate
+    if (this.teleportCD > 0) this.teleportCD -= recoveryRate
     if (this.timeWarpActive > 0) this.timeWarpActive--
-    if (this.iceCrystalCD > 0) this.iceCrystalCD--  // [v1.2.0] 冰晶护体CD
+    if (this.iceCrystalCD > 0) this.iceCrystalCD -= recoveryRate  // [v1.2.0] 冰晶护体CD
     if (this.invincibleFrames > 0) this.invincibleFrames--
     if (this.speedPackFrames > 0) this.speedPackFrames--
 
@@ -459,7 +482,7 @@ class AbilitySystem {
 
     // [v1.1.5] 护盾爆发——定期获得1层护盾
     if (this.hasStat('hasShieldBurst')) {
-      this.shieldBurstTimer--
+      this.shieldBurstTimer -= recoveryRate
       if (this.shieldBurstTimer <= 0) {
         this.addShieldLayer(1)
         this.shieldBurstTimer = this._getShieldBurstCD()
@@ -470,7 +493,7 @@ class AbilitySystem {
     // [v1.1.5] 坚韧护盾恢复（30s恢复1层）
     const toughnessLv = this.owned.get('toughness') || 0
     if (toughnessLv > 0 && this.shieldLayers < this.maxShieldLayers) {
-      this.shieldRecoverTimer++
+      this.shieldRecoverTimer += recoveryRate
       // [v1.4.0] 超载神盾：护盾恢复CD缩短
       if (this.shieldRecoverTimer >= Config.SHIELD.TOUGHNESS_RECOVER_CD * this._getOverdriveCDScale()) {
         this.addShieldLayer(1)
@@ -482,7 +505,7 @@ class AbilitySystem {
     // [v1.1.5] 弹力护盾恢复（20s-5s/级恢复1层）
     const bounceShieldLv = this.owned.get('bounce_shield') || 0
     if (bounceShieldLv > 0 && this.shieldLayers < this.maxShieldLayers) {
-      this.bounceShieldRecoverTimer++
+      this.bounceShieldRecoverTimer += recoveryRate
       const cd = this._getBounceShieldRecoverCD()
       if (this.bounceShieldRecoverTimer >= cd) {
         this.addShieldLayer(1)
@@ -493,7 +516,7 @@ class AbilitySystem {
 
     // [v1.1.0] 自愈
     if (this.hasStat('hasRegeneration') && this.hp < this.maxHp) {
-      this.regenerationTimer--
+      this.regenerationTimer -= recoveryRate
       if (this.regenerationTimer <= 0) {
         this.hp = Math.min(this.hp + 1, this.maxHp)
         this.regenerationTimer = this._getRegenerationCD()
@@ -737,7 +760,7 @@ class AbilitySystem {
   onPipePassEchoWing() {
     const echoLv = this.owned.get('echo_wing') || 0
     if (echoLv <= 0) return
-    this.echoWingPipes++
+    this.echoWingPipes += this.recoveryRate
     const need = Config.ABILITY.ECHO_WING_BASE_PIPES -
       Config.ABILITY.ECHO_WING_PIPES_REDUCTION * (echoLv - 1)
     if (this.echoWingPipes >= need) {
@@ -788,7 +811,7 @@ class AbilitySystem {
     // [v1.2.2] N1 无敌期间（受击/连击/复活等任何来源）过管不累计combo，
     // 打破连击之心Lv3"阈值2+无敌期照算"的永久无敌循环
     if (this.invincibleFrames > 0) return
-    this.comboCount++
+    this.comboCount += this.recoveryRate
     const threshold = this.getStat('comboThreshold')
     if ((this.owned.get('combo_heart') || 0) > 0 && this.comboCount >= threshold) {
       this.invincibleFrames = 180  // [v1.1.2] 300→180帧(3s)，避免永久无敌

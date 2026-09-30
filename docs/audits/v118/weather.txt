@@ -1,0 +1,20 @@
+=== 环境系统触发率模拟测试 ===
+轮数: 10，每轮: 300s（18000帧）
+配置: START_TIME=18s, CHECK_INTERVAL=10s, BASE=0.2, MAX=0.5
+
+第1轮: 6次触发 rain@88s(35s) hail@108s(19s) rain@208s(40s) wind@228s(30s) hail@268s(20s) wind@288s(30s)
+第2轮: 8次触发 hail@38s(13s) wind@58s(22s) hail@88s(17s) wind@118s(30s) wind@178s(30s) hail@208s(20s) hail@258s(20s) wind@278s(30s)
+第3轮: 7次触发 rain@58s(30s) rain@168s(40s) hail@188s(20s) wind@218s(30s) rain@238s(40s) hail@248s(20s) wind@298s(30s)
+第4轮: 8次触发 hail@118s(20s) rain@128s(40s) wind@208s(30s) rain@228s(40s) hail@238s(20s) wind@268s(30s) hail@288s(20s) rain@298s(40s)
+第5轮: 7次触发 hail@18s(12s) wind@48s(21s) rain@118s(40s) hail@148s(20s) rain@238s(40s) wind@278s(30s) hail@298s(20s)
+第6轮: 9次触发 wind@48s(21s) rain@78s(33s) hail@118s(20s) wind@128s(30s) hail@168s(20s) rain@188s(40s) wind@218s(30s) hail@258s(20s) wind@298s(30s)
+第7轮: 6次触发 rain@68s(31s) hail@128s(20s) rain@168s(40s) hail@198s(20s) wind@258s(30s) hail@288s(20s)
+第8轮: 10次触发 wind@28s(19s) wind@98s(27s) hail@118s(20s) rain@128s(40s) hail@168s(20s) wind@188s(30s) rain@198s(40s) hail@218s(20s) wind@248s(30s) hail@268s(20s)
+第9轮: 8次触发 rain@38s(26s) wind@58s(22s) hail@108s(19s) rain@178s(40s) hail@188s(20s) hail@238s(20s) wind@258s(30s) rain@268s(40s)
+第10轮: 8次触发 wind@38s(20s) hail@118s(20s) wind@128s(30s) rain@138s(40s) hail@168s(20s) wind@228s(30s) rain@278s(40s) wind@288s(30s)
+
+=== 统计 ===
+总触发次数: 77（平均 7.7 次/轮）
+类型分布: 风=27 雨=21 冰雹=29
+首次触发平均: 54s（最早18s，最晚118s）
+相邻触发间隔: 平均35s，中位数30s，最短10s，最长110s
