@@ -213,4 +213,4 @@ test('短屏夹击在上下边缘仍保留130px安全走廊',()=>{
   assert.equal(lines.length,2);assert.equal(lines[1].y-lines[0].y-lines[0].radius-lines[1].radius,130)
  }
 })
-console.log(`Total 1.1.8 suites: ${n}`)
+console.log(`Total 1.8.0 suites: ${n}`)

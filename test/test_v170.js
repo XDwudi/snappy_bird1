@@ -37,7 +37,7 @@ test('两章满血存活半程也进入P2，演出不计攻击时间',()=>{
     b.startLeaving();const age=b.combatAge;b.update();assert.equal(b.combatAge,age)
   }
 })
-// 1.1.8 的36招/墙/连协几何验证见 test_v118.js；这里保留旧伤害链回归。
+// 1.8.0 的36招/墙/连协几何验证见 test_v180.js；这里保留旧伤害链回归。
 test('普通弹幕预警期间不伤人，P2不扩大已经生成的预警',()=>{
   const {b,shots}=boss();const bird={x:112,y:300,collisionWidth:24,collisionHeight:17}
   b._beginAttack(bird);const count=shots.length;b._enterPhase2();assert.equal(shots.length,count)

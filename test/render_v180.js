@@ -3,7 +3,7 @@ const {createCanvas,GlobalFonts}=require('@napi-rs/canvas')
 if(process.env.CJK_FONT)for(const font of ['sans-serif','monospace'])GlobalFonts.registerFromPath(process.env.CJK_FONT,font)
 const Game=require('../game/core/Game'),R=require('../game/abilities/AbilityRegistry')
 require('../game/systems/GameLogger').enabled=false
-const out=path.resolve(__dirname,'../docs/audits/v118');fs.mkdirSync(out,{recursive:true})
+const out=path.resolve(__dirname,'../docs/audits/v180');fs.mkdirSync(out,{recursive:true})
 function game(w=375,h=667){const c=createCanvas(w,h),g=new Game(c,c.getContext('2d'),w,h,null);g.start();return {c,g}}
 for(const active of [false,true]){
  const sheet=createCanvas(1125,1414),ctx=sheet.getContext('2d');ctx.fillStyle='#152435';ctx.fillRect(0,0,sheet.width,sheet.height)
