@@ -56,13 +56,13 @@ function run(mode,seed,build='balanced',chapter=0){
   if(mode==='boss'&&(!g.chapterSystem.isBossActive()||g.bossClears.length))break
   if(mode==='early'&&g.gameTime>=limit*60)break
   let guard=0
-  while(g.state==='upgrading'&&guard++<100){const choices=g._currentChoices;if(!choices?.length)break;g.selectAbility(choices[Math.floor(Math.random()*choices.length)].id)}
+  while(g.state==='upgrading'&&guard++<100){const choices=g._currentChoices;if(!choices || !choices.length)break;g.selectAbility(choices[Math.floor(Math.random()*choices.length)].id)}
   if(g.state==='playing')pilot(g,p,mode==='endless'?18:12)
   g.update();maxHazards=Math.max(maxHazards,g.feathers.length)
   if(g.chapterSystem.isBossActive())reached=true
   if(g.bossClears.length&&firstClear===null)firstClear=g.bossClears[0]
  }
- const r={seconds:Math.round((mode==='endless'?g.chapterSystem.endlessFrames:mode==='boss'?g.bossFightFrames:g.gameTime)/6)/10,dead:g.state==='gameover',reached,clear:firstClear?.method||null,level:g.expSystem.level,maxHazards}
+ const r={seconds:Math.round((mode==='endless'?g.chapterSystem.endlessFrames:mode==='boss'?g.bossFightFrames:g.gameTime)/6)/10,dead:g.state==='gameover',reached,clear:(firstClear && firstClear.method)||null,level:g.expSystem.level,maxHazards}
  Math.random=realRandom;return r
 }
 if(require.main===module){
