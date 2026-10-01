@@ -1,5 +1,5 @@
 /**
- * 1.8.0 六章进度：每章同时达到管数与最低有效时间后迎战。
+ * 1.8.2 六章进度：管数/最低时间达标，或达到最长有效时间后迎战。
  * 剧情战败只重赛，不跳章；六章分别获胜（生存或击杀）后进入无尽。
  * 无尽独立计时、随机Boss，章节/出场/选卡期间世界与难度钟冻结。
  */
@@ -37,7 +37,8 @@ class ChapterSystem {
     this._bossActive = false       // Boss 战进行中（出场演出结束→Boss 离场/死亡）
     this._bossIntro = null         // null | { phase:'vignette'|'gather'|'enter', frame }（§4.11 出场演出）
     this._bossDefeatCount = 0      // 本章失败次数；失败不会跳章
-    this._awaitingRematch = false  // [步骤C] 等待 20 管后 Boss 回归
+    this._awaitingRematch = false  // 20管或35秒后回归，先到为准
+    this._bossReturnDeadline = 0
     this._bossReturnAt = 0         // [步骤C] 回归触发管数（章内计数）
     this._transition = null        // null | { phase:'flash'|'wipe'|'title', frame, toIndex }
     this._pipeLerp = null          // null | { frame, from, to }（from/to 为 {body,highlight,shadow}）
@@ -60,6 +61,7 @@ class ChapterSystem {
     this._bossIntro = null
     this._bossDefeatCount = 0
     this._awaitingRematch = false
+    this._bossReturnDeadline = 0
     this._bossReturnAt = 0
     this._transition = null
     this._pipeLerp = null
@@ -99,6 +101,7 @@ class ChapterSystem {
     return {
       endless: this.endless, seconds: Math.floor(this.endlessFrames / 60),
       rematch:this._awaitingRematch, remainingPipes:Math.max(0,this._bossReturnAt-this.pipesPassed),
+      deadline:Math.max(0,Math.ceil(((this._awaitingRematch ? this._bossReturnDeadline : this.getChapter().maxFrames)-this.chapterTime)/60)),
       remaining: Math.max(0, Math.ceil((this.getChapter().minFrames - this.chapterTime) / 60)),
       id: this.getChapter().id,
       name: this.getChapter().name,
@@ -146,8 +149,11 @@ class ChapterSystem {
         this.endlessBossIndex = Math.floor(Math.random() * Config.BOSS.VARIANTS.length)
         this._triggerBossPoint('endless')
       }
-    } else if (!this._bossTriggered && this.chapterTime >= this.getChapter().minFrames &&
-        this.pipesPassed >= this.getChapter().triggerPipes) {
+    } else if (this._awaitingRematch && this.chapterTime >= this._bossReturnDeadline) {
+      this._awaitingRematch=false
+      this._triggerBossPoint('rematch_timeout')
+    } else if (!this._bossTriggered && (this.chapterTime >= this.getChapter().maxFrames ||
+        (this.chapterTime >= this.getChapter().minFrames && this.pipesPassed >= this.getChapter().triggerPipes))) {
       this._triggerBossPoint('progress')
     }
   }
@@ -216,6 +222,7 @@ class ChapterSystem {
       chapter: this.getChapter().id, defeatCount: this._bossDefeatCount, pipes: this.pipesPassed
     })
     this._awaitingRematch = true
+    this._bossReturnDeadline = this.chapterTime + 35*60
     this._bossReturnAt = this.pipesPassed + Config.BOSS.DEFEAT_RETURN_PIPES
     return 'rematch'
   }
@@ -335,6 +342,7 @@ class ChapterSystem {
     this._bossIntro = null
     this._bossDefeatCount = 0
     this._awaitingRematch = false
+    this._bossReturnDeadline = 0
     this._bossReturnAt = 0
     const mods = this.getMods()
     // §4.4 生成参数注入（速度/间隙加算由 Game 侧读 getMods()，不在此处）

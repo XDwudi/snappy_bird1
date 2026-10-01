@@ -6,6 +6,7 @@ class BossHazard {
       warn:66,life:180,color:'#b6f6ff',groundY:580,screenW:375,gap:150,
       turnFrames:0,split:false,onSpawn:null,age:0}, options)
     this.type='feather'; this.alive=true
+    if(this.piercing)this.color='#ff66df'
     this.isSandWall=this.kind==='gate' || (this.kind==='beam' || this.kind==='column')
     this.topHeight=this.y-this.gap/2; this.bottomY=this.y+this.gap/2
     this._splitDone=false
@@ -50,9 +51,19 @@ class BossHazard {
     return this.age>=this.warn && this.kind!=='beam' && this.kind!=='column' && (this.x< -40||this.y< -50||this.y>h+40)
   }
   render(ctx) {
+    // 延迟波次临近生效才显示自己的预警，避免多个未来安全框同时误导。
+    if(this.telegraphFrames!=null && this.age<this.warn-this.telegraphFrames)return
     const warning=this.age<this.warn
     ctx.save();ctx.strokeStyle=warning?'#ffb65c':this.color;ctx.fillStyle=this.color
     ctx.lineWidth=warning?2:3
+    if(this.piercing) {
+      ctx.strokeStyle='#ff66df';ctx.fillStyle='#ff66df'
+      ctx.save();ctx.font='bold 12px sans-serif';ctx.textAlign='right';ctx.fillStyle='#ffb9ed'
+      ctx.strokeStyle='#38122e';ctx.lineWidth=3
+      const label='◆ 穿盾 · 上下躲避'
+      const y=Math.max(205,Math.min(this.groundY-18,this.y-30))
+      ctx.strokeText(label,this.screenW-12,y);ctx.fillText(label,this.screenW-12,y);ctx.restore()
+    }
     if(this.kind==='gate') {
       if(warning) {
         ctx.fillStyle='rgba(255,95,70,0.12)'

@@ -8,7 +8,7 @@
 const Campaign = require('./CampaignConfig.js')
 
 module.exports = {
-  VERSION: '1.8.1',
+  VERSION: '1.8.2',
   // ==================== 小鸟参数 ====================
   BIRD: {
     WIDTH: 34,              // 小鸟视觉宽度
@@ -606,7 +606,7 @@ module.exports = {
     CONTACT_DAMAGE: 1,          // 本体接触伤害（走统一受击链）
     // §4.11 出场演出：暗角收拢30帧 → "雷云聚集……"1s → Boss 右侧飞入至70%（60帧）→ 血条展开
     INTRO_VIGNETTE_FRAMES: 30,
-    INTRO_GATHER_FRAMES: 60,
+    INTRO_GATHER_FRAMES: 180,
     INTRO_ENTER_FRAMES: 60,
     // §4.11 死亡演出：爆炸粒子环（半径120px）→ 慢动作30帧（复用速度包0.5×）→ 大礼包面板
     DEATH_SLOWMO_FRAMES: 30,
@@ -625,8 +625,8 @@ module.exports = {
     // （setBossActive 预置满计时），战斗结束清零、下一场同样即供。
     // 依据：§4.9"无卡玩家能赢"的可达成化——实测无卡对 Boss 唯一伤害源
     // 是道具导弹（约 1 枚/48s，见 DECISIONS D20），与 30HP 差 2 个数量级；
-    // 保底供给把"无卡输出链"从随机掉落解耦为确定性节拍（5.5s/枚+即供首枚）
-    MISSILE_SUPPLY_INTERVAL_FRAMES: 330,
+    // 保底供给把"无卡输出链"从随机掉落解耦为确定性节拍（1.8.2：3s/枚+即供首枚，已有导弹时保持就绪）
+    MISSILE_SUPPLY_INTERVAL_FRAMES: 180,
     // [v1.5.0 数值闭环 D21] 导弹对 Boss 基础伤害系数（只乘 MISSILE.DAMAGE 基础值，
     // 猎手标记/屠龙者加成保持 1:1 flat 不削卡）：无卡 4/发、成型火力 7/发、满配 8/发，
     // 配合受击间隔门与 Ch1 HP36：无卡 ~62s（9 发×~6.5s 节拍）、满配 ~17.6s（5 发）、

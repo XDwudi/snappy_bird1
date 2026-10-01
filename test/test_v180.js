@@ -104,7 +104,7 @@ test('无尽随机Boss同级数值、时间递增、刷新间隔、死亡不兜�
  for(let idx=0;idx<6;idx++){
   g.chapterSystem.endlessBossIndex=idx;g._spawnBoss()
   assert.equal(g.boss.maxHp,scaling(36000).bossHp);assert.equal(g.boss.variant.bulletSpeed,C.BOSS.VARIANTS[5].bulletSpeed)
-  assert.equal(g.boss.difficultyTier,5);assert.equal(g.boss.survivalFrames,5400)
+  assert.equal(g.boss.difficultyTier,5);assert.equal(g.boss.survivalFrames,9000)
  }
  const hp0=scaling(0).bossHp;assert.ok(scaling(72000).bossHp>hp0*30)
  g.abilitySystem.hp=0;g._onBossDefeat();assert.equal(g.state,'gameover')
@@ -180,7 +180,7 @@ test('完整六章奖励/转场链进入无尽，重赛不能冒领章节通关'
   g.chapterSystem.pipesPassed=C.CHAPTERS.LIST[ch].triggerPipes
   g.chapterSystem.chapterTime=C.CHAPTERS.LIST[ch].minFrames
   g.chapterSystem.update()
-  for(let i=0;i<150;i++)g.update()
+  for(let i=0;i<C.BOSS.INTRO_VIGNETTE_FRAMES+C.BOSS.INTRO_GATHER_FRAMES+C.BOSS.INTRO_ENTER_FRAMES;i++)g.update()
   assert.ok(g.chapterSystem.isBossActive())
   g._onBossVictory(ch%2?'kill':'survival')
   for(let i=0;i<32&&g.state==='playing';i++){g.bird.y=300;g.bird.velocity=0;g.update()}

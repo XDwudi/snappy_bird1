@@ -1,0 +1,270 @@
+{
+  "mode": "boss",
+  "runs": 4,
+  "groups": {
+    "balanced_ch1": {
+      "min": 54.3,
+      "median": 78.2,
+      "max": 78.3,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 4,
+      "survival": 0,
+      "maxHazards": 6
+    },
+    "balanced_ch2": {
+      "min": 57.3,
+      "median": 60.8,
+      "max": 63.4,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 4,
+      "survival": 0,
+      "maxHazards": 16
+    },
+    "balanced_ch3": {
+      "min": 87.3,
+      "median": 102.3,
+      "max": 110.6,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 4,
+      "survival": 0,
+      "maxHazards": 18
+    },
+    "balanced_ch4": {
+      "min": 98.2,
+      "median": 154,
+      "max": 154,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 0,
+      "survival": 2,
+      "maxHazards": 16
+    },
+    "balanced_ch5": {
+      "min": 130.5,
+      "median": 157.7,
+      "max": 159.3,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 4,
+      "survival": 0,
+      "maxHazards": 21
+    },
+    "balanced_ch6": {
+      "min": 92,
+      "median": 95.2,
+      "max": 97.3,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 4,
+      "survival": 0,
+      "maxHazards": 28
+    },
+    "offense_ch1": {
+      "min": 44.3,
+      "median": 49.2,
+      "max": 56.8,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 4,
+      "survival": 0,
+      "maxHazards": 6
+    },
+    "offense_ch2": {
+      "min": 39.2,
+      "median": 40.2,
+      "max": 42.3,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 4,
+      "survival": 0,
+      "maxHazards": 16
+    },
+    "offense_ch3": {
+      "min": 61.3,
+      "median": 72.2,
+      "max": 78.2,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 4,
+      "survival": 0,
+      "maxHazards": 18
+    },
+    "offense_ch4": {
+      "min": 85.4,
+      "median": 146.6,
+      "max": 154,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 1,
+      "survival": 1,
+      "maxHazards": 17
+    },
+    "offense_ch5": {
+      "min": 56.3,
+      "median": 80,
+      "max": 80,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 4,
+      "survival": 0,
+      "maxHazards": 21
+    },
+    "offense_ch6": {
+      "min": 49.2,
+      "median": 52.7,
+      "max": 52.7,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 4,
+      "survival": 0,
+      "maxHazards": 28
+    },
+    "fortress_ch1": {
+      "min": 81.8,
+      "median": 94.3,
+      "max": 100,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 3,
+      "survival": 1,
+      "maxHazards": 6
+    },
+    "fortress_ch2": {
+      "min": 57.3,
+      "median": 70.6,
+      "max": 71.7,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 4,
+      "survival": 0,
+      "maxHazards": 16
+    },
+    "fortress_ch3": {
+      "min": 136,
+      "median": 136,
+      "max": 136,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 0,
+      "survival": 4,
+      "maxHazards": 21
+    },
+    "fortress_ch4": {
+      "min": 154,
+      "median": 154,
+      "max": 154,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 0,
+      "survival": 4,
+      "maxHazards": 16
+    },
+    "fortress_ch5": {
+      "min": 172,
+      "median": 172,
+      "max": 172,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 0,
+      "survival": 4,
+      "maxHazards": 21
+    },
+    "fortress_ch6": {
+      "min": 148.5,
+      "median": 159.3,
+      "max": 161,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 4,
+      "survival": 0,
+      "maxHazards": 28
+    },
+    "complete_ch1": {
+      "min": 34.8,
+      "median": 40.3,
+      "max": 42.7,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 4,
+      "survival": 0,
+      "maxHazards": 3
+    },
+    "complete_ch2": {
+      "min": 32.9,
+      "median": 34.2,
+      "max": 34.3,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 4,
+      "survival": 0,
+      "maxHazards": 16
+    },
+    "complete_ch3": {
+      "min": 33.2,
+      "median": 37,
+      "max": 41.2,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 4,
+      "survival": 0,
+      "maxHazards": 18
+    },
+    "complete_ch4": {
+      "min": 135.3,
+      "median": 150.3,
+      "max": 154,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 3,
+      "survival": 1,
+      "maxHazards": 16
+    },
+    "complete_ch5": {
+      "min": 35.7,
+      "median": 39.7,
+      "max": 41.1,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 4,
+      "survival": 0,
+      "maxHazards": 20
+    },
+    "complete_ch6": {
+      "min": 24,
+      "median": 26.8,
+      "max": 27.8,
+      "dead": 0,
+      "within5to20": 0,
+      "reached": 4,
+      "kills": 4,
+      "survival": 0,
+      "maxHazards": 16
+    }
+  }
+}

@@ -156,7 +156,7 @@ class Game {
       },
       onSpawnMonster: function (monster) {
         self.monsters.push(monster)
-        if(monster.elite)self._addFloatingText(self.screenW/2,190,monster.eliteKind==='gunship'?'护航炮艇 · 躲炮抢击杀':'唤天气灵 · 击杀驱散叠加天气','#ffdc87',100)
+        if(monster.elite)self._addFloatingText(self.screenW/2,190,monster.name+' · '+monster.hint,'#ffdc87',100)
       },
       onSpawnItem: function (item) { self.items.push(item) }
     })
@@ -1221,7 +1221,7 @@ class Game {
       })
       this.boss.power=this.chapterSystem.getMods().bossPower
       this.boss.difficultyTier=5
-      this.boss.survivalFrames=90*60
+      this.boss.survivalFrames=150*60
       this.boss._enterPhase2()
     }
     Logger.info('Boss', 'Boss 出场' , { name: this.boss.name, hp: hp, chapter: idx + 1 })
@@ -2202,6 +2202,8 @@ class Game {
       return false
     }
 
+    const piercing=!!(pipe && pipe.piercing)
+    // 穿盾保留厚皮、受击无敌、时间扭曲与凤凰；只跳过羽盾和普通护盾。
     // [v1.5.0] C7 厚皮（thick_skin）：0.3/级概率格挡怪系伤害（怪物/召唤物/Boss本体/羽刃弹幕；
     // 管道/地面/天花板不格挡——C7 是"怪系生存卡"）。位置：时间扭曲之后、羽盾之前（廉价概率节点前置，
     // 保住稀缺的羽盾/护盾层）。格挡成功断连击（与羽盾 N1 同语义，受击链内被命中即断）
@@ -2220,7 +2222,7 @@ class Game {
 
     // [v1.4.0] 羽盾（回响之翼/铁羽）：§2.6 受击链最前置防御节点——挡 1 次伤害；
     // 铁羽：破羽盾给 30 帧/级无敌（consumeFeatherShield 内结算）；消耗断连击（N1 同语义）
-    if (this.abilitySystem.consumeFeatherShield()) {
+    if (!piercing && this.abilitySystem.consumeFeatherShield()) {
       this.bird.invincibleBlink = 20
       this.shakeFrames = 4
       this.shakeIntensity = 2
@@ -2228,7 +2230,7 @@ class Game {
     }
 
     // [v1.1.5] 统一护盾——消耗一层护盾
-    if (this.abilitySystem.shieldLayers > 0) {
+    if (!piercing && this.abilitySystem.shieldLayers > 0) {
       const hasBounceShield = (this.abilitySystem.owned.get('bounce_shield') || 0) > 0
       this.abilitySystem.consumeShield()
 
@@ -2305,7 +2307,7 @@ class Game {
 
     // 存活但受伤
     Logger.info('Collision', '受到伤害', { hp: this.abilitySystem.hp, maxHp: this.abilitySystem.maxHp })
-    this._addFloatingText(this.bird.x, this.bird.y - 20, '-1 HP', '#ff4444', 40)
+    this._addFloatingText(this.bird.x, this.bird.y - 20, piercing?'穿盾受伤！':'受伤！', piercing?'#ff66df':'#ff4444', 40)
     return false
   }
 
@@ -2590,6 +2592,8 @@ class Game {
       ctx.fillRect(0, 0, this.screenW, this.screenH)
     }
 
+    this._drawDangerBorder()
+
     // [v1.1.0] 浮动文字
     this._drawFloatingTexts()
 
@@ -2614,6 +2618,23 @@ class Game {
     } else if (this.state === Config.GAME.STATE.GAME_OVER) {
       this._drawGameOverOverlay()
     }
+  }
+
+  _drawDangerBorder() {
+    if(this.abilitySystem.hp!==1 || !['playing','upgrading'].includes(this.state))return
+    const ctx=this.ctx,w=this.screenW,h=this.screenH
+    // 缓慢呼吸而非高频闪烁，中心保持清晰；临时生命仍用黄色心形。
+    const alpha=.26+.10*Math.sin(this.frameCount*.045)
+    ctx.save()
+    for(let inset=0;inset<24;inset+=3) {
+      ctx.strokeStyle='rgba(245,32,45,'+(alpha*(1-inset/24)).toFixed(3)+')'
+      ctx.lineWidth=3;ctx.strokeRect(inset+1.5,inset+1.5,w-inset*2-3,h-inset*2-3)
+    }
+    ctx.strokeStyle='rgba(255,45,65,.85)';ctx.lineWidth=3;ctx.strokeRect(1.5,1.5,w-3,h-3)
+    ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff2ed'
+    ctx.strokeStyle='#9c1930';ctx.lineWidth=4
+    ctx.strokeText('生命危险',w/2,h-Config.GROUND.HEIGHT+28);ctx.fillText('生命危险',w/2,h-Config.GROUND.HEIGHT+28)
+    ctx.restore()
   }
 
   _drawBackground() {
@@ -2779,6 +2800,18 @@ class Game {
       else if (i === 2) ctx.fillRect(0, 0, edge, this.screenH)
       else ctx.fillRect(this.screenW - edge, 0, edge, this.screenH)
     }
+    if(st.phase!=='vignette') {
+      const cfg=Config.BOSS.VARIANTS[this.chapterSystem.getBossIndex()]
+      const y=this.screenH*.48,w=this.screenW
+      ctx.save();ctx.fillStyle='rgba(12,20,34,.90)';ctx.fillRect(12,y-38,w-24,128)
+      ctx.textAlign='center';ctx.fillStyle='#ffe399';ctx.font='bold 15px sans-serif'
+      ctx.fillText(cfg.name+' · 破招指引',w/2,y-14,w-40)
+      ctx.font='12px sans-serif';ctx.fillStyle='#e8fff1'
+      cfg.guide.forEach((line,i)=>ctx.fillText(line,w/2,y+13+i*23,w-40))
+      ctx.fillStyle='#ff9ee6';ctx.font='11px sans-serif'
+      ctx.fillText((this.chapterSystem.endless || cfg.tier>=3) ? '紫色 ◆ 穿盾攻击：护盾无法抵挡，请上下躲避' : '橙色预警是危险区域，绿色框是目标或缺口',w/2,y+66,w-40)
+      ctx.restore()
+    }
   }
 
   /**
@@ -2818,12 +2851,12 @@ class Game {
     const goal = this._bossClearMode ? (this._bossClearMode === 'kill' ? '击败通关' : '生存通关') : `击败 Boss 或再坚持 ${seconds} 秒`
     ctx.strokeText(goal, cx, barY + barH + 24)
     ctx.fillText(goal, cx, barY + barH + 24)
-    ctx.fillStyle = boss.state === 'recover' ? '#fff5a6' : '#caffbd'
-    ctx.strokeText(boss.getActionLabel(), cx, barY + barH + 40)
-    ctx.fillText(boss.getActionLabel(), cx, barY + barH + 40)
+    ctx.fillStyle = boss.piercingAttack ? '#ff9ee6' : boss.state === 'recover' ? '#fff5a6' : '#caffbd'
+    ctx.strokeText(boss.getActionLabel(), cx, barY + barH + 40, this.screenW-20)
+    ctx.fillText(boss.getActionLabel(), cx, barY + barH + 40, this.screenW-20)
     ctx.fillStyle='#ffdf8f'
-    ctx.strokeText(boss.mechanics.label(),cx,barY+barH+55)
-    ctx.fillText(boss.mechanics.label(),cx,barY+barH+55)
+    ctx.strokeText(boss.mechanics.label(),cx,barY+barH+55,this.screenW-20)
+    ctx.fillText(boss.mechanics.label(),cx,barY+barH+55,this.screenW-20)
   }
 
   // [v1.1.0] 速度包边框特效
@@ -3171,8 +3204,8 @@ class Game {
     }
     ctx.fillText(chapterHud.endless
       ? `无尽 ${Math.floor(chapterHud.seconds/60)}:${String(chapterHud.seconds%60).padStart(2,'0')} · 得分×2${chapterHud.seconds>=120?' · 时空压缩':''}`
-      : chapterHud.rematch ? `Ch${chapterHud.id}/6 · 再战还需 ${chapterHud.remainingPipes} 管`
-      : `Ch${chapterHud.id}/6 · ${chapterHud.pipes}/${chapterHud.target}${chapterHud.remaining?' · 最短还需'+chapterHud.remaining+'s':''}`, this.screenW / 2, chapterY)
+      : chapterHud.rematch ? `Ch${chapterHud.id}/6 · 再战 ${chapterHud.remainingPipes}管 / 最迟${chapterHud.deadline}s`
+      : `Ch${chapterHud.id}/6 · ${chapterHud.pipes}/${chapterHud.target}${this.chapterSystem.isBossActive()?'':' · 最迟'+chapterHud.deadline+'s开战'}`, this.screenW / 2, chapterY)
     ctx.globalAlpha = 1.0
 
     // ----- [v1.5.0] Boss 血条（§4.9：顶部居中宽 60% 高 10px，P2 变红；Boss 战期间代替连击行）-----

@@ -96,7 +96,15 @@ class BossMechanics {
   }
   label() {
     if(this.weak)return '机关破解！集中火力'
-    return {meadow:'击碎两枚树根 · 解除护甲',desert:'站到绿环高度 · 诱撞岩柱',night:'击碎紫卵 · 阻止孵化',glacier:'绿环蓄热 · 三次碎冰',volcano:'绿环开阀 · 排热反噬',storm:'击打发光节点 · 依次断路'}[this.boss.variant.theme]
+    const alive=this.nodes.filter(n=>n.hp>0).length
+    return {
+      meadow:'对准树根发射 · 剩'+alive+'根解除护甲',
+      desert:this.boss.state==='windup'||this.boss.state==='charging'?'瞄准已锁定！离开红带，让巨蝎撞柱':'先到绿框高度 · 等冲锋锁定再离开',
+      night:'对准紫卵发射 · 剩'+alive+'卵会孵化',
+      glacier:'绿框停留蓄热 '+this.progress+'/3 · 碎冰后强攻',
+      volcano:'绿框开阀 '+this.progress+'/3 · 热量 '+this.heat+'/4',
+      storm:'对准发光节点 '+Math.min(3,this.activeNode+1)+'/3 · 导弹自动瞄准'
+    }[this.boss.variant.theme]
   }
   render(ctx,birdX) {
     const b=this.boss,t=b.variant.theme

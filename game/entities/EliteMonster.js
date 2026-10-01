@@ -7,9 +7,11 @@ class EliteMonster extends Monster {
     super(x,y,type,groundY,opts)
     this.eliteKind=opts.eliteKind || 'gunship'
     this.screenW=opts.screenW;this.onHazard=opts.onHazard;this.getPipes=opts.getPipes
-    this.name=this.eliteKind==='gunship'?'护航炮艇':'唤天气灵'
-    this.width=46;this.height=38;this.hp=Math.max(10,this.hp*2);this.maxHp=this.hp
-    this.shotTimer=0;this.stayFrames=720;this.retreating=false
+    this.tier=opts.eliteTier || 0
+    this.name={gunship:'护航炮艇',stormcaller:'唤天气灵',prism:'棱镜哨兵',bomber:'孢雷水母'}[this.eliteKind]
+    this.hint={gunship:'躲开瞄准弹，反击炮艇',stormcaller:'优先击杀，驱散叠加天气',prism:'避开交叉弹，反击菱形核心',bomber:'离开孢雷圆圈，反击水母'}[this.eliteKind]
+    this.width=46;this.height=38;this.hp=opts.eliteHp || [6,12,24,42,66,96][Math.min(5,this.tier)];this.maxHp=this.hp
+    this.shotTimer=0;this.stayFrames=720+this.tier*60;this.retreating=false
   }
   update(speed,bird,scale=1) {
     this.age+=scale;this.phase+=.05*scale;if(this.hitFlash>0)this.hitFlash--
@@ -22,13 +24,28 @@ class EliteMonster extends Monster {
       const ahead=pipes.filter(p=>p.x+p.width>this.x-40).sort((a,b)=>a.x-b.x)[0]
       const target=ahead?ahead.topHeight+ahead.gap/2:bird.y
       this.y+=clamp(target-this.y,-.9*scale,.9*scale)
-      if(this.age>90 && this.eliteKind==='gunship') {
+      if(this.age>90 && this.eliteKind!=='stormcaller') {
         this.shotTimer+=scale
         // 穿管瞬间不额外封路，炮口亮起后锁定，不追踪预警中的鸟。
-        if(this.shotTimer>=140 && !pipes.some(p=>Math.abs(p.x+p.width/2-bird.x)<75)) {
+        if(this.shotTimer>=Math.max(96,150-this.tier*10) && !pipes.some(p=>Math.abs(p.x+p.width/2-bird.x)<75)) {
           this.shotTimer=0
           const a=Math.atan2(bird.y-this.y,bird.x-this.x)
-          for(const d of [-.15,.15])if(this.onHazard)this.onHazard(new Hazard({x:this.x,y:this.y,vx:Math.cos(a+d)*3.4,vy:Math.sin(a+d)*3.4,warn:65,life:150,screenW:this.screenW,groundY:this.groundY,color:'#ffb65c'}))
+          const emit=o=>{if(this.onHazard)this.onHazard(new Hazard(Object.assign({warn:75,life:130,screenW:this.screenW,groundY:this.groundY,color:'#ffb65c'},o)))}
+          const velocity=3.2+this.tier*.22
+          if(this.eliteKind==='bomber') {
+            // 只锁定一个高度，留足上下离开的时间；不在穿管窗口布雷。
+            emit({x:bird.x+20,y:bird.y,vx:0,vy:0,grow:true,radius:10,warn:90,life:45,color:'#d6ee84'})
+          } else if(this.eliteKind==='prism') {
+            for(const dy of [-65,65]) {
+              const angle=Math.atan2(bird.y-this.y-dy,bird.x-this.x)
+              emit({x:this.x,y:this.y+dy,vx:Math.cos(angle)*velocity,vy:Math.sin(angle)*velocity,color:'#89e5ff'})
+            }
+          } else {
+            const count=2+Math.floor(this.tier/2)
+            for(let i=0;i<count;i++) {const angle=a+(i-(count-1)/2)*.25
+              emit({x:this.x,y:this.y,vx:Math.cos(angle)*velocity,vy:Math.sin(angle)*velocity})
+            }
+          }
         }
       }
     }
@@ -44,6 +61,16 @@ class EliteMonster extends Monster {
       ctx.beginPath();ctx.moveTo(-26,0);ctx.lineTo(-10,-18);ctx.lineTo(20,-12);ctx.lineTo(25,12);ctx.lineTo(-10,18);ctx.closePath();ctx.fill();ctx.stroke()
       ctx.fillStyle='#ffc86d';ctx.fillRect(-33,-4,18,8)
       for(const s of [-1,1]){ctx.fillStyle='#5c8294';ctx.fillRect(-8,s*25-3,30,6);ctx.strokeRect(-8,s*25-3,30,6);ctx.fillStyle='#caf4ff';ctx.fillRect(-5+Math.sin(this.phase*4)*8,s*25-2,16,4)}
+    } else if(this.eliteKind==='prism') {
+      ctx.fillStyle=this.hitFlash?'#fff':'#247a99';ctx.strokeStyle='#b9faff'
+      ctx.beginPath();ctx.moveTo(-30,0);ctx.lineTo(0,-26);ctx.lineTo(29,0);ctx.lineTo(0,26);ctx.closePath();ctx.fill();ctx.stroke()
+      for(const d of [-1,1]){ctx.beginPath();ctx.arc(0,d*32,6+Math.sin(this.phase)*2,0,Math.PI*2);ctx.stroke()}
+      ctx.fillStyle='#e4fdff';ctx.fillRect(-7,-7,14,14)
+    } else if(this.eliteKind==='bomber') {
+      ctx.fillStyle=this.hitFlash?'#fff':'#92a959';ctx.strokeStyle='#ebff9d'
+      ctx.beginPath();ctx.ellipse(0,-6,26,18,0,Math.PI,Math.PI*2);ctx.lineTo(26,8);ctx.lineTo(-26,8);ctx.closePath();ctx.fill();ctx.stroke()
+      for(let i=-2;i<=2;i++){ctx.beginPath();ctx.moveTo(i*9,8);ctx.quadraticCurveTo(i*9+Math.sin(this.phase+i)*10,23,i*10,33);ctx.stroke()}
+      ctx.fillStyle='#fdffad';ctx.beginPath();ctx.arc(0,-4,6,0,Math.PI*2);ctx.fill()
     } else {
       ctx.fillStyle=this.hitFlash?'#fff':'#6663a7'
       ctx.beginPath();ctx.moveTo(0,-27);ctx.lineTo(23,-3);ctx.lineTo(13,20);ctx.lineTo(-16,20);ctx.lineTo(-25,-4);ctx.closePath();ctx.fill();ctx.stroke()

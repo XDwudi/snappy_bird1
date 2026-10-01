@@ -1,6 +1,6 @@
 /**
  * 生成管道、怪物、精英与道具。Game 通过回调接收实体。
- * v1.8.1：普通怪靠近管道出口，保留水平绕行间隔；精英升级为伴飞炮艇/天气灵。
+ * v1.8.2：普通怪靠近管道出口；四种精英轮换，按章节/无尽时间成长。
  * 45秒保护期后按25秒周期尝试精英，最多同屏一只；Boss战暂停常规生成。
  * 参数由 ChapterSystem 注入，reset 清除局内计时。
  */
@@ -49,6 +49,8 @@ class SpawnSystem {
 
     // [v1.5.0] 精英怪 roll 状态（§5.1）：局内状态，随 reset 清零
     this._eliteTimer = 0      // 距上次 roll 的帧数（45s 保护期后开始计时）
+    this._eliteCursor = 0
+    this._eliteMisses = 0
     this._elitePending = false // true = 下一只怪物升级为精英
 
     // [v1.5.0 D21] Boss 战导弹保底供给计时（仅 bossActive 期间推进）
@@ -67,6 +69,8 @@ class SpawnSystem {
     this.supplyLineTimer = 0  // [v1.4.0]
     this._eliteTimer = 0      // [v1.5.0] 精英 roll 计时（局内状态）
     this._elitePending = false // [v1.5.0]
+    this._eliteCursor = 0
+    this._eliteMisses = 0
     this._bossSupplyTimer = 0 // [v1.5.0 D21] Boss 战导弹保底供给
     this.bossSupplyCount = 0  // [v1.5.0 D21]
     // 注：_bossActive / _chapterMods 是跨局配置，不随局内重置清零（由 ChapterSystem 管理）
@@ -248,7 +252,11 @@ class SpawnSystem {
       this._elitePending = false
       opts = opts || {}
       opts.elite = true
-      opts.eliteKind = Math.random()<.5?'gunship':'stormcaller'
+      const tier=this._chapterMods ? this._chapterMods.eliteTier || 0 : 0
+      const kinds=tier>=2?['gunship','stormcaller','prism','gunship','stormcaller','bomber']:['gunship','stormcaller']
+      opts.eliteKind=kinds[this._eliteCursor++ % kinds.length]
+      opts.eliteTier=tier
+      opts.eliteHp=this._chapterMods && this._chapterMods.eliteHp
       opts.screenW=this._deps.screenW
       opts.onHazard=this._deps.onHazard
       opts.getPipes=this._deps.getPipes
@@ -259,6 +267,10 @@ class SpawnSystem {
     const Factory=opts&&opts.elite?EliteMonster:Monster
     const monster = new Factory(spawnX, y, type, groundY, opts)
     this._deps.onSpawnMonster(monster)
+    if(monster.elite && !this._deps.hasItemType('missile')) {
+      const supplyY=Math.max(150,Math.min(groundY-35,this._deps.getBirdY()))
+      this._deps.onSpawnItem(new Item(this._deps.screenW*.6,supplyY,'missile'))
+    }
     Logger.info('Monster', '生成怪物', {
       type: type, x: monster.x, y: monster.y, gameTime: this._deps.getGameTime(),
       elite: monster.elite, hp: monster.hp
@@ -278,7 +290,8 @@ class SpawnSystem {
     this._eliteTimer = 0
     const chance = (this._chapterMods && this._chapterMods.eliteChance != null)
       ? this._chapterMods.eliteChance : M.ELITE_CHANCE
-    if (Math.random() < chance) {
+    if (Math.random() < chance || ++this._eliteMisses >= 2) {
+      this._eliteMisses=0
       this._elitePending = true
       Logger.info('Monster', '精英预警：下一只怪物升级为精英', { gameTime: this._deps.getGameTime(), chance: chance })
     }
@@ -385,7 +398,7 @@ class SpawnSystem {
   /**
    * [v1.5.0 D21] Boss 战导弹保底供给：战斗期间每 MISSILE_SUPPLY_INTERVAL_FRAMES 检查一次，
    * 场上无导弹道具则在玩家前方（与小鸟同高，右屏缘外 20px）生成 1 枚导弹道具。
-   * 与随机生成/补给线完全独立；场上已有导弹道具则顺延下个周期再查（不囤积）。
+   * 与随机生成/补给线完全独立；场上已有导弹道具则保持就绪，拾取后补发（不囤积）。
    * 依据：§4.9"无卡玩家能赢"的可达成化——无卡对 Boss 唯一伤害源是道具导弹，
    * 随机供给约 1 枚/48s 与 30HP 差 2 个数量级（D20）；保底节拍把无卡输出链确定性化。
    */
@@ -394,7 +407,8 @@ class SpawnSystem {
     this._bossSupplyTimer++
     if (this._bossSupplyTimer < Config.BOSS.MISSILE_SUPPLY_INTERVAL_FRAMES) return
     this._bossSupplyTimer = 0
-    if (this._deps.hasItemType('missile')) return  // 场上已有导弹道具：本周期不生成（顺延）
+    // 场上只保留一枚；已有道具时保持就绪，拾取后立即补给，不再空等整个周期。
+    if (this._deps.hasItemType('missile')) { this._bossSupplyTimer=Config.BOSS.MISSILE_SUPPLY_INTERVAL_FRAMES; return }
     const groundY = this._deps.screenH - Config.GROUND.HEIGHT
     const minY = Config.PIPE.MIN_TOP + 30
     const maxY = groundY - 30

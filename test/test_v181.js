@@ -9,7 +9,7 @@ const game=(w=375,h=667)=>{const g=new Game({},{},w,h,null);g.start();return g}
 const fight=(ch,h=667)=>{const g=game(375,h);g.chapterSystem.index=ch;g._spawnBoss();g.chapterSystem.startBossFight();g.boss.x=g.boss.homeX;g.boss._setState('roam');g.boss.update(g.bird);return g}
 const give=(g,id,lv)=>{for(let i=0;i<lv;i++)g.abilitySystem.selectAbility(id)}
 test('版本1.8.1；六Boss有18个不重复专属招式与六种机关',()=>{
- assert.equal(C.VERSION,'1.8.1')
+ assert.equal(C.VERSION,'1.8.2') // 旧机制回归沿用当前版本
  const kinds=C.BOSS.VARIANTS.flatMap(b=>b.skills.map(s=>s.kind))
  assert.ok(kinds.filter(k=>kinds.filter(x=>x===k).length===1).length>=18)
  assert.equal(new Set(Array.from({length:6},(_,i)=>fight(i).boss.mechanics.label())).size,6)
@@ -101,7 +101,7 @@ test('普通怪跟随管道出口高度，水平间隔保留绕行空间',()=>{
 test('炮艇有伴飞/预警射击/撤离阶段，非Boss弹幕照常更新碰撞',()=>{
  const g=game(),shots=[]
  const e=new Elite(405,300,'bat',587,{elite:true,screenW:375,onHazard:h=>shots.push(h),getPipes:()=>[]});g.bird.y=300
- for(let i=0;i<240;i++)e.update(3,g.bird)
+ for(let i=0;i<250;i++)e.update(3,g.bird)
  assert.ok(e.x>g.bird.x+100&&e.x<375);assert.equal(shots.length,2);assert.ok(shots.every(h=>h.age<h.warn))
  const h=shots[0];g.feathers=[h];const before=h.age;g._updateBossFight();assert.ok(h.age>before)
  for(let i=0;i<800;i++)e.update(3,g.bird);assert.equal(e.isOffscreen(),true)

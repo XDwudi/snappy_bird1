@@ -85,7 +85,7 @@ class Boss extends Obstacle {
     if (this.phase2Flash > 0) this.phase2Flash--
     if (!['entering', 'dying', 'leaving'].includes(this.state)) {
       this.combatAge = combatFrames == null ? this.combatAge + 1 : combatFrames
-      if (this.combatAge >= this.survivalFrames / 2) this._enterPhase2()
+      if (this.combatAge >= this.survivalFrames * .35) this._enterPhase2()
     }
     if (this.state === 'entering') {
       const t = Math.min(1, this.stateT / B.INTRO_ENTER_FRAMES)
@@ -156,7 +156,7 @@ class Boss extends Obstacle {
 
   _finishAttack(bird) {
     if(this.comboQueue.length) this._beginAttack(bird,true)
-    else this._setState('recover')
+    else {this.piercingAttack=false;this._setState('recover')}
   }
 
   _enterPhase2() {
@@ -186,7 +186,7 @@ class Boss extends Obstacle {
       const hint={gate:'穿绿框',beam:'离开横线',pincer:'留在两线中间',dash:'离开红带',
         rain:'避开落点',columns:'避开雷轨',eruption:'避开地火',seek:'提前变向',
         split:'留意分裂',summon:'击退召唤',fan:'离开瞄线',burst:'持续变向',spiral:'绕开扇面'}
-      return `${this.skill.name} · ${(this.skill.hint || hint[this.action] || '观察预警')}${this.comboLength>1?' · 连协'+this.comboStep+'/'+this.comboLength:''}`
+      return `${this.piercingAttack?'◆穿盾 ':''}${this.skill.name} · ${(this.skill.hint || hint[this.action] || '观察预警')}${this.comboLength>1?' · 连协'+this.comboStep+'/'+this.comboLength:''}`
     }
     return '观察起手 · 等待反击'
   }

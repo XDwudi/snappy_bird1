@@ -14,6 +14,7 @@ module.exports = function endlessScaling(frames) {
     monsterSpawnDistance:Math.max(170,310 - minutes * 10),
     monsterMaxAlive:Math.min(8,4 + Math.floor(minutes / 2)),
     monsterHpMult:3.25 * pressure,
+    eliteTier:5, eliteHp:Math.round(96*pressure),
     floaterTrackSpeed:Math.min(2.4,1.35 + minutes * 0.07),
     batSineAmp:65,eliteChance:Math.min(0.8,0.45 + minutes * 0.03),
     bossHp:Math.round(Campaign.chapters[Campaign.chapters.length-1].mods.bossHp * pressure),

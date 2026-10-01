@@ -4,13 +4,27 @@ const clamp=(n,a,b)=>Math.max(a,Math.min(b,n))
 module.exports=function cast(boss,bird,skill) {
   const w=boss.screenW,g=boss.groundY,c=boss.variant
   const tier=boss.difficultyTier, power=boss.power
-  const speed=c.bulletSpeed*Math.min(4.5,power)
+  const speed=c.bulletSpeed*Math.min(4.5,power)*(1+Math.min(.25,boss.combatAge/(150*60)))
   const warn=Math.max(42,c.warnFrames-Math.floor((power-1)*8))
   const aim=clamp(bird.y,155,g-45)
-  const emit=o=>boss._deps.onHazard(new Hazard(Object.assign({color:c.bulletColor,screenW:w,
-    groundY:g,warn,life:Math.ceil((w+100)/speed)+50,onSpawn:boss._deps.onHazard},o)))
+  let lastEnd=0
+  const emit=o=>{
+    const h=new Hazard(Object.assign({color:c.bulletColor,screenW:w,
+      groundY:g,warn,life:Math.ceil((w+100)/speed)+50,onSpawn:boss._deps.onHazard},o))
+    h.telegraphFrames=h.piercing?Math.max(90,warn):warn
+    lastEnd=Math.max(lastEnd,h.warn+Math.max(h.life,h.split?166:0))
+    boss._deps.onHazard(h)
+  }
+  // 穿盾仅用于明确标记的后期区域招式，完整90帧预警；不临时改变普通弹。
+  const piercing=tier>=3 && ['frost_steps','beam','vent_burst','rail_switch','gate'].includes(skill.kind)
+  boss.piercingAttack=piercing
+  const dangerWarn=piercing?Math.max(90,warn):warn
+  const waves=1+Math.floor(tier/2)+(boss.phase===2?1:0)
   const angle=Math.atan2(aim-boss.y,bird.x-boss.x)
-  const bolt=(x,y,a,s=speed,extra={})=>emit(Object.assign({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s},extra))
+  const bolt=(x,y,a,s=speed,extra={})=>{
+    for(let wave=0;wave<waves;wave++)emit(Object.assign({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s},extra,
+      {warn:(extra.warn==null?warn:extra.warn)+wave*42}))
+  }
   let duration=Math.ceil((w+100)/speed)+60
   switch(skill.kind) {
     // 1.8.1 专属招式：同一预警实体驱动实际轨迹，机关状态提供反击路线。
@@ -20,7 +34,7 @@ module.exports=function cast(boss,bird,skill) {
     case 'vine_steps':
     case 'frost_steps': {
       const ys=skill.kind==='vine_steps'?[g-60,190,g-125]:[190,g-75,260]
-      ys.forEach((y,i)=>emit({kind:'beam',y,radius:20,warn:warn+i*65,life:32}))
+      ys.forEach((y,i)=>emit({kind:'beam',y,radius:20,warn:dangerWarn+i*78,life:32,piercing}))
       duration=172;break
     }
     case 'seed_mines':
@@ -35,9 +49,13 @@ module.exports=function cast(boss,bird,skill) {
         bolt(w-15,g-30-i*24,Math.PI+.6,speed,{warn:warn+i*15})
       }
       duration+=45;break
-    case 'sandfall':
-      for(let i=0;i<3;i++)for(const dx of [-16,16])bolt(w*.24+i*w*.27+dx,120,Math.PI/2,speed,{warn:warn+i*32,radius:6})
-      duration=Math.ceil(g/speed)+70;break
+    case 'sandfall': {
+      // 固定横坐标不能横躲垂直弹：改为横向沙幕，三次缺口只移动48px。
+      const center=clamp(aim,235,g-110)
+      for(let i=0;i<3;i++)emit({kind:'gate',x:w,y:center+(i%2?24:-24),gap:154,
+        width:18,vx:-speed*.85,warn:warn+i*100,life:Math.ceil((w+50)/(speed*.85))})
+      break
+    }
     case 'web_lattice':
       for(let i=0;i<2;i++)emit({kind:'gate',x:w,y:clamp(aim+(i?38:-38),210,g-100),gap:138,width:18,vx:-speed*.8,warn:warn+i*105,life:Math.ceil(w/(speed*.8))+40})
       duration=Math.ceil(w/(speed*.8))+150;break
@@ -61,17 +79,20 @@ module.exports=function cast(boss,bird,skill) {
     case 'magma_bomb':
       for(const offset of [-.18,.18])bolt(boss.x,boss.y,angle+offset,speed*.7,{radius:14,split:true})
       duration+=60;break
-    case 'vent_burst':
-      for(const x of [w*.22,w*.62])for(const d of [-.2,.2])bolt(x,g-8,-Math.PI/2+d,speed,{radius:8,warn:warn+(x>w/2?45:0)})
-      duration=Math.ceil(g/speed)+70;break
+    case 'vent_burst': {
+      const center=clamp(aim,235,g-105)
+      for(let i=0;i<3;i++)emit({kind:'column',x:bird.x,y:center+(i%2?-26:26),gap:144,
+        radius:22,warn:dangerWarn+i*90,life:32,piercing})
+      break
+    }
     case 'polarity':
       for(const y of [aim-65,aim+65])for(const offset of [-.1,.1])bolt(w-15,clamp(y,150,g-30),Math.PI+offset,speed)
       break
     case 'rail_switch':
-      for(let i=0;i<3;i++)emit({kind:'column',x:bird.x,y:clamp(aim+(i%2?-55:55),215,g-90),gap:140,radius:17,warn:warn+i*75,life:30})
+      for(let i=0;i<3;i++)emit({kind:'column',x:bird.x,y:clamp(aim,250,g-125)+(i%2?-40:40),gap:140,radius:17,warn:dangerWarn+i*90,life:30,piercing})
       duration=195;break
     case 'orbit_discharge':
-      for(let i=0;i<8;i++){const a=Math.PI*2*i/8;bolt(w*.65,(g+130)/2,a,speed*.8,{warn:warn+i*8,radius:7})}
+      for(let i=0;i<7;i++){const a=Math.PI-.72+i*.24;bolt(w*.82,(g+130)/2,a,speed*.85,{warn:warn+i*10,radius:7})}
       duration+=60;break
     case 'fan': {
       const count=3+Math.floor(tier/2)+(boss.phase===2?2:0)+Math.min(6,Math.max(0,Math.floor((power-2)*2)))
@@ -84,10 +105,10 @@ module.exports=function cast(boss,bird,skill) {
     case 'gate': {
       const gap=Math.max(100,c.gateGap-(power-1)*12-(boss.phase===2?8:0))
       const center=clamp(aim+(boss.attackIndex%2? -34:34),135+gap/2,g-22-gap/2)
-      emit({kind:'gate',x:w,y:center,gap,width:26,vx:-speed,vy:0,life:Math.ceil((w+60)/speed)})
+      emit({kind:'gate',x:w,y:center,gap,width:26,vx:-speed,vy:0,warn:dangerWarn,piercing,life:Math.ceil((w+60)/speed)})
       duration=Math.ceil((w+60)/speed);break
     }
-    case 'beam': emit({kind:'beam',y:aim,radius:18+tier,life:40});duration=50;break
+    case 'beam': emit({kind:'beam',y:aim,radius:18+tier,life:40,warn:dangerWarn,piercing});duration=50;break
     case 'pincer': {
       const center=clamp(aim,230,g-105)
       for(const sign of [-1,1]) emit({kind:'beam',y:center+sign*85,radius:20,life:52})
@@ -118,6 +139,7 @@ module.exports=function cast(boss,bird,skill) {
       boss.chargeY=aim;boss._windupStartY=boss.y;boss._setState('windup')
       return warn
   }
-  boss.attackDuration=duration
+  // 连协只在当前招式危险物完全退场后接续，增加密度不制造未预告交叉封路。
+  boss.attackDuration=Math.max(duration,lastEnd-warn+2)
   return warn
 }
