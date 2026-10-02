@@ -1,3 +1,4 @@
+const FX=require('../art/Effects')
 /**
  * HailEffect.js - 冰雹环境效果 [v1.2.0新增]
  *
@@ -211,23 +212,7 @@ class HailEffect extends WeatherEffect {
   }
 
   render(ctx, screenW, screenH) {
-    // 渲染冰雹
-    for (const h of this.hailstones) {
-      h.render(ctx)
-    }
-
-    // 渲染碎裂特效
-    for (const c of this.crackEffects) {
-      for (const frag of c.fragments) {
-        const alpha = frag.life / frag.maxLife
-        ctx.globalAlpha = alpha
-        ctx.fillStyle = frag.color
-        ctx.beginPath()
-        ctx.arc(frag.x, frag.y, 2, 0, Math.PI * 2)
-        ctx.fill()
-        ctx.globalAlpha = 1
-      }
-    }
+    FX.hail(ctx, this, screenW, screenH)
   }
 
   onExpire(gameCtx) {

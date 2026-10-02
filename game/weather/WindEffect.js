@@ -1,3 +1,4 @@
+const FX=require('../art/Effects')
 /**
  * WindEffect.js - 风环境效果 [v1.2.0新增]
  *
@@ -105,77 +106,7 @@ class WindEffect extends WeatherEffect {
   }
 
   render(ctx, screenW, screenH, gameCtx) {
-    const intensity = this.sinIntensity
-    if (intensity < 0.05) return
-
-    // 风向粒子线条
-    for (const p of this.particles) {
-      const alpha = (p.life / p.maxLife) * 0.4 * intensity
-      ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`
-      ctx.lineWidth = 1.5
-      ctx.beginPath()
-      if (this.isVertical) {
-        ctx.moveTo(p.x, p.y)
-        ctx.lineTo(p.x, p.y - this.direction * p.length)
-      } else {
-        ctx.moveTo(p.x, p.y)
-        ctx.lineTo(p.x - this.direction * p.length, p.y)
-      }
-      ctx.stroke()
-    }
-
-    // 小鸟周围风向箭头
-    if (gameCtx && gameCtx.bird && intensity > 0.1 && Math.abs(this.currentForce)>.001) {
-      const bx = gameCtx.bird.x
-      const by = gameCtx.bird.y
-      const arrowDist = 35 + intensity * 10
-      const arrowLen = 12 + intensity * 8
-
-      // 箭头跟随实际风向；驯化或免疫时不画受力箭头。
-      const arrowDir = Math.sign(this.currentForce) || this.direction
-
-      ctx.save()
-      ctx.translate(bx, by)
-
-      // 箭头方向
-      let dx, dy
-      if (this.isVertical) {
-        dx = 0
-        dy = arrowDir * arrowDist
-      } else {
-        dx = arrowDir * arrowDist
-        dy = 0
-      }
-
-      // 绘制箭头
-      ctx.strokeStyle = `rgba(255, 255, 255, ${0.6 * intensity})`
-      ctx.fillStyle = `rgba(255, 255, 255, ${0.4 * intensity})`
-      ctx.lineWidth = 2
-
-      // 箭杆
-      ctx.beginPath()
-      ctx.moveTo(dx * 0.4, dy * 0.4)
-      ctx.lineTo(dx, dy)
-      ctx.stroke()
-
-      // 箭头三角
-      const angle = Math.atan2(dy, dx)
-      ctx.beginPath()
-      ctx.moveTo(dx, dy)
-      ctx.lineTo(
-        dx - Math.cos(angle - 0.4) * arrowLen,
-        dy - Math.sin(angle - 0.4) * arrowLen
-      )
-      ctx.lineTo(
-        dx - Math.cos(angle + 0.4) * arrowLen,
-        dy - Math.sin(angle + 0.4) * arrowLen
-      )
-      ctx.closePath()
-      ctx.fill()
-      ctx.stroke()
-
-      ctx.restore()
-    }
+    FX.wind(ctx, this, screenW, screenH, gameCtx)
   }
 
   onExpire(gameCtx) {

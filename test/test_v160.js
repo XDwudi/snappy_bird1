@@ -148,10 +148,10 @@ test('Canvas 各主要状态渲染可执行，HUD 显示血量与生存目标',(
   },set(o,k,v){o[k]=v;return true}})
   const g=new Game({},ctx,375,667,null);g.render();g.start();g.render()
   g._spawnBoss();g.boss._setState('roam');g.chapterSystem.startBossFight();g.render()
-  assert.ok(texts.some(t=>t.includes('再坚持 '+Config.BOSS.VARIANTS[0].survivalFrames/60+' 秒')))
+  assert.ok(texts.some(t=>t.includes('坚持 '+Config.BOSS.VARIANTS[0].survivalFrames/60+'秒')))
   assert.ok(texts.some(t=>t.includes(Config.BOSS.VARIANTS[0].name)))
   assert.ok(!texts.some(t=>t.includes(`${Config.CHAPTERS.LIST[0].mods.bossHp}/${Config.CHAPTERS.LIST[0].mods.bossHp}`))) // 1.8.1图形血条
   g._onBossVictory('survival');g.render();rewards(g);g.render()
-  g.state='gameover';g.render();assert.ok(texts.some(t=>t.includes('Ch1 生存')))
+  g.state='gameover';g.render();assert.ok(texts.some(t=>t.includes('首领通关 1 · 击败 0 · 生存 1')))
 })
 console.log(`${passed} 项机制回归通过`)

@@ -2,7 +2,7 @@
 
 Flappy Bird单指飞行 + roguelike成长的微信小游戏，CommonJS / Canvas 2D，无npm运行依赖。
 
-当前为 **1.8.2 测试候选**（2026-10-02 平衡修订）：继续强化Boss，降低后期经验滚雪球，修复技能叠加导致的飞行失控，并重做天气卡冲突；保留73张卡与六派系。手机验收尚未完成，微信上传由用户手动进行。
+当前为 **1.8.3 美术改造测试候选**（2026-10-02）：采用已确认的首版像素冒险风格，更新六章场景、角色与Boss、全部能力图标、界面和特效；保留1.8.2成长与操控修订的玩法数值。手机验收尚未完成，微信上传由用户手动进行。
 
 ## 运行
 
@@ -30,14 +30,19 @@ node test/test_v180.js
 node test/test_v181.js
 node test/test_v182.js
 node test/test_v182_balance.js
+node test/test_v183.js
 node test/probe_v182_balance.js
 node test/sim_v182_balance.js boss 4
 node test/sim_v182_balance.js endless 8
 ```
 
-103项机制回归；实际Canvas攻击、教学与短屏低血画面检查通过。用户反馈已证明旧模拟不足以代表真人无尽时长；新版模拟仅作压力测试，具体结果与限制见迭代记录。
+115项回归（原有103项机制回归＋12项美术/交互专项）；实际Canvas六章、攻击、教学、73张图标、短屏选卡与安全区检查通过。用户反馈已证明旧模拟不足以代表真人无尽时长；新版模拟仅作压力测试，具体结果与限制见迭代记录。
 
 ## 交接
+
+- [1.8.3美术改造与验证](docs/iterations/迭代_v1.8.3_像素冒险美术改造.md)
+- [六章实际画面](docs/audits/v183/six-chapters.png) · [飞行画面](docs/audits/v183/flight.png) · [短屏选卡](docs/audits/v183/cards-6-top.png)
+- [素材目录、提示词与维护说明](docs/art/v1.8.3_素材说明.md)
 
 - [1.8.2现行成长与操控修订](docs/iterations/迭代_v1.8.2_成长与操控平衡修订.md)
 - [修订后技能卡](docs/audits/v182-balance/cards-short-screen.png)

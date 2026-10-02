@@ -1,3 +1,4 @@
+const FX=require('../art/Effects')
 /**
  * RainEffect.js - 雨环境效果 [v1.2.0新增]
  *
@@ -139,54 +140,7 @@ class RainEffect extends WeatherEffect {
   }
 
   render(ctx, screenW, screenH, gameCtx) {
-    // 雨滴下落
-    ctx.strokeStyle = 'rgba(150, 180, 220, 0.4)'
-    ctx.lineWidth = 1
-    for (const d of this.drops) {
-      ctx.beginPath()
-      ctx.moveTo(d.x, d.y)
-      ctx.lineTo(d.x - 1, d.y - d.length)
-      ctx.stroke()
-    }
-
-    // 小鸟身上蓝色积水
-    if (gameCtx && gameCtx.bird && this.rainLevel > 0) {
-      const bird = gameCtx.bird
-      const wetness = this.rainLevel / 100
-      ctx.save()
-      ctx.translate(bird.x, bird.y)
-      ctx.rotate(bird.rotation)
-      ctx.scale(bird.collisionScale, bird.collisionScale)
-
-      const r = bird.width / 2
-      // 蓝色积水覆盖
-      ctx.fillStyle = `rgba(80, 140, 200, ${wetness * 0.3})`
-      ctx.beginPath()
-      ctx.arc(0, 0, r, 0, Math.PI * 2)
-      ctx.fill()
-
-      // 积水滴（随rainLevel增多）
-      const dropCount = Math.floor(wetness * 5)
-      for (let i = 0; i < dropCount; i++) {
-        const angle = (Math.PI * 2 * i) / 5 + bird.wingFrame * 0.1
-        const dr = r * 0.7
-        ctx.fillStyle = `rgba(100, 160, 220, ${wetness * 0.5})`
-        ctx.beginPath()
-        ctx.arc(Math.cos(angle) * dr, Math.sin(angle) * dr, 2, 0, Math.PI * 2)
-        ctx.fill()
-      }
-
-      ctx.restore()
-
-      // 甩水粒子
-      for (const s of this.splashParticles) {
-        const alpha = s.life / s.maxLife
-        ctx.fillStyle = `rgba(120, 180, 230, ${alpha * 0.7})`
-        ctx.beginPath()
-        ctx.arc(bird.x + s.x, bird.y + s.y, 2, 0, Math.PI * 2)
-        ctx.fill()
-      }
-    }
+    FX.rain(ctx, this, screenW, screenH, gameCtx)
   }
 
   onExpire(gameCtx) {

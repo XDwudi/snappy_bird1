@@ -383,6 +383,7 @@ class ChapterSystem {
 
   _lerpPipeSet(from, to, t) {
     return {
+      theme: to.theme,
       body: this._lerpColor(from.body, to.body, t),
       highlight: this._lerpColor(from.highlight, to.highlight, t),
       shadow: this._lerpColor(from.shadow, to.shadow, t)

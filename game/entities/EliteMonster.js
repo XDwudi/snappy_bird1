@@ -1,3 +1,4 @@
+const Art=require('../art/Entities')
 const Monster=require('./Monster.js')
 const Hazard=require('./BossHazard.js')
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v))
@@ -54,33 +55,7 @@ class EliteMonster extends Monster {
   isOffscreen(){return this.retreating&&this.x>this.screenW+60}
   _doCheckCollision(bird){return this.age>90&&!this.retreating&&super._doCheckCollision(bird)}
   _doRender(ctx) {
-    const cx=this.x+this.width/2,y=this.y
-    ctx.save();ctx.translate(cx,y);ctx.strokeStyle='#ffe09a';ctx.lineWidth=2
-    if(this.eliteKind==='gunship') {
-      ctx.fillStyle=this.hitFlash?'#fff6c0':'#a76948'
-      ctx.beginPath();ctx.moveTo(-26,0);ctx.lineTo(-10,-18);ctx.lineTo(20,-12);ctx.lineTo(25,12);ctx.lineTo(-10,18);ctx.closePath();ctx.fill();ctx.stroke()
-      ctx.fillStyle='#ffc86d';ctx.fillRect(-33,-4,18,8)
-      for(const s of [-1,1]){ctx.fillStyle='#5c8294';ctx.fillRect(-8,s*25-3,30,6);ctx.strokeRect(-8,s*25-3,30,6);ctx.fillStyle='#caf4ff';ctx.fillRect(-5+Math.sin(this.phase*4)*8,s*25-2,16,4)}
-    } else if(this.eliteKind==='prism') {
-      ctx.fillStyle=this.hitFlash?'#fff':'#247a99';ctx.strokeStyle='#b9faff'
-      ctx.beginPath();ctx.moveTo(-30,0);ctx.lineTo(0,-26);ctx.lineTo(29,0);ctx.lineTo(0,26);ctx.closePath();ctx.fill();ctx.stroke()
-      for(const d of [-1,1]){ctx.beginPath();ctx.arc(0,d*32,6+Math.sin(this.phase)*2,0,Math.PI*2);ctx.stroke()}
-      ctx.fillStyle='#e4fdff';ctx.fillRect(-7,-7,14,14)
-    } else if(this.eliteKind==='bomber') {
-      ctx.fillStyle=this.hitFlash?'#fff':'#92a959';ctx.strokeStyle='#ebff9d'
-      ctx.beginPath();ctx.ellipse(0,-6,26,18,0,Math.PI,Math.PI*2);ctx.lineTo(26,8);ctx.lineTo(-26,8);ctx.closePath();ctx.fill();ctx.stroke()
-      for(let i=-2;i<=2;i++){ctx.beginPath();ctx.moveTo(i*9,8);ctx.quadraticCurveTo(i*9+Math.sin(this.phase+i)*10,23,i*10,33);ctx.stroke()}
-      ctx.fillStyle='#fdffad';ctx.beginPath();ctx.arc(0,-4,6,0,Math.PI*2);ctx.fill()
-    } else {
-      ctx.fillStyle=this.hitFlash?'#fff':'#6663a7'
-      ctx.beginPath();ctx.moveTo(0,-27);ctx.lineTo(23,-3);ctx.lineTo(13,20);ctx.lineTo(-16,20);ctx.lineTo(-25,-4);ctx.closePath();ctx.fill();ctx.stroke()
-      ctx.strokeStyle='#b6edff';ctx.beginPath();ctx.ellipse(0,0,34,12,this.phase*.5,0,Math.PI*2);ctx.stroke()
-      ctx.fillStyle='#e0f7ff';ctx.beginPath();ctx.moveTo(3,-14);ctx.lineTo(-8,3);ctx.lineTo(1,3);ctx.lineTo(-3,16);ctx.lineTo(12,-4);ctx.lineTo(3,-4);ctx.closePath();ctx.fill()
-    }
-    ctx.restore();ctx.save();ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff1ae'
-    ctx.fillText(this.retreating?'撤离':this.name,cx,y-42)
-    ctx.fillStyle='#49343e';ctx.fillRect(cx-25,y+33,50,5);ctx.fillStyle='#ffce69';ctx.fillRect(cx-25,y+33,50*this.hp/this.maxHp,5)
-    ctx.strokeStyle='#ffe5a6';ctx.beginPath();ctx.arc(cx,y,36,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.max(0,1-this.age/this.stayFrames));ctx.stroke();ctx.restore()
+    Art.elite(ctx, this)
   }
 }
 module.exports=EliteMonster

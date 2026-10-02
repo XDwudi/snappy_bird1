@@ -1,3 +1,4 @@
+const Art=require('../art/Entities')
 // 新武器独立计时/有界实体池，不改变拍翅物理或旧导弹伤害链。
 const Config = require('../config/GameConfig.js')
 class CombatSystem {
@@ -180,34 +181,7 @@ class CombatSystem {
       s.y + 4 >= target.topHeight && s.y - 4 <= target.bottomY
   }
   render(ctx) {
-    const b = this.game.bird
-    ctx.save()
-    for (const s of this.shots) {
-      ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.angle)
-      ctx.fillStyle = 'rgba(145,247,255,0.28)'; ctx.fillRect(-25, -3, 22, 6)
-      ctx.fillStyle = ({seed:'#b9ff8d',sand:'#ffce86',echo:'#cca1ff',frost:'#99eaff',revenge:'#ffa0ba'})[s.source] || '#ecffff'; ctx.strokeStyle = '#169bac'; ctx.lineWidth = 1.5
-      ctx.beginPath(); ctx.moveTo(10,0); ctx.lineTo(-8,-5); ctx.lineTo(-3,0); ctx.lineTo(-8,5); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore()
-    }
-    if (this.flash) {
-      ctx.strokeStyle = '#ecffff'; ctx.lineWidth = 2
-      ctx.beginPath(); ctx.arc(b.x + b.width / 2, b.y, 12 - this.flash, 0, Math.PI * 2); ctx.stroke()
-    }
-    const lv = this.level('orbit_guard')
-    if (lv) {
-      const ready = this.guardCD <= 0
-      ctx.strokeStyle = '#137d89'; ctx.lineWidth = 4
-      ctx.beginPath(); ctx.arc(b.x, b.y, Config.COMBAT.GUARD_RADIUS, 0, Math.PI * 2); ctx.stroke()
-      ctx.strokeStyle = ready ? '#baffff' : 'rgba(145,247,255,0.65)'
-      ctx.lineWidth = ready ? 2 : 1
-      const progress = ready ? 1 : 1 - this.guardCD / Config.COMBAT.GUARD_CD[lv - 1]
-      ctx.beginPath(); ctx.arc(b.x, b.y, Config.COMBAT.GUARD_RADIUS, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * progress); ctx.stroke()
-      if (ready) {
-        ctx.fillStyle = '#ecffff'
-        const angle = this.age * 0.06
-        ctx.beginPath(); ctx.arc(b.x + Math.cos(angle) * 34, b.y + Math.sin(angle) * 34, 4, 0, Math.PI * 2); ctx.fill()
-      }
-    }
-    ctx.restore()
+    Art.combat(ctx, this)
   }
 }
 module.exports = CombatSystem

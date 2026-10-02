@@ -1,3 +1,4 @@
+const Art=require('../art/Entities')
 // 六种可主动破解的战斗规则。机关不是小怪，不产出经验/回血/连锁刷取。
 const Hazard = require('./BossHazard.js')
 class BossMechanics {
@@ -107,36 +108,7 @@ class BossMechanics {
     }[this.boss.variant.theme]
   }
   render(ctx,birdX) {
-    const b=this.boss,t=b.variant.theme
-    if(['entering','dying','leaving'].includes(b.state))return
-    ctx.save()
-    for(const n of this.nodes)if(n.hp>0) {
-      const active=n.kind!=='relay'||n.index===this.activeNode
-      ctx.strokeStyle=active?'#fff4a3':'#64718a';ctx.fillStyle=n.kind==='cocoon'?'#8c5aaf':n.kind==='root'?'#487849':'#436982';ctx.lineWidth=active?3:1
-      ctx.beginPath()
-      if(n.kind==='root') {
-        ctx.moveTo(n.x+8,n.y-18);ctx.lineTo(n.x+21,n.y-18);ctx.lineTo(n.x+25,n.y+13)
-        ctx.lineTo(n.x+32,n.y+22);ctx.lineTo(n.x+17,n.y+15);ctx.lineTo(n.x+1,n.y+24);ctx.lineTo(n.x+7,n.y+8);ctx.closePath()
-      } else if(n.kind==='relay') {
-        ctx.moveTo(n.x+15,n.y-20);ctx.lineTo(n.x+32,n.y);ctx.lineTo(n.x+15,n.y+20);ctx.lineTo(n.x-2,n.y);ctx.closePath()
-      } else ctx.ellipse(n.x+15,n.y,15,19,Math.sin(this.age*.03)*.15,0,Math.PI*2)
-      ctx.fill();ctx.stroke()
-      if(n.kind==='cocoon') {ctx.strokeStyle='#cba5e8';ctx.lineWidth=1;for(const dy of [-8,0,8]){ctx.beginPath();ctx.moveTo(n.x+3,n.y+dy);ctx.lineTo(n.x+27,n.y+dy+4);ctx.stroke()}}
-      ctx.fillStyle='#d7f9ac';ctx.fillRect(n.x,n.y-27,30*n.hp/n.maxHp,3)
-      if(n.kind==='cocoon'){ctx.strokeStyle='#eb9aff';ctx.beginPath();ctx.arc(n.x+15,n.y,23,-Math.PI/2,-Math.PI/2+Math.PI*2*n.age/420);ctx.stroke()}
-      if(n.kind==='relay'){ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillStyle=active?'#fff':'#9aa';ctx.fillText(String(n.index+1),n.x+15,n.y+4)}
-    }
-    if(t==='desert'||t==='glacier'||t==='volcano') {
-      const y=t==='desert'?this.rockY:this.zoneY
-      if(!this.weak){
-        ctx.strokeStyle='#9dffd3';ctx.lineWidth=2;ctx.setLineDash([5,4]);ctx.strokeRect(birdX-28,y-34,56,68);ctx.setLineDash([])
-        ctx.beginPath();ctx.arc(birdX,y,25,-Math.PI/2,-Math.PI/2+Math.PI*2*(t==='desert'?1:this.zoneTime/45));ctx.stroke()
-        ctx.fillStyle='#d4ffe7';ctx.font='10px sans-serif';ctx.textAlign='center';ctx.fillText(t==='desert'?'诱撞':t==='glacier'?'蓄热':'开阀',birdX,y-40)
-      }
-      if(t==='desert'){ctx.fillStyle='#ab886b';ctx.fillRect(b.screenW*.52,y-25,18,50);ctx.strokeStyle='#ecd3a5';ctx.strokeRect(b.screenW*.52,y-25,18,50)}
-      else for(let i=0;i<3;i++){ctx.fillStyle=i<this.progress?'#ffdb72':'#456';ctx.fillRect(b.x+i*12,b.y+b.height/2+12,8,6)}
-    }
-    ctx.restore()
+    Art.mechanics(ctx, this, birdX)
   }
 }
 module.exports=BossMechanics

@@ -1,3 +1,4 @@
+const Art=require('../art/Entities')
 /**
  * Pipe.js - 管道障碍实体 [v1.1.0] 继承 Obstacle 基类
  *
@@ -41,15 +42,7 @@ class Pipe extends Obstacle {
    * 渲染管道（像素风格）
    */
   _doRender(ctx) {
-    const { PIPE, VISUAL } = Config
-
-    // 上管道
-    this._drawPipeBody(ctx, this.x, 0, this.width, this.topHeight)
-    this._drawPipeCap(ctx, this.x, this.topHeight - PIPE.CAP_HEIGHT, true)
-
-    // 下管道
-    this._drawPipeBody(ctx, this.x, this.bottomY, this.width, this.bottomHeight)
-    this._drawPipeCap(ctx, this.x, this.bottomY, false)
+    Art.pipe(ctx, this)
   }
 
   /**

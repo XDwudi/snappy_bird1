@@ -36,7 +36,7 @@ const chapters = themes.map((t,i) => ({
   visual:{theme:t[1],skyTop:t[4],skyBottom:t[5],clouds:i===0,
     sun:{color:'#ffd93b',radius:36},duneColor:'#d5a061',heatParticles:12,
     ground:{base:t[7],strip:t[6],tileA:t[7],tileB:t[4]},
-    pipe:{body:t[7],highlight:t[6],shadow:t[4]}}
+    pipe:{theme:t[1],body:t[7],highlight:t[6],shadow:t[4]}}
 }))
 const bosses = themes.map((t,i) => ({
   name:t[3], theme:t[1], tier:i, guide:guides[i], survivalFrames:(100+i*18)*60,

@@ -1,3 +1,4 @@
+const Art=require('../art/Entities')
 /**
  * Item.js - 道具实体 [v1.1.0新增, v1.1.4图标区分]
  *
@@ -31,44 +32,7 @@ class Item extends Collectible {
    * 渲染道具 [v1.1.4] 每种道具独特图标
    */
   render(ctx) {
-    const pulse = Math.sin(this.pulsePhase) * 0.15 + 1
-    const r = this.radius * pulse
-
-    // 外层光晕（道具颜色）
-    ctx.fillStyle = this._hexToRgba(this.color, 0.25)
-    ctx.beginPath()
-    ctx.arc(this.x, this.y, r * 2.2, 0, Math.PI * 2)
-    ctx.fill()
-
-    // 主体圆形
-    ctx.fillStyle = this.color
-    ctx.beginPath()
-    ctx.arc(this.x, this.y, r, 0, Math.PI * 2)
-    ctx.fill()
-
-    // 描边
-    ctx.strokeStyle = '#000000'
-    ctx.lineWidth = 2
-    ctx.stroke()
-
-    // [v1.1.4] 按类型绘制独特图标
-    switch (this.type) {
-      case 'health_pack':
-        this._drawHealthIcon(ctx, r)
-        break
-      case 'exp_pack':
-        this._drawExpIcon(ctx, r)
-        break
-      case 'shield_pack':
-        this._drawShieldIcon(ctx, r)
-        break
-      case 'speed_pack':
-        this._drawSpeedIcon(ctx, r)
-        break
-      case 'missile':
-        this._drawMissileIcon(ctx, r)
-        break
-    }
+    Art.item(ctx, this)
   }
 
   /**

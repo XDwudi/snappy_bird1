@@ -1,3 +1,4 @@
+const Art=require('../art/Entities')
 // 有寿命的环境攻击；预警无碰撞，冻结时寿命也暂停，实体上限由 Game 控制。
 const MathUtil = require('../core/MathUtil.js')
 class BossHazard {
@@ -51,53 +52,7 @@ class BossHazard {
     return this.age>=this.warn && this.kind!=='beam' && this.kind!=='column' && (this.x< -40||this.y< -50||this.y>h+40)
   }
   render(ctx) {
-    // 延迟波次临近生效才显示自己的预警，避免多个未来安全框同时误导。
-    if(this.telegraphFrames!=null && this.age<this.warn-this.telegraphFrames)return
-    const warning=this.age<this.warn
-    ctx.save();ctx.strokeStyle=warning?'#ffb65c':this.color;ctx.fillStyle=this.color
-    ctx.lineWidth=warning?2:3
-    if(this.piercing) {
-      ctx.strokeStyle='#ff66df';ctx.fillStyle='#ff66df'
-      ctx.save();ctx.font='bold 12px sans-serif';ctx.textAlign='right';ctx.fillStyle='#ffb9ed'
-      ctx.strokeStyle='#38122e';ctx.lineWidth=3
-      const label='◆ 穿盾 · 上下躲避'
-      const y=Math.max(205,Math.min(this.groundY-18,this.y-30))
-      ctx.strokeText(label,this.screenW-12,y);ctx.fillText(label,this.screenW-12,y);ctx.restore()
-    }
-    if(this.kind==='gate') {
-      if(warning) {
-        ctx.fillStyle='rgba(255,95,70,0.12)'
-        ctx.fillRect(0,130,this.screenW,Math.max(0,this.topHeight-130))
-        ctx.fillRect(0,this.bottomY,this.screenW,this.groundY-this.bottomY)
-        ctx.strokeStyle='#bdffd4';ctx.setLineDash([8,5])
-        ctx.strokeRect(2,this.topHeight,this.screenW-4,this.gap)
-      } else {
-        ctx.fillRect(this.x,0,this.width,this.topHeight)
-        ctx.fillRect(this.x,this.bottomY,this.width,this.groundY-this.bottomY)
-        ctx.strokeStyle='#cffff0';ctx.strokeRect(this.x,this.topHeight-4,this.width,4)
-        ctx.strokeRect(this.x,this.bottomY,this.width,4)
-      }
-    } else if(this.kind==='column') {
-      ctx.globalAlpha=warning ? .13 : .45;ctx.fillRect(this.x-this.radius,130,this.radius*2,Math.max(0,this.topHeight-130));ctx.fillRect(this.x-this.radius,this.bottomY,this.radius*2,this.groundY-this.bottomY)
-      ctx.globalAlpha=1;if(warning)ctx.setLineDash([9,7])
-      ctx.beginPath();ctx.moveTo(this.x,130);ctx.lineTo(this.x,this.topHeight);ctx.moveTo(this.x,this.bottomY);ctx.lineTo(this.x,this.groundY);ctx.stroke()
-      ctx.strokeStyle='#bdffd4';ctx.strokeRect(this.x-28,this.topHeight,56,this.gap)
-    } else if(this.kind==='beam') {
-      ctx.globalAlpha=warning?0.13:0.42;ctx.fillRect(0,this.y-this.radius,this.screenW,this.radius*2)
-      ctx.globalAlpha=1; if(warning)ctx.setLineDash([9,7])
-      ctx.beginPath();ctx.moveTo(0,this.y);ctx.lineTo(this.screenW,this.y);ctx.stroke()
-      if(!warning){ctx.strokeStyle='#fffbe0';ctx.lineWidth=3;ctx.stroke()}
-    } else if(warning) {
-      ctx.globalAlpha=0.55;ctx.setLineDash([6,7]);ctx.beginPath();ctx.moveTo(this.x,this.y)
-      ctx.lineTo(this.x+this.vx*100,this.y+this.vy*100);ctx.stroke()
-      ctx.setLineDash([]);ctx.beginPath();ctx.arc(this.x,this.y,this.grow?23:10,0,Math.PI*2);ctx.stroke()
-    } else {
-      ctx.globalAlpha=.3;ctx.beginPath();ctx.arc(this.x,this.y,this.radius+5,0,Math.PI*2);ctx.fill()
-      ctx.globalAlpha=1;ctx.beginPath();ctx.arc(this.x,this.y,this.radius,0,Math.PI*2);ctx.fill()
-      ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(this.x-1,this.y-1,2,0,Math.PI*2);ctx.fill()
-      ctx.beginPath();ctx.moveTo(this.x,this.y);ctx.lineTo(this.x-this.vx*5,this.y-this.vy*5);ctx.stroke()
-    }
-    ctx.restore()
+    Art.hazard(ctx, this)
   }
 }
 module.exports=BossHazard

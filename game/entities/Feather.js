@@ -1,3 +1,4 @@
+const Art=require('../art/Entities')
 /**
  * Feather.js - Boss 羽刃弹幕实体 [v1.5.0 步骤C]
  *
@@ -65,48 +66,7 @@ class Feather {
   }
 
   render(ctx) {
-    // 尾迹（渐隐小点）
-    for (let i = 0; i < this.trail.length; i++) {
-      const t = this.trail[i]
-      const alpha = (i / this.trail.length) * 0.35
-      ctx.fillStyle = 'rgba(255, 255, 255, ' + alpha.toFixed(3) + ')'
-      ctx.beginPath()
-      ctx.arc(t.x, t.y, this.radius * (0.3 + 0.5 * i / this.trail.length), 0, Math.PI * 2)
-      ctx.fill()
-    }
-
-    ctx.save()
-    ctx.translate(this.x, this.y)
-    ctx.rotate(this.angle + this._spin * 0.3)
-
-    // 外层光晕
-    ctx.fillStyle = this.color
-    ctx.globalAlpha = 0.25
-    ctx.beginPath()
-    ctx.arc(0, 0, this.radius * 1.5, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.globalAlpha = 1
-
-    // 羽刃/沙锥主体：指向飞行方向的梭形（前尖后羽）
-    ctx.fillStyle = this.color
-    ctx.beginPath()
-    ctx.moveTo(this.radius * 1.6, 0)
-    ctx.lineTo(-this.radius * 0.8, -this.radius * 0.7)
-    ctx.lineTo(-this.radius * 0.3, 0)
-    ctx.lineTo(-this.radius * 0.8, this.radius * 0.7)
-    ctx.closePath()
-    ctx.fill()
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.55)'
-    ctx.lineWidth = 1
-    ctx.stroke()
-
-    // 核心亮点
-    ctx.fillStyle = '#ffffff'
-    ctx.beginPath()
-    ctx.arc(this.radius * 0.3, 0, this.radius * 0.35, 0, Math.PI * 2)
-    ctx.fill()
-
-    ctx.restore()
+    Art.projectile(ctx, this, false)
   }
 }
 

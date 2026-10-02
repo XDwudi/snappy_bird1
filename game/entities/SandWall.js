@@ -19,19 +19,17 @@ class SandWall {
   }
   isOffscreen() { return this.x + this.width < -20 }
   render(ctx) {
-    ctx.save()
-    ctx.fillStyle = '#bd7734'
-    ctx.fillRect(this.x, 0, this.width, this.topHeight)
-    ctx.fillRect(this.x, this.bottomY, this.width, this.groundY - this.bottomY)
-    ctx.fillStyle = '#f9cb79'
-    for (let y = 0; y < this.groundY; y += 18) {
-      if (y + 8 > this.topHeight && y < this.bottomY) continue
-      const dx = 4 + (Math.sin(this.age * 0.22 + y) + 1) * 6
-      ctx.fillRect(this.x + dx, y, 8, 5)
+    const P = require('../art/Pixel'), A = require('../art/Assets')
+    ctx.save(); ctx.imageSmoothingEnabled = false
+    for (const [y, h] of [[0, this.topHeight], [this.bottomY, this.groundY-this.bottomY]]) {
+      ctx.save(); ctx.beginPath(); ctx.rect(this.x,y,this.width,h); ctx.clip()
+      P.box(ctx,this.x,y,this.width,h,'#b18153','#e8bc81')
+      if(A.images.materials)for(let dy=y;dy<y+h;dy+=100)ctx.drawImage(A.images.materials,640,110,256,402,this.x+2,dy,this.width-4,100)
+      for(let dy=y+10;dy<y+h;dy+=24){ctx.fillStyle=P.C.gold;ctx.fillRect(Math.round(this.x+5+(Math.sin(this.age*.22+dy)+1)*5),dy,3,3)}
+      ctx.restore()
     }
-    ctx.fillStyle = '#caffbd'
-    ctx.fillRect(this.x - 3, this.topHeight - 3, this.width + 6, 3)
-    ctx.fillRect(this.x - 3, this.bottomY, this.width + 6, 3)
+    P.path(ctx,[[this.x,this.topHeight],[this.x+this.width,this.topHeight]],P.C.green,2)
+    P.path(ctx,[[this.x,this.bottomY],[this.x+this.width,this.bottomY]],P.C.green,2)
     ctx.restore()
   }
 }

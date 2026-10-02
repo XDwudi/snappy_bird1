@@ -51,8 +51,18 @@ wx.onTouchStart(function (e) {
   const touch = e.touches[0]
   if (!touch) return
   // clientX/clientY 为 CSS 像素，与 ctx.scale 后的逻辑坐标一致
-  game.handleTouch(touch.clientX, touch.clientY)
+  game.handleTouchStart(touch.clientX, touch.clientY)
 })
+
+wx.onTouchMove(function (e) {
+  const touch = e.touches[0]
+  if (touch) game.handleTouchMove(touch.clientX, touch.clientY)
+})
+wx.onTouchEnd(function (e) {
+  const touch = e.changedTouches[0]
+  if (touch) game.handleTouchEnd(touch.clientX, touch.clientY)
+})
+wx.onTouchCancel(function () { game.handleTouchCancel() })
 
 // ===== 启动游戏循环 =====
 Logger.info('System', '游戏循环启动')

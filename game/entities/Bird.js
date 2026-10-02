@@ -1,3 +1,4 @@
+const Art=require('../art/Entities')
 /**
  * Bird.js - 小鸟实体
  * 
@@ -121,91 +122,7 @@ class Bird {
    * @param {number} shieldLayers - [v1.1.5] 当前护盾层数（0=无护盾，N=N层圆圈）
    */
   render(ctx, shieldLayers) {
-    const { BIRD, VISUAL } = Config
-
-    // [v1.2.1] 无敌闪烁改为50%半透明渲染（原整帧消失，玩家易迷失位置）
-    const blinking = this.invincibleBlink > 0 && Math.floor(this.invincibleBlink / 4) % 2 === 0
-    ctx.save()
-    if (blinking) ctx.globalAlpha = 0.5
-    ctx.translate(this.x, this.y)
-    ctx.rotate(this.rotation)
-    // [v1.1.1] 灵巧能力：视觉体积随碰撞箱同步缩小
-    ctx.scale(this.collisionScale, this.collisionScale)
-
-    const r = this.width / 2
-
-    // ---- 身体 ----
-    ctx.fillStyle = VISUAL.BIRD_BODY
-    ctx.beginPath()
-    ctx.arc(0, 0, r, 0, Math.PI * 2)
-    ctx.fill()
-
-    ctx.strokeStyle = VISUAL.BIRD_OUTLINE
-    ctx.lineWidth = 2
-    ctx.stroke()
-
-    // ---- 翅膀 ----
-    const wingOffsets = [-5, 0, 5]
-    const wingY = wingOffsets[this.wingFrame]
-    ctx.fillStyle = VISUAL.BIRD_WING
-    ctx.beginPath()
-    ctx.ellipse(-5, wingY, 10, 7, 0, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.strokeStyle = VISUAL.BIRD_OUTLINE
-    ctx.lineWidth = 1.5
-    ctx.stroke()
-
-    // ---- 眼睛 ----
-    ctx.fillStyle = VISUAL.BIRD_EYE
-    ctx.beginPath()
-    ctx.arc(8, -6, 5, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.strokeStyle = VISUAL.BIRD_OUTLINE
-    ctx.lineWidth = 1.5
-    ctx.stroke()
-
-    // 瞳孔
-    ctx.fillStyle = VISUAL.BIRD_PUPIL
-    ctx.beginPath()
-    ctx.arc(10, -6, 2, 0, Math.PI * 2)
-    ctx.fill()
-
-    // ---- 喙 ----
-    ctx.fillStyle = VISUAL.BIRD_BEAK
-    ctx.beginPath()
-    ctx.moveTo(12, 0)
-    ctx.lineTo(22, -2)
-    ctx.lineTo(12, 4)
-    ctx.closePath()
-    ctx.fill()
-    ctx.strokeStyle = VISUAL.BIRD_OUTLINE
-    ctx.lineWidth = 1.5
-    ctx.stroke()
-
-    ctx.restore()
-
-    // [v1.1.5] 统一护盾：N层护盾显示N个同心圆圈
-    if (shieldLayers > 0) {
-      ctx.save()
-      ctx.translate(this.x, this.y)
-      for (let i = 0; i < shieldLayers; i++) {
-        // 每层圆圈半径递增，脉冲错相
-        const baseR = (this.width / 2) * this.collisionScale + 6 + i * 5
-        const shieldR = baseR + Math.sin(Date.now() * 0.005 + i * 0.8) * 2
-        const fillAlpha = Math.max(0.08, 0.35 - i * 0.06)
-        const strokeAlpha = Math.max(0.3, 0.8 - i * 0.12)
-
-        ctx.fillStyle = `rgba(100, 200, 255, ${fillAlpha})`
-        ctx.beginPath()
-        ctx.arc(0, 0, shieldR, 0, Math.PI * 2)
-        ctx.fill()
-
-        ctx.strokeStyle = `rgba(100, 200, 255, ${strokeAlpha})`
-        ctx.lineWidth = 2
-        ctx.stroke()
-      }
-      ctx.restore()
-    }
+    Art.bird(ctx, this, shieldLayers)
   }
 }
 

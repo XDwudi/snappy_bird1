@@ -1,3 +1,4 @@
+const Art=require('../art/Entities')
 /**
  * Missile.js - 导弹实体 [v1.3.0新增]
  *
@@ -110,64 +111,7 @@ class Missile {
    * 渲染：拖尾 + 弹头
    */
   render(ctx) {
-    const M = Config.MISSILE
-
-    // 拖尾（渐隐圆点，尾部小头部大）
-    for (let i = 0; i < this.trail.length; i++) {
-      const p = this.trail[i]
-      const ratio = (i + 1) / this.trail.length
-      ctx.fillStyle = 'rgba(255, 160, 60, ' + (ratio * 0.4).toFixed(3) + ')'
-      ctx.beginPath()
-      ctx.arc(p.x, p.y, 1.5 + ratio * 2, 0, Math.PI * 2)
-      ctx.fill()
-    }
-
-    ctx.save()
-    ctx.translate(this.x, this.y)
-    ctx.rotate(this.angle)
-
-    // 尾焰（随相位闪烁）
-    const flame = 4 + Math.sin(this._flamePhase) * 1.5
-    ctx.fillStyle = '#f39c12'
-    ctx.beginPath()
-    ctx.moveTo(-M.WIDTH / 2, -2.5)
-    ctx.lineTo(-M.WIDTH / 2 - flame - 3, 0)
-    ctx.lineTo(-M.WIDTH / 2, 2.5)
-    ctx.closePath()
-    ctx.fill()
-
-    // 弹身
-    ctx.fillStyle = '#ecf0f1'
-    ctx.fillRect(-M.WIDTH / 2, -M.HEIGHT / 2, M.WIDTH, M.HEIGHT)
-    ctx.strokeStyle = '#000000'
-    ctx.lineWidth = 1.5
-    ctx.strokeRect(-M.WIDTH / 2, -M.HEIGHT / 2, M.WIDTH, M.HEIGHT)
-
-    // 弹头（红色三角）
-    ctx.fillStyle = '#e74c3c'
-    ctx.beginPath()
-    ctx.moveTo(M.WIDTH / 2, -M.HEIGHT / 2)
-    ctx.lineTo(M.WIDTH / 2 + 6, 0)
-    ctx.lineTo(M.WIDTH / 2, M.HEIGHT / 2)
-    ctx.closePath()
-    ctx.fill()
-
-    // 尾翼
-    ctx.fillStyle = '#c0392b'
-    ctx.beginPath()
-    ctx.moveTo(-M.WIDTH / 2, -M.HEIGHT / 2)
-    ctx.lineTo(-M.WIDTH / 2 - 4, -M.HEIGHT / 2 - 4)
-    ctx.lineTo(-M.WIDTH / 2 + 3, -M.HEIGHT / 2)
-    ctx.closePath()
-    ctx.fill()
-    ctx.beginPath()
-    ctx.moveTo(-M.WIDTH / 2, M.HEIGHT / 2)
-    ctx.lineTo(-M.WIDTH / 2 - 4, M.HEIGHT / 2 + 4)
-    ctx.lineTo(-M.WIDTH / 2 + 3, M.HEIGHT / 2)
-    ctx.closePath()
-    ctx.fill()
-
-    ctx.restore()
+    Art.missile(ctx, this)
   }
 }
 

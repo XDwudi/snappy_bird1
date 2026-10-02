@@ -1,3 +1,4 @@
+const Art=require('../art/Entities')
 /**
  * Hailstone.js - 冰雹实体 [v1.2.0新增]
  *
@@ -53,44 +54,7 @@ class Hailstone {
   }
 
   render(ctx) {
-    // 尾迹
-    for (let i = 0; i < this.trail.length; i++) {
-      const t = this.trail[i]
-      const alpha = (i / this.trail.length) * 0.3
-      ctx.fillStyle = `rgba(200, 220, 255, ${alpha})`
-      ctx.beginPath()
-      ctx.arc(t.x, t.y, this.radius * (i / this.trail.length), 0, Math.PI * 2)
-      ctx.fill()
-    }
-
-    // 冰球主体
-    ctx.save()
-    ctx.translate(this.x, this.y)
-    ctx.rotate(this.rotation)
-
-    // 外层光晕
-    ctx.fillStyle = 'rgba(200, 220, 255, 0.3)'
-    ctx.beginPath()
-    ctx.arc(0, 0, this.radius * 1.3, 0, Math.PI * 2)
-    ctx.fill()
-
-    // 冰球
-    ctx.fillStyle = '#e8f0ff'
-    ctx.beginPath()
-    ctx.arc(0, 0, this.radius, 0, Math.PI * 2)
-    ctx.fill()
-
-    ctx.strokeStyle = '#a0b8d0'
-    ctx.lineWidth = 1.5
-    ctx.stroke()
-
-    // 高光
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
-    ctx.beginPath()
-    ctx.arc(-this.radius * 0.3, -this.radius * 0.3, this.radius * 0.3, 0, Math.PI * 2)
-    ctx.fill()
-
-    ctx.restore()
+    Art.projectile(ctx, this, true)
   }
 }
 

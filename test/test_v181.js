@@ -9,7 +9,7 @@ const game=(w=375,h=667)=>{const g=new Game({},{},w,h,null);g.start();return g}
 const fight=(ch,h=667)=>{const g=game(375,h);g.chapterSystem.index=ch;g._spawnBoss();g.chapterSystem.startBossFight();g.boss.x=g.boss.homeX;g.boss._setState('roam');g.boss.update(g.bird);return g}
 const give=(g,id,lv)=>{for(let i=0;i<lv;i++)g.abilitySystem.selectAbility(id)}
 test('版本1.8.1；六Boss有18个不重复专属招式与六种机关',()=>{
- assert.equal(C.VERSION,'1.8.2') // 旧机制回归沿用当前版本
+ assert.equal(C.VERSION,'1.8.3') // 旧机制回归沿用当前版本
  const kinds=C.BOSS.VARIANTS.flatMap(b=>b.skills.map(s=>s.kind))
  assert.ok(kinds.filter(k=>kinds.filter(x=>x===k).length===1).length>=18)
  assert.equal(new Set(Array.from({length:6},(_,i)=>fight(i).boss.mechanics.label())).size,6)
@@ -88,10 +88,17 @@ test('无尽击杀不回满血，进入随机Boss不会送血盾',()=>{
  g._bossClearMode='kill';g._startBossRewards();assert.equal(g.abilitySystem.hp,2);assert.equal(g.abilitySystem.shieldLayers,0)
 })
 test('血量始终图形，临时生命为黄色，最大容量下两行不越界',()=>{
- const g=game(320,568),fills=[],texts=[];let curves=0
- let color='';g.ctx=new Proxy({},{get:(_,key)=>key==='fillText'?(v)=>texts.push(v):key==='fill'?()=>fills.push(color):key==='bezierCurveTo'?()=>curves++:()=>{},set:(_,key,value)=>{if(key==='fillStyle')color=value;return true}})
+ const g=game(320,568),fills=[],texts=[]
+ let color='';g.ctx=new Proxy({},{get:(_,key)=>key==='fillText'?(v)=>texts.push(v):key==='fillRect'?(x,y,w,h)=>fills.push({color,x,y,w,h}):()=>{},set:(_,key,value)=>{if(key==='fillStyle')color=value;return true}})
  const a=g.abilitySystem;a.maxHp=6;a.hp=4;a.tempHp=11;a.blessingTempHpCapBonus=9;g._drawHPHearts(14,14,18,4)
- assert.equal(texts.length,0);assert.equal(curves,34);assert.equal(fills.filter(x=>x==='#ffd54a').length,11)
+ assert.equal(texts.length,0)
+ // Pixel hearts replace Bezier curves. Assert every logical heart, its color and bounds.
+ const cells=fills.filter(v=>['#ed7265','#435363','#e8bd68'].includes(v.color))
+ const pixelsPerHeart=27
+ assert.equal(cells.filter(v=>v.color==='#ed7265').length,4*pixelsPerHeart)
+ assert.equal(cells.filter(v=>v.color==='#435363').length,2*pixelsPerHeart)
+ assert.equal(cells.filter(v=>v.color==='#e8bd68').length,11*pixelsPerHeart)
+ assert.ok(cells.every(v=>v.x>=14&&v.x+v.w<135&&v.y>=14&&v.y+v.h<44))
 })
 test('普通怪跟随管道出口高度，水平间隔保留绕行空间',()=>{
  const g=game();g.gameTime=4000;g.spawnSystem.spawnPipe();const p=g.pipes[0]

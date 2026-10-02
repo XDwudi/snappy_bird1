@@ -1,3 +1,4 @@
+const Art=require('../art/Entities')
 /**
  * Monster.js - 怪物障碍实体 [v1.3.0新增]
  *
@@ -130,52 +131,7 @@ class Monster extends Obstacle {
   }
 
   _doRender(ctx) {
-    ctx.save()
-    for (let i = 0; i < this.trail.length; i++) {
-      const t = this.trail[i]
-      ctx.fillStyle = this.monsterType === 'bat' ? 'rgba(121,80,174,0.14)' : 'rgba(84,221,145,0.16)'
-      ctx.beginPath(); ctx.arc(t.x, t.y, 2 + i, 0, Math.PI * 2); ctx.fill()
-    }
-    const cx = this.x + this.width / 2
-    const pulse = Math.sin(this.age * (this.monsterType === 'bat' ? 0.18 : 0.10)) * 0.055
-    ctx.translate(cx, this.y)
-    ctx.scale(1 + pulse, 1 - pulse)
-    ctx.translate(-cx + (this.hitFlash ? Math.sin(this.hitFlash * 2) * 2 : 0), -this.y)
-    if (this.monsterType === 'bat') {
-      this._renderBat(ctx)
-    } else {
-      this._renderFloater(ctx)
-    }
-    if (this.hitFlash) {
-      ctx.fillStyle = 'rgba(255,255,255,' + this.hitFlash / 10 + ')'
-      ctx.beginPath(); ctx.ellipse(cx, this.y, this.width * 0.36, this.height * 0.42, 0, 0, Math.PI * 2); ctx.fill()
-    }
-    ctx.restore()
-    // [v1.5.0] 精英怪：金色描边（§5.1 高价值目标视觉承诺，区别于普通怪黑描边）
-    if (this.elite) {
-      ctx.strokeStyle = Config.MONSTER.ELITE_BORDER_COLOR
-      ctx.lineWidth = 2.5
-      const crownY = this.y - this.height / 2 - 16
-      ctx.fillStyle = '#ffd700'
-      ctx.beginPath(); ctx.moveTo(cx - 10, crownY); ctx.lineTo(cx - 5, crownY + 4)
-      ctx.lineTo(cx, crownY - 4); ctx.lineTo(cx + 5, crownY + 4); ctx.lineTo(cx + 10, crownY)
-      ctx.lineTo(cx + 7, crownY + 8); ctx.lineTo(cx - 7, crownY + 8); ctx.closePath(); ctx.fill()
-    }
-    // HP 指示：多血怪物头顶显示血点（实心=剩余HP）
-    if (this.maxHp > 1) {
-      const cx = this.x + this.width / 2
-      if(this.maxHp>5) {
-        ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillRect(cx-18,this.y-this.height/2-10,36,4)
-        ctx.fillStyle='#e74c3c';ctx.fillRect(cx-18,this.y-this.height/2-10,36*this.hp/this.maxHp,4)
-      }
-      for (let i = 0; i < Math.min(5,this.maxHp); i++) {
-        if(this.maxHp>5)break
-        ctx.fillStyle = i < this.hp ? '#e74c3c' : 'rgba(0, 0, 0, 0.3)'
-        ctx.beginPath()
-        ctx.arc(cx + (i - (this.maxHp - 1) / 2) * 8, this.y - this.height / 2 - 8, 3, 0, Math.PI * 2)
-        ctx.fill()
-      }
-    }
+    Art.monster(ctx, this)
   }
 
   /**

@@ -1,3 +1,4 @@
+const Icons=require('../art/Icons')
 /**
  * Orb.js - 经验球实体 [v1.1.0] 继承 Collectible 基类
  *
@@ -21,32 +22,7 @@ class Orb extends Collectible {
    * 渲染经验球
    */
   render(ctx) {
-    const { ORB, VISUAL } = Config
-    const pulse = Math.sin(this.pulsePhase) * 0.2 + 1
-    const r = this.radius * pulse
-
-    // 外层光晕
-    ctx.fillStyle = VISUAL.ORB_OUTER
-    ctx.beginPath()
-    ctx.arc(this.x, this.y, r * 2.5, 0, Math.PI * 2)
-    ctx.fill()
-
-    // 主体
-    ctx.fillStyle = VISUAL.ORB_GLOW
-    ctx.beginPath()
-    ctx.arc(this.x, this.y, r, 0, Math.PI * 2)
-    ctx.fill()
-
-    // 描边
-    ctx.strokeStyle = '#000000'
-    ctx.lineWidth = 1.5
-    ctx.stroke()
-
-    // 内核高光
-    ctx.fillStyle = VISUAL.ORB_CORE
-    ctx.beginPath()
-    ctx.arc(this.x - r * 0.3, this.y - r * 0.3, r * 0.4, 0, Math.PI * 2)
-    ctx.fill()
+    Icons.draw(ctx, 'exp_pack', this.x, this.y, this.radius * 2.6)
   }
 }
 

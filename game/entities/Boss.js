@@ -1,3 +1,4 @@
+const Art=require('../art/Entities')
 // 六章主题招式与P2连协：观察预警 → 躲避 → 破绽反击。行为计时不消耗随机数。
 const BossMechanics = require('./BossMechanics.js')
 const castPattern = require('./BossPatterns.js')
@@ -222,84 +223,11 @@ class Boss extends Obstacle {
   // ==================== 渲染（纯 Canvas 几何体像素风，零素材） ====================
 
   _doRender(ctx) {
-    const cfg = this.variant
-    const c = cfg.colors
-    this.mechanics.render(ctx, this.screenW * Config.BIRD.X_RATIO)
-    const cx = this.x + this.width / 2
-    const cy = this.y
-    const flap = Math.sin(this.roamT * 0.12 + this.stateT * 0.08) * 10  // 翅膀扇动
-
-    // 冲锋蓄力预警（§4.8 预警规范：≥0.5s 前摇+独立视觉语言）
-    if (this.state === 'windup') this._renderChargeWarning(ctx)
-
-    // 环境招式由 BossHazard 绘制实际判定区域的预警。
-    for (let i = 0; i < this._trail.length; i++) {
-      const t = this._trail[i]
-      ctx.fillStyle = 'rgba(190,255,210,' + (0.04 + i * 0.03) + ')'
-      ctx.beginPath(); ctx.ellipse(t.x + this.width / 2, t.y, 40, 22, 0, 0, Math.PI * 2); ctx.fill()
-    }
-
-    if(this.pendingSummon) {
-      ctx.save();ctx.strokeStyle=this.variant.bulletColor;ctx.lineWidth=3
-      ctx.setLineDash([4,5]);ctx.beginPath();ctx.arc(this.screenW-18,this.pendingSummon.y,20+Math.sin(this.stateT*.2)*4,0,Math.PI*2);ctx.stroke();ctx.restore()
-    }
-
-    // P2 暴怒红晕（血条变红在 HUD；本体给红色气场）
-    if (this.phase === 2) {
-      const pulse = 0.5 + 0.5 * Math.sin(this.stateT * 0.3)
-      ctx.fillStyle = 'rgba(255, 60, 40, ' + (0.10 + 0.08 * pulse).toFixed(3) + ')'
-      ctx.beginPath()
-      ctx.arc(cx, cy, this.width * 0.75, 0, Math.PI * 2)
-      ctx.fill()
-    }
-
-    ctx.save()
-    ctx.translate(cx, cy)
-    if (this.state === 'windup' || this.state === 'telegraph') ctx.scale(0.94, 1.06)
-    else if (this.state === 'charging') ctx.scale(1.12, 0.9)
-    else if (this.state === 'recover') ctx.rotate(0.12 + Math.sin(this.stateT * 0.1) * 0.04)
-    if (this._hitFlash > 0) ctx.translate(Math.sin(this._hitFlash * 2) * 3, 0)
-    if (this.state === 'dying') {
-      // 死亡翻滚坠落渐隐
-      ctx.rotate(this.stateT * 0.15)
-      ctx.globalAlpha = Math.max(0, 1 - this.stateT / Config.BOSS.DEATH_SLOWMO_FRAMES)
-    }
-
-    drawBossArt(ctx, this)
-
-    ctx.restore()
-
-    // P2 入场爆闪：全屏闪电白闪（30 帧渐隐，粒子由 Game 侧补）
-    if (this.phase2Flash > 0) {
-      ctx.fillStyle = 'rgba(255, 255, 220, ' + (this.phase2Flash / Config.BOSS.PHASE2_FLASH_FRAMES * 0.10).toFixed(3) + ')'
-      ctx.fillRect(0, 0, this.screenW, this.screenH)
-    }
-
-    // Ch2 沙暴巨鹰：沙粒尾迹（§4.6 差异说明；位置由 stateT 推导，零随机源）
-    if (cfg.trailColor) {
-      for (let i = 0; i < 6; i++) {
-        const tx = this.x + this.width + 8 + i * 14
-        const ty = cy + Math.sin(this.stateT * 0.2 + i * 1.7) * 12 + (i % 2) * 8
-        const alpha = Math.max(0, 0.4 - i * 0.06)
-        ctx.fillStyle = 'rgba(' + cfg.trailColor + ', ' + alpha.toFixed(3) + ')'
-        ctx.beginPath()
-        ctx.arc(tx, ty, 3 - i * 0.3, 0, Math.PI * 2)
-        ctx.fill()
-      }
-    }
+    Art.boss(ctx, this)
   }
 
   _renderChargeWarning(ctx) {
-    const y = this.chargeY
-    ctx.save()
-    ctx.fillStyle = 'rgba(255,70,55,0.20)'
-    ctx.fillRect(0, y - this.height / 2, this.screenW, this.height)
-    ctx.strokeStyle = '#ff5b46'; ctx.lineWidth = 2
-    ctx.strokeRect(0, y - this.height / 2, this.screenW, this.height)
-    for (let x = 15; x < this.screenW; x += 35) {
-      ctx.beginPath(); ctx.moveTo(x + 7, y - 7); ctx.lineTo(x, y); ctx.lineTo(x + 7, y + 7); ctx.stroke()
-    }
-    ctx.restore()
+    Art.charge(ctx, this)
   }
 
 }

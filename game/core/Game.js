@@ -1,3 +1,5 @@
+const Art=require('../art/GameArt')
+const FX=require('../art/Effects')
 /**
  * Game.js - 游戏主类 [v1.2.0]
  *
@@ -44,9 +46,7 @@
  * 框架无关——只依赖 Canvas 2D API，不直接调用微信SDK。
  */
 
-const drawCampaignScenery = require('./CampaignScenery.js')
 const Config = require('../config/GameConfig.js')
-const drawCombatIcon = require('./CombatIcon.js')
 const Bird = require('../entities/Bird.js')
 // [v1.5.0] Pipe/Monster/Item 实体构造已随生成决策迁入 systems/SpawnSystem.js；
 // Monster 在 Boss 召唤物（§4.8 P2 召唤走 Monster 工厂）处仍需直接构造
@@ -94,6 +94,7 @@ class Game {
    * @param {Object} [safeArea] - 安全区 {top, bottom, left, right}
    */
   constructor(canvas, ctx, screenW, screenH, safeArea) {
+    Art.init()
     this.canvas = canvas
     this.ctx = ctx
     this.screenW = screenW
@@ -2440,73 +2441,7 @@ class Game {
   }
 
   _drawPhoenixAnim() {
-    const anim = this.phoenixAnim
-    if (!anim) return
-    const ctx = this.ctx
-    const cx = this.bird.x
-    const cy = this.bird.y
-
-    if (anim.phase === 'pause') {
-      // 暂停阶段：暗色遮罩 + 提示文字
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
-      ctx.fillRect(0, 0, this.screenW, this.screenH)
-
-      const progress = 1 - anim.timer / anim.maxTimer
-      ctx.font = 'bold 24px monospace'
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.fillStyle = `rgba(255, 102, 0, ${0.5 + progress * 0.5})`
-      ctx.strokeStyle = '#000000'
-      ctx.lineWidth = 3
-      ctx.strokeText('凤凰复活!', cx, cy - 40)
-      ctx.fillText('凤凰复活!', cx, cy - 40)
-
-      // 凤凰印记图标
-      ctx.font = '32px sans-serif'
-      ctx.fillText('🔥', cx, cy)
-    } else if (anim.phase === 'revive') {
-      // 复活动画：火凤凰翅膀 + 粒子
-      const progress = 1 - anim.timer / anim.maxTimer
-
-      // 火凤凰翅膀（展开→消失）
-      const wingSize = 40 * Math.sin(progress * Math.PI)
-      ctx.save()
-      ctx.translate(cx, cy)
-
-      // 左翅
-      ctx.fillStyle = `rgba(255, 100, 0, ${0.6 * (1 - progress)})`
-      ctx.beginPath()
-      ctx.ellipse(-wingSize * 0.5, 0, wingSize, wingSize * 0.4, -0.3, 0, Math.PI * 2)
-      ctx.fill()
-
-      // 右翅
-      ctx.beginPath()
-      ctx.ellipse(wingSize * 0.5, 0, wingSize, wingSize * 0.4, 0.3, 0, Math.PI * 2)
-      ctx.fill()
-
-      // 中心光晕
-      const glowR = 30 * (1 - progress * 0.5)
-      const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, glowR)
-      grad.addColorStop(0, `rgba(255, 200, 0, ${0.6 * (1 - progress * 0.5)})`)
-      grad.addColorStop(1, 'rgba(255, 100, 0, 0)')
-      ctx.fillStyle = grad
-      ctx.beginPath()
-      ctx.arc(0, 0, glowR, 0, Math.PI * 2)
-      ctx.fill()
-
-      ctx.restore()
-
-      // 粒子
-      for (const p of anim.particles) {
-        const alpha = p.life / p.maxLife
-        ctx.fillStyle = p.color
-        ctx.globalAlpha = alpha
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, p.size * alpha, 0, Math.PI * 2)
-        ctx.fill()
-        ctx.globalAlpha = 1
-      }
-    }
+    FX.phoenix(this)
   }
 
   // ==================== 游戏结束 ====================
@@ -2593,8 +2528,7 @@ class Game {
 
     // [v1.1.0] 受击红屏
     if (this.damageFlash > 0) {
-      ctx.fillStyle = `rgba(255, 0, 0, ${this.damageFlash / 20 * 0.3})`
-      ctx.fillRect(0, 0, this.screenW, this.screenH)
+      FX.damage(this)
     }
 
     this._drawDangerBorder()
@@ -2626,103 +2560,20 @@ class Game {
   }
 
   _drawDangerBorder() {
-    if(this.abilitySystem.hp!==1 || !['playing','upgrading'].includes(this.state))return
-    const ctx=this.ctx,w=this.screenW,h=this.screenH
-    // 缓慢呼吸而非高频闪烁，中心保持清晰；临时生命仍用黄色心形。
-    const alpha=.26+.10*Math.sin(this.frameCount*.045)
-    ctx.save()
-    for(let inset=0;inset<24;inset+=3) {
-      ctx.strokeStyle='rgba(245,32,45,'+(alpha*(1-inset/24)).toFixed(3)+')'
-      ctx.lineWidth=3;ctx.strokeRect(inset+1.5,inset+1.5,w-inset*2-3,h-inset*2-3)
-    }
-    ctx.strokeStyle='rgba(255,45,65,.85)';ctx.lineWidth=3;ctx.strokeRect(1.5,1.5,w-3,h-3)
-    ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff2ed'
-    ctx.strokeStyle='#9c1930';ctx.lineWidth=4
-    ctx.strokeText('生命危险',w/2,h-Config.GROUND.HEIGHT+28);ctx.fillText('生命危险',w/2,h-Config.GROUND.HEIGHT+28)
-    ctx.restore()
+    FX.danger(this)
   }
 
   _drawBackground() {
-    const ctx = this.ctx
-    // [v1.5.0] 天空渐变按章节参数（§4.2）；Ch1 色值原样录入 CHAPTERS，渲染零变化
-    const visual = this.chapterSystem.getVisual()
-    const gradient = ctx.createLinearGradient(0, 0, 0, this.screenH)
-    gradient.addColorStop(0, visual.skyTop)
-    gradient.addColorStop(1, visual.skyBottom)
-    ctx.fillStyle = gradient
-    ctx.fillRect(0, 0, this.screenW, this.screenH)
+    Art.background(this)
   }
 
   _drawClouds() {
-    // [v1.5.0] 章节背景元素开关：Ch2 沙漠无云（§4.2）；Ch1 clouds=true 零变化
-    if (!this.chapterSystem.getVisual().clouds) return
-    const ctx = this.ctx
-    ctx.fillStyle = Config.VISUAL.CLOUD_COLOR
-    for (const cloud of this.clouds) {
-      ctx.beginPath()
-      ctx.arc(cloud.x, cloud.y, cloud.size * 0.5, 0, Math.PI * 2)
-      ctx.arc(cloud.x + cloud.size * 0.4, cloud.y - cloud.size * 0.2, cloud.size * 0.4, 0, Math.PI * 2)
-      ctx.arc(cloud.x + cloud.size * 0.7, cloud.y, cloud.size * 0.45, 0, Math.PI * 2)
-      ctx.arc(cloud.x + cloud.size * 0.3, cloud.y + cloud.size * 0.15, cloud.size * 0.35, 0, Math.PI * 2)
-      ctx.fill()
-    }
+    // Clouds are painted into the six chapter background tiles.
   }
 
-  // [v1.5.0] 章节背景元素调度（§4.2 全部 Canvas 几何体 + 换色，零素材）
+  // [v1.5.0] 章节像素背景与轻量环境粒子
   _drawChapterScenery() {
-    const visual = this.chapterSystem.getVisual()
-    if (visual.theme === 'desert') {
-      this._drawDesertScenery(visual)
-    }
-    drawCampaignScenery(this.ctx,visual.theme,this.screenW,this.screenH,this.frameCount)
-  }
-
-  /**
-   * [v1.5.0] Ch2 沙漠背景元素（§4.2）：右上太阳+radial光晕、远景沙丘3条抛物线弧（0.5×视差）、
-   * 热浪粒子（上升透明条，12 粒预算）。位置全部由 frameCount 推导，不消耗随机数。
-   */
-  _drawDesertScenery(visual) {
-    const ctx = this.ctx
-    const groundY = this.screenH - Config.GROUND.HEIGHT
-
-    // 太阳（右上 40px 圆 + radial 光晕）
-    const sunX = this.screenW - 70
-    const sunY = 90
-    const r = visual.sun.radius
-    const glow = ctx.createRadialGradient(sunX, sunY, r * 0.5, sunX, sunY, r * 2.2)
-    glow.addColorStop(0, 'rgba(255, 217, 59, 0.45)')
-    glow.addColorStop(1, 'rgba(255, 217, 59, 0)')
-    ctx.fillStyle = glow
-    ctx.beginPath()
-    ctx.arc(sunX, sunY, r * 2.2, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.fillStyle = visual.sun.color
-    ctx.beginPath()
-    ctx.arc(sunX, sunY, r, 0, Math.PI * 2)
-    ctx.fill()
-
-    // 远景沙丘 3 条抛物线弧（0.5× 视差滚动，循环周期 = 屏宽 + 240px）
-    ctx.fillStyle = visual.duneColor
-    const cycle = this.screenW + 240
-    const scroll = (this.frameCount * 1.5) % cycle  // ≈0.5× 基准滚动速度
-    for (let i = 0; i < 3; i++) {
-      const peakY = groundY - 70 - i * 42
-      const cx = this.screenW + 120 - ((scroll + i * 220) % cycle)
-      ctx.beginPath()
-      ctx.moveTo(cx - 170, groundY)
-      ctx.quadraticCurveTo(cx, peakY, cx + 170, groundY)
-      ctx.fill()
-    }
-
-    // 热浪粒子（上升透明条；x/相位由粒号推导，y 随帧号上升，无随机源）
-    for (let i = 0; i < visual.heatParticles; i++) {
-      const px = (i * 97 + 31) % this.screenW
-      const span = groundY - 140
-      const py = groundY - 20 - ((this.frameCount * (0.6 + (i % 3) * 0.25) + i * 61) % span)
-      const alpha = 0.04 + 0.05 * (0.5 + 0.5 * Math.sin(this.frameCount * 0.05 + i))
-      ctx.fillStyle = 'rgba(255, 255, 255, ' + alpha.toFixed(3) + ')'
-      ctx.fillRect(px, py, 2, 14)
-    }
+    Art.scenery(this)
   }
 
   /**
@@ -2730,46 +2581,7 @@ class Game {
    * → 标题卡90帧（"第二章 · 沙漠" + 副标）。转场期间世界冻结（update 只推进转场计时）。
    */
   _drawChapterTransition() {
-    const tr = this.chapterSystem.getTransitionRenderState()
-    if (!tr) return
-    const ctx = this.ctx
-    const T = Config.CHAPTERS.TRANSITION
-
-    if (tr.phase === 'flash') {
-      // 全屏白闪（渐隐）
-      const alpha = 1 - (tr.frame / T.FLASH_FRAMES) * 0.85
-      ctx.fillStyle = 'rgba(255, 255, 255, ' + alpha.toFixed(3) + ')'
-      ctx.fillRect(0, 0, this.screenW, this.screenH)
-    } else if (tr.phase === 'wipe') {
-      // 横向色带擦除：新章天空渐变从左推入
-      const w = this.screenW * (tr.frame / T.WIPE_FRAMES)
-      const gradient = ctx.createLinearGradient(0, 0, 0, this.screenH)
-      gradient.addColorStop(0, tr.toVisual.skyTop)
-      gradient.addColorStop(1, tr.toVisual.skyBottom)
-      ctx.fillStyle = gradient
-      ctx.fillRect(0, 0, w, this.screenH)
-    } else if (tr.phase === 'title') {
-      // 章节标题卡：横向色带 + 章节名大字 + 副标（淡入淡出各 15 帧）
-      const cx = this.screenW / 2
-      const cy = this.screenH * 0.4
-      const fade = Math.min(1, tr.frame / 15, (T.TITLE_FRAMES - tr.frame) / 15)
-      ctx.globalAlpha = Math.max(0, fade)
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.45)'
-      ctx.fillRect(0, cy - 60, this.screenW, 120)
-      ctx.font = 'bold 30px monospace'
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.lineWidth = 4
-      ctx.strokeStyle = '#000000'
-      ctx.fillStyle = '#ffffff'
-      ctx.strokeText(tr.title, cx, cy - 10)
-      ctx.fillText(tr.title, cx, cy - 10)
-      ctx.font = 'bold 15px monospace'
-      ctx.fillStyle = '#ffd700'
-      ctx.strokeText(tr.subtitle, cx, cy + 28)
-      ctx.fillText(tr.subtitle, cx, cy + 28)
-      ctx.globalAlpha = 1.0
-    }
+    Art.transition(this)
   }
 
   /**
@@ -2777,46 +2589,7 @@ class Game {
    * → gather/enter 阶段保持半强度暗角聚焦战场；"雷云聚集……"文案由 ChapterSystem 浮动文字呈现。
    */
   _drawBossIntro() {
-    const st = this.chapterSystem.getBossIntroRenderState()
-    if (!st) return
-    const ctx = this.ctx
-    const B = Config.BOSS
-    let strength
-    if (st.phase === 'vignette') {
-      strength = st.frame / B.INTRO_VIGNETTE_FRAMES        // 0 → 1 收拢
-    } else {
-      strength = 0.75                                       // gather/enter 保持聚焦
-    }
-    const maxA = 0.55 * Math.min(1, strength)
-    // 四边暗角（上/下/左/右渐变压黑）
-    const edge = Math.round(this.screenH * 0.22)
-    const grads = [
-      ctx.createLinearGradient(0, 0, 0, edge),
-      ctx.createLinearGradient(0, this.screenH, 0, this.screenH - edge),
-      ctx.createLinearGradient(0, 0, edge, 0),
-      ctx.createLinearGradient(this.screenW, 0, this.screenW - edge, 0)
-    ]
-    for (let i = 0; i < 4; i++) {
-      grads[i].addColorStop(0, 'rgba(10, 8, 20, ' + maxA.toFixed(3) + ')')
-      grads[i].addColorStop(1, 'rgba(10, 8, 20, 0)')
-      ctx.fillStyle = grads[i]
-      if (i === 0) ctx.fillRect(0, 0, this.screenW, edge)
-      else if (i === 1) ctx.fillRect(0, this.screenH - edge, this.screenW, edge)
-      else if (i === 2) ctx.fillRect(0, 0, edge, this.screenH)
-      else ctx.fillRect(this.screenW - edge, 0, edge, this.screenH)
-    }
-    if(st.phase!=='vignette') {
-      const cfg=Config.BOSS.VARIANTS[this.chapterSystem.getBossIndex()]
-      const y=this.screenH*.48,w=this.screenW
-      ctx.save();ctx.fillStyle='rgba(12,20,34,.90)';ctx.fillRect(12,y-38,w-24,128)
-      ctx.textAlign='center';ctx.fillStyle='#ffe399';ctx.font='bold 15px sans-serif'
-      ctx.fillText(cfg.name+' · 破招指引',w/2,y-14,w-40)
-      ctx.font='12px sans-serif';ctx.fillStyle='#e8fff1'
-      cfg.guide.forEach((line,i)=>ctx.fillText(line,w/2,y+13+i*23,w-40))
-      ctx.fillStyle='#ff9ee6';ctx.font='11px sans-serif'
-      ctx.fillText((this.chapterSystem.endless || cfg.tier>=3) ? '紫色 ◆ 穿盾攻击：护盾无法抵挡，请上下躲避' : '橙色预警是危险区域，绿色框是目标或缺口',w/2,y+66,w-40)
-      ctx.restore()
-    }
+    Art.intro(this)
   }
 
   /**
@@ -2826,51 +2599,12 @@ class Game {
    * @param {number} cy - 中心 Y
    */
   _drawBossHPBar(cx, cy) {
-    const boss = this.boss
-    if (!boss || boss.maxHp <= 0) return
-    const ctx = this.ctx
-    const barW = this.screenW * Config.BOSS.HP_BAR_WIDTH_RATIO
-    const barH = Config.BOSS.HP_BAR_HEIGHT
-    const barX = cx - barW / 2
-    const barY = cy - barH / 2
-    const ratio = Math.max(0, boss.hp / boss.maxHp)
-
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.55)'
-    ctx.fillRect(barX - 2, barY - 2, barW + 4, barH + 4)
-    ctx.fillStyle = boss.phase === 2 ? '#e03030' : '#c04ae0'
-    if (ratio > 0) ctx.fillRect(barX, barY, barW * ratio, barH)
-    ctx.strokeStyle = '#ffd700'
-    ctx.lineWidth = 1.5
-    ctx.strokeRect(barX - 2, barY - 2, barW + 4, barH + 4)
-
-    ctx.font = 'bold 10px monospace'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.lineWidth = 3
-    ctx.strokeStyle = '#000000'
-    ctx.fillStyle = '#ffffff'
-    const label = boss.name + (boss.phase === 2 ? ' · 怒' : '')
-    ctx.strokeText(label, cx, barY + barH + 9)
-    ctx.fillText(label, cx, barY + barH + 9)
-    const seconds = Math.ceil(Math.max(0, this._getBossSurvivalFrames() - this.bossFightFrames) / 60)
-    const goal = this._bossClearMode ? (this._bossClearMode === 'kill' ? '击败通关' : '生存通关') : `击败 Boss 或再坚持 ${seconds} 秒`
-    ctx.strokeText(goal, cx, barY + barH + 24)
-    ctx.fillText(goal, cx, barY + barH + 24)
-    ctx.fillStyle = boss.piercingAttack ? '#ff9ee6' : boss.state === 'recover' ? '#fff5a6' : '#caffbd'
-    ctx.strokeText(boss.getActionLabel(), cx, barY + barH + 40, this.screenW-20)
-    ctx.fillText(boss.getActionLabel(), cx, barY + barH + 40, this.screenW-20)
-    ctx.fillStyle='#ffdf8f'
-    ctx.strokeText(boss.mechanics.label(),cx,barY+barH+55,this.screenW-20)
-    ctx.fillText(boss.mechanics.label(),cx,barY+barH+55,this.screenW-20)
+    Art.bossHP(this, cx, cy)
   }
 
   // [v1.1.0] 速度包边框特效
   _drawSpeedPackBorder() {
-    const ctx = this.ctx
-    const alpha = Math.min(this.abilitySystem.speedPackFrames / 60, 1) * 0.4
-    ctx.strokeStyle = `rgba(26, 188, 156, ${alpha})`
-    ctx.lineWidth = 6
-    ctx.strokeRect(3, 3, this.screenW - 6, this.screenH - 6)
+    FX.speed(this)
   }
 
   /**
@@ -2881,490 +2615,53 @@ class Game {
    * 纯信息卡、零数值。
    */
   _drawPipeSense() {
-    const lv = this.abilitySystem.owned.get('pipe_sense') || 0
-    if (lv <= 0) return
-
-    // 下一根管道 = 小鸟前方最近（最紧迫）的管道
-    const bird = this.bird
-    let next = null
-    for (const p of this.pipes) {
-      if (p.x + p.width > bird.x - bird.collisionWidth / 2) {
-        if (!next || p.x < next.x) next = p
-      }
-    }
-    if (!next) return
-
-    const ctx = this.ctx
-    const alpha = Config.PIPE.SENSE_ALPHA
-    const gapTop = next.topHeight
-    const gapH = next.gap
-
-    // Lv1/Lv2 共有：间隙金色轮廓
-    ctx.strokeStyle = `rgba(255, 215, 0, ${alpha})`
-    ctx.lineWidth = 2
-    ctx.strokeRect(next.x, gapTop, next.width, gapH)
-
-    // Lv2 追加：间隙中心 ±30px 渐亮安全区
-    if (lv >= 2) {
-      const half = Config.PIPE.SENSE_ZONE_HALF
-      const centerY = gapTop + gapH / 2
-      const grad = ctx.createLinearGradient(0, centerY - half, 0, centerY + half)
-      grad.addColorStop(0, 'rgba(255, 215, 0, 0)')
-      grad.addColorStop(0.5, `rgba(255, 215, 0, ${alpha})`)
-      grad.addColorStop(1, 'rgba(255, 215, 0, 0)')
-      ctx.fillStyle = grad
-      ctx.fillRect(next.x, centerY - half, next.width, half * 2)
-    }
+    FX.sense(this)
   }
 
   // [v1.1.4] 增强擦边特效：多环扩散 + 粒子爆发 + 中心闪光
   _drawNearMissEffects() {
-    const ctx = this.ctx
-
-    for (const e of this.nearMissEffects) {
-      // 中心闪光（最短暂，最亮）
-      if (e.flashLife > 0) {
-        const flashAlpha = (e.flashLife / e.flashMaxLife) * 0.5
-        ctx.fillStyle = `rgba(255, 255, 200, ${flashAlpha})`
-        ctx.beginPath()
-        ctx.arc(e.x, e.y, 20, 0, Math.PI * 2)
-        ctx.fill()
-
-        ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha * 0.8})`
-        ctx.beginPath()
-        ctx.arc(e.x, e.y, 10, 0, Math.PI * 2)
-        ctx.fill()
-      }
-
-      // 多环扩散
-      if (e.rings) {
-        for (const ring of e.rings) {
-          if (ring.life <= 0) continue
-          const progress = 1 - ring.life / ring.maxLife
-          const radius = ring.radius + (ring.maxRadius - ring.radius) * progress
-          const alpha = (1 - progress) * 0.8
-
-          // 外圈光环
-          ctx.strokeStyle = `rgba(255, 215, 0, ${alpha})`
-          ctx.lineWidth = ring.lineWidth
-          ctx.beginPath()
-          ctx.arc(e.x, e.y, radius, 0, Math.PI * 2)
-          ctx.stroke()
-
-          // 内圈光晕
-          ctx.fillStyle = `rgba(255, 215, 0, ${alpha * 0.12})`
-          ctx.beginPath()
-          ctx.arc(e.x, e.y, radius * 0.5, 0, Math.PI * 2)
-          ctx.fill()
-        }
-      }
-
-      // 粒子爆发
-      if (e.sparkles) {
-        for (const sp of e.sparkles) {
-          if (sp.life <= 0) continue
-          const spAlpha = sp.life / sp.maxLife
-          // 粒子尾迹
-          ctx.fillStyle = `rgba(255, 215, 0, ${spAlpha * 0.4})`
-          ctx.beginPath()
-          ctx.arc(sp.x - sp.vx * 0.5, sp.y - sp.vy * 0.5, 3, 0, Math.PI * 2)
-          ctx.fill()
-          // 粒子核心
-          ctx.fillStyle = `rgba(255, 255, 200, ${spAlpha})`
-          ctx.beginPath()
-          ctx.arc(sp.x, sp.y, 2.5, 0, Math.PI * 2)
-          ctx.fill()
-        }
-      }
-    }
+    FX.near(this)
   }
 
   // [v1.1.1] 能力光环特效
   _drawAbilityAuras() {
-    const ctx = this.ctx
-
-    // 磁吸光环——显示吸引范围
-    const attractRange = this.abilitySystem.getStat('orbAttractRange')
-    if (attractRange > Config.ORB.ATTRACT_RANGE) {
-      ctx.save()
-      ctx.translate(this.bird.x, this.bird.y)
-      ctx.strokeStyle = 'rgba(255, 215, 0, 0.12)'
-      ctx.lineWidth = 1
-      ctx.setLineDash([4, 4])
-      ctx.beginPath()
-      ctx.arc(0, 0, attractRange, 0, Math.PI * 2)
-      ctx.stroke()
-      ctx.setLineDash([])
-      ctx.restore()
-    }
-
-    // 狂暴红色光环——HP=1时触发
-    const berserkLv = this.abilitySystem.owned.get('berserk') || 0
-    if (berserkLv > 0 && this.abilitySystem.hp <= 1) {
-      ctx.save()
-      ctx.translate(this.bird.x, this.bird.y)
-      const pulse = Math.sin(this.frameCount * 0.2) * 0.3 + 0.7
-      const auraR = this.bird.width * 0.8
-      ctx.fillStyle = `rgba(255, 50, 50, ${0.15 * pulse})`
-      ctx.beginPath()
-      ctx.arc(0, 0, auraR, 0, Math.PI * 2)
-      ctx.fill()
-      ctx.strokeStyle = `rgba(255, 80, 80, ${0.5 * pulse})`
-      ctx.lineWidth = 2
-      ctx.stroke()
-      ctx.restore()
-    }
-
-    // 时间扭曲蓝色滤镜
-    if (this.abilitySystem.timeWarpActive > 0) {
-      ctx.fillStyle = 'rgba(100, 150, 255, 0.08)'
-      ctx.fillRect(0, 0, this.screenW, this.screenH)
-    }
-
-    // [v1.2.2] N7 风暴之子金色光环——环境效果期间生效
-    const stormLv = this.abilitySystem.owned.get('storm_child') || 0
-    if (stormLv > 0 && this.abilitySystem.weatherActive) {
-      ctx.save()
-      ctx.translate(this.bird.x, this.bird.y)
-      const pulse = Math.sin(this.frameCount * 0.15) * 0.3 + 0.7
-      const auraR = this.bird.width * 0.9 + pulse * 4
-      ctx.fillStyle = `rgba(255, 215, 0, ${0.12 * pulse})`
-      ctx.beginPath()
-      ctx.arc(0, 0, auraR, 0, Math.PI * 2)
-      ctx.fill()
-      ctx.strokeStyle = `rgba(255, 215, 0, ${0.55 * pulse})`
-      ctx.lineWidth = 2
-      ctx.stroke()
-      ctx.restore()
-    }
+    FX.auras(this)
   }
 
   /**
    * [v1.2.2] N7 能力内联特效渲染（粒子/扩散环，与擦边特效同风格）
    */
   _drawAbilityEffects() {
-    const ctx = this.ctx
-    for (const p of this.abilityEffects) {
-      const alpha = p.life / p.maxLife
-      if (p.kind === 'ring') {
-        // 蓝色闪光环：半径随生命扩散
-        const progress = 1 - alpha
-        const radius = p.size + progress * 26
-        ctx.strokeStyle = `rgba(${p.color}, ${alpha * 0.9})`
-        ctx.lineWidth = 2.5
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2)
-        ctx.stroke()
-      } else if (p.kind === 'cross') {
-        // 绿色十字粒子
-        const s = p.size
-        ctx.strokeStyle = `rgba(${p.color}, ${alpha})`
-        ctx.lineWidth = 1.5
-        ctx.beginPath()
-        ctx.moveTo(p.x - s, p.y)
-        ctx.lineTo(p.x + s, p.y)
-        ctx.moveTo(p.x, p.y - s)
-        ctx.lineTo(p.x, p.y + s)
-        ctx.stroke()
-      } else {
-        // 白色尾迹圆点
-        ctx.fillStyle = `rgba(${p.color}, ${alpha * 0.8})`
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-        ctx.fill()
-      }
-    }
+    FX.effects(this)
   }
 
   // [v1.1.0] 浮动文字渲染 [v1.1.4] 渐隐效果优化
   _drawFloatingTexts() {
-    const ctx = this.ctx
-    for (const t of this.floatingTexts) {
-      // [v1.1.4] 前60%不透明，后40%线性渐隐
-      const lifeRatio = t.life / t.maxLife
-      const alpha = lifeRatio > 0.6 ? 1.0 : lifeRatio / 0.6
-      ctx.globalAlpha = alpha
-      ctx.font = 'bold 14px monospace'
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.lineWidth = 3
-      ctx.strokeStyle = '#000000'
-      ctx.fillStyle = t.color
-      ctx.strokeText(t.text, t.x, t.y)
-      ctx.fillText(t.text, t.x, t.y)
-      ctx.globalAlpha = 1.0
-    }
+    FX.floats(this)
   }
 
   _drawGround() {
-    const ctx = this.ctx
-    const { GROUND, VISUAL } = Config
-    // [v1.5.0] 地面配色按章节参数（§4.2）；Ch1 色值原样录入 CHAPTERS，渲染零变化
-    const g = this.chapterSystem.getVisual().ground
-    const groundY = this.screenH - GROUND.HEIGHT
-
-    ctx.fillStyle = g.base
-    ctx.fillRect(0, groundY, this.screenW, GROUND.HEIGHT)
-
-    ctx.fillStyle = g.strip
-    ctx.fillRect(0, groundY, this.screenW, 6)
-
-    ctx.fillStyle = g.tileA
-    for (let x = -this.groundOffset; x < this.screenW; x += GROUND.SCROLL_TILE) {
-      ctx.fillRect(x, groundY + 6, 12, 4)
-    }
-
-    ctx.fillStyle = g.tileB
-    for (let x = -this.groundOffset; x < this.screenW; x += GROUND.SCROLL_TILE) {
-      ctx.fillRect(x + 6, groundY + 14, 8, 3)
-    }
-
-    ctx.fillStyle = VISUAL.PIPE_OUTLINE
-    ctx.fillRect(0, groundY, this.screenW, 2)
+    Art.ground(this)
   }
 
   // ==================== HUD 渲染 [v1.1.1] 重构布局 ====================
 
   _drawHUD() {
-    if (this.state === Config.GAME.STATE.READY) return
-
-    const ctx = this.ctx
-    const { VISUAL, HP } = Config
-    const topY = this.safeTop
-    const expData = this.expSystem.getExpBarData()
-
-    // ----- HP 心形（左上角）-----
-    this._drawHPHearts(14, topY + 14, HP.HEART_SIZE, HP.HEART_GAP)
-
-    const factionText=this.abilitySystem.getFactions().filter(f=>f.tier>0).map(f=>f.name+f.count).join(' · ')
-    if(factionText) {
-      ctx.font='10px sans-serif';ctx.textAlign='center';ctx.fillStyle='#e8fbff'
-      ctx.fillText(factionText+' · 2/4张激活',this.screenW/2,this.screenH-Config.GROUND.HEIGHT+16)
-    }
-    if(this.chapterSystem.endless) {
-      const mods=this.chapterSystem.getMods(), need=Math.ceil(20*mods.pressure)
-      ctx.font='10px sans-serif';ctx.textAlign='center';ctx.fillStyle='#b6f6ff'
-      const recovery=Math.round(100*mods.recoveryRate)
-      ctx.fillText(`破敌护盾 ${Math.floor(this.combat.endlessCharge)}/${need} · 恢复${recovery}% · 补给间隔${Math.round(mods.renewalInterval/60)}s`,
-        this.screenW/2,this.screenH-Config.GROUND.HEIGHT+30)
-    }
-    // ----- 等级徽章（右上角）-----
-    const badgeW = Math.max(54, String(expData.level).length*9+28)
-    const badgeH = 22
-    const badgeX = this.screenW - badgeW - 14
-    const badgeY = topY + 3
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
-    this._roundRect(badgeX, badgeY, badgeW, badgeH, 11)
-    ctx.fill()
-    ctx.strokeStyle = '#ffd700'
-    ctx.lineWidth = 1.5
-    this._roundRect(badgeX, badgeY, badgeW, badgeH, 11)
-    ctx.stroke()
-    ctx.font = 'bold 13px monospace'
-    ctx.fillStyle = '#ffd700'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillText(`Lv.${expData.level}`, badgeX + badgeW / 2, badgeY + badgeH / 2)
-
-    // ----- 分数（居中偏上）-----
-    if (this.state === Config.GAME.STATE.PLAYING) {
-      ctx.font = 'bold 34px monospace'
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.lineWidth = 4
-      ctx.strokeStyle = '#000000'
-      ctx.fillStyle = '#ffffff'
-      ctx.fillText(this.score, this.screenW / 2, topY + 16, 64)
-    }
-
-    // ----- 经验条（居中，分数下方）-----
-    const barW = this.screenW * 0.6
-    const barH = 10
-    const barX = (this.screenW - barW) / 2
-    const barY = topY + 40
-
-    ctx.fillStyle = VISUAL.EXP_BAR_BG
-    ctx.fillRect(barX - 2, barY - 2, barW + 4, barH + 4)
-
-    const fillW = barW * expData.progress
-    ctx.fillStyle = VISUAL.EXP_BAR_FILL
-    ctx.fillRect(barX, barY, fillW, barH)
-
-    ctx.strokeStyle = '#000000'
-    ctx.lineWidth = 1
-    ctx.strokeRect(barX - 2, barY - 2, barW + 4, barH + 4)
-
-    // ----- [v1.5.0] 章节进度（§4.5：经验条下方 "Ch1 · 12/40"，≥35/40 金色脉冲）-----
-    const chapterHud = this.chapterSystem.getHudData()
-    const chapterY = barY + barH + 12
-    ctx.font = 'bold 10px monospace'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    if (chapterHud.pulse) {
-      // Boss 临近：金色呼吸脉冲
-      ctx.globalAlpha = 0.55 + 0.45 * Math.sin(this.frameCount * 0.2)
-      ctx.fillStyle = '#ffd700'
-    } else {
-      ctx.fillStyle = '#ffffff'
-    }
-    ctx.fillText(chapterHud.endless
-      ? `无尽 ${Math.floor(chapterHud.seconds/60)}:${String(chapterHud.seconds%60).padStart(2,'0')} · 得分×2${chapterHud.seconds>=120?' · 时空压缩':''}`
-      : chapterHud.rematch ? `Ch${chapterHud.id}/6 · 再战 ${chapterHud.remainingPipes}管 / 最迟${chapterHud.deadline}s`
-      : `Ch${chapterHud.id}/6 · ${chapterHud.pipes}/${chapterHud.target}${this.chapterSystem.isBossActive()?'':' · 最迟'+chapterHud.deadline+'s开战'}`, this.screenW / 2, chapterY)
-    ctx.globalAlpha = 1.0
-
-    // ----- [v1.5.0] Boss 血条（§4.9：顶部居中宽 60% 高 10px，P2 变红；Boss 战期间代替连击行）-----
-    if (this.chapterSystem.isBossActive() && this.boss) {
-      this._drawBossHPBar(this.screenW / 2, chapterY + 14)
-    }
-
-    // ----- 连击计数 -----
-    // [v1.5.0] 章节进度占经验条下方第一行，连击/天气/驯化行依次顺延；Boss 战期间让位给血条
-    const comboLv = this.abilitySystem.owned.get('combo_heart') || 0
-    if (!this.chapterSystem.isBossActive() && comboLv > 0 && this.abilitySystem.comboCount > 0) {
-      const threshold = this.abilitySystem.getStat('comboThreshold')
-      ctx.font = 'bold 11px monospace'
-      ctx.fillStyle = '#ffaa00'
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.fillText(`连击 ${Math.floor(this.abilitySystem.comboCount)}/${threshold}`, this.screenW / 2, barY + barH + 26)
-    }
-
-    // ----- [v1.2.0] 环境状态指示器 -----
-    const weatherInfo = this.weatherSystem.getActiveEffectInfo()
-    if (weatherInfo.length > 0) {
-      const icons = { wind: '💨', rain: '🌧️', hail: '🧊' }
-      const colors = { wind: '#ffffff', rain: '#7eb8e0', hail: '#c0d8f0' }
-      const indicatorY = barY + barH + (this.chapterSystem.isBossActive() ? 103 : 40)
-      let iconX = this.screenW / 2 - (weatherInfo.length - 1) * 30
-
-      for (const info of weatherInfo) {
-        ctx.font = '16px sans-serif'
-        ctx.textAlign = 'center'
-        ctx.textBaseline = 'middle'
-        ctx.fillText(icons[info.type] || '?', iconX, indicatorY)
-
-        ctx.font = 'bold 9px monospace'
-        ctx.fillStyle = colors[info.type] || '#ffffff'
-        ctx.fillText(`${info.remaining}s`, iconX, indicatorY + 14)
-
-        iconX += 60
-      }
-    }
-
-    // ----- [v1.2.0] 凤凰印记计数 -----
-    // [v1.4.0] 心形区宽度含临时HP（空心心形），凤凰/羽盾标记顺延避免重叠
-    const heartsW = Math.min(3, this.abilitySystem.maxHp + (this.abilitySystem.tempHp || 0)) * (HP.HEART_SIZE + HP.HEART_GAP)
-    const phoenixLv = this.abilitySystem.owned.get('phoenix') || 0
-    if (phoenixLv > 0) {
-      const remaining = phoenixLv - this.abilitySystem.phoenixUsed
-      const phoenixX = this.screenW - 128
-      const phoenixY = topY + 30
-      ctx.font = '14px sans-serif'
-      ctx.textAlign = 'left'
-      ctx.textBaseline = 'middle'
-      ctx.fillText('🔥', phoenixX, phoenixY)
-      ctx.font = 'bold 11px monospace'
-      ctx.fillStyle = remaining > 0 ? '#ff6600' : '#666666'
-      ctx.fillText(`×${remaining}`, phoenixX + 16, phoenixY)
-    }
-
-    // ----- [v1.4.0] 羽盾图标（回响之翼/铁羽）：心形区右侧羽毛+层数 -----
-    const echoLv = this.abilitySystem.owned.get('echo_wing') || 0
-    if (echoLv > 0) {
-      const featherX = this.screenW - 128 + (phoenixLv > 0 ? 44 : 0)
-      const featherY = topY + 30
-      ctx.font = '14px sans-serif'
-      ctx.textAlign = 'left'
-      ctx.textBaseline = 'middle'
-      ctx.fillText('🪶', featherX, featherY)
-      ctx.font = 'bold 11px monospace'
-      ctx.fillStyle = this.abilitySystem.featherShields > 0 ? '#fff2c8' : '#666666'
-      ctx.fillText(`×${this.abilitySystem.featherShields}`, featherX + 16, featherY)
-      // 攒盾进度（过管计数/阈值）
-      const need = Config.ABILITY.ECHO_WING_BASE_PIPES - Config.ABILITY.ECHO_WING_PIPES_REDUCTION * (echoLv - 1)
-      ctx.fillStyle = '#aaaaaa'
-      ctx.font = 'bold 9px monospace'
-      ctx.fillText(`${Math.floor(this.abilitySystem.echoWingPipes)}/${need}`, featherX + 36, featherY)
-    }
-
-    // ----- [v1.4.0] 风暴驯化标记（已驯化天气徽章，无天气活跃时也常驻可见）-----
-    if (this.weatherSystem.tamedWeather) {
-      const tamed = this.weatherSystem.tamedWeather
-      const tamedIcons = { wind: '💨', rain: '🌧️', hail: '🧊' }
-      const tamedX = this.screenW / 2
-      const hasWeatherRow = weatherInfo.length > 0
-      const tamedY = this.chapterSystem.isBossActive() ? this.screenH - Config.GROUND.HEIGHT + 45 : hasWeatherRow ? barY + barH + 62 : barY + barH + 40
-      ctx.font = 'bold 10px monospace'
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.fillStyle = '#7fff7f'
-      ctx.fillText(`🌈已驯化${tamedIcons[tamed] || ''}`, tamedX, tamedY)
-    }
-
-    // ----- 能力图标栏（底部安全区）-----
-    const allOwned = this.abilitySystem.getOwnedList()
-    const capacity=Math.max(1,Math.floor((this.screenW-50)/34))
-    const owned=allOwned.slice(-capacity)
-    if (owned.length > 0) {
-      const iconSize = 28
-      const gap = 6
-      const totalW = owned.length * (iconSize + gap) - gap + (allOwned.length>capacity?34:0)
-      const startX = (this.screenW - totalW) / 2
-      const iconY = this.safeBottom - iconSize - 8
-
-      if(allOwned.length>capacity) {
-        ctx.font='bold 11px sans-serif';ctx.fillStyle='#fff';ctx.textAlign='center'
-        ctx.fillText('+'+(allOwned.length-capacity),startX+totalW-14,iconY+14)
-      }
-      for (let i = 0; i < owned.length; i++) {
-        const { def, level } = owned[i]
-        const ix = startX + i * (iconSize + gap)
-
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
-        ctx.beginPath()
-        ctx.arc(ix + iconSize / 2, iconY + iconSize / 2, iconSize / 2, 0, Math.PI * 2)
-        ctx.fill()
-
-        ctx.strokeStyle = '#fff'
-        ctx.lineWidth = 1.5
-        ctx.stroke()
-
-        ctx.font = '16px sans-serif'
-        ctx.textAlign = 'center'
-        ctx.textBaseline = 'middle'
-        if (!drawCombatIcon(ctx, def.id, ix + iconSize / 2, iconY + iconSize / 2 - 2, 18)) ctx.fillText(def.icon, ix + iconSize / 2, iconY + iconSize / 2 - 2)
-
-        ctx.fillStyle = '#ffd700'
-        ctx.font = 'bold 9px monospace'
-        ctx.fillText(`L${level}`, ix + iconSize / 2, iconY + iconSize - 4)
-      }
-    }
+    Art.hud(this)
   }
 
-  // [v1.1.1] HP 心形渲染——贝塞尔曲线心形，更大更清晰
+  // [v1.1.1] HP 心形渲染——固定两行像素心形
   // [v1.4.0] 超载神盾：临时HP 以黄色实心心形接在普通红心之后
   _drawHPHearts(x, y, size, gap) {
-    const ctx = this.ctx
-    const ab=this.abilitySystem
-    const capacity=ab.maxHp+Config.SHIELD.OVERDRIVE_TEMP_HP_CAP+ab.blessingTempHpCapBonus
-    // 预留分数和等级位置，按上限排两行；不会因当前血量变化切换样式。
-    const width=Math.max(74,this.screenW/2-50)
-    const cols=Math.ceil(capacity/2)
-    const step=Math.min(size+gap,width/cols)
-    const heartSize=Math.min(size,step-2,14)
-    for(let i=0;i<ab.maxHp+ab.tempHp;i++) {
-      const cx=x+(i%cols)*step+heartSize/2,cy=y+Math.floor(i/cols)*16
-      const r=heartSize/2, temporary=i>=ab.maxHp,filled=temporary||i<ab.hp
-      ctx.beginPath();ctx.moveTo(cx,cy+r*.7)
-      ctx.bezierCurveTo(cx-r*1.1,cy-r*.2,cx-r*.9,cy-r*.9,cx,cy-r*.2)
-      ctx.bezierCurveTo(cx+r*.9,cy-r*.9,cx+r*1.1,cy-r*.2,cx,cy+r*.7);ctx.closePath()
-      ctx.fillStyle=temporary?'#ffd54a':filled?'#ff4444':'rgba(60,60,60,0.4)';ctx.fill()
-      ctx.strokeStyle=temporary?'#8a601a':'#301a22';ctx.lineWidth=1;ctx.stroke()
-    }
+    Art.heartHUD(this, x, y, size)
   }
 
   // ==================== 触摸交互 ====================
+
+  handleTouchStart(x, y) { Art.touchStart(this, x, y) }
+  handleTouchMove(x, y) { Art.touchMove(this, x, y) }
+  handleTouchEnd(x, y) { Art.touchEnd(this, x, y) }
+  handleTouchCancel() { this._choiceGesture = null }
 
   handleTouch(x, y) {
     if (this.state === Config.GAME.STATE.READY) {
@@ -3404,110 +2701,11 @@ class Game {
   // ==================== 覆盖层渲染 ====================
 
   _drawReadyOverlay() {
-    const ctx = this.ctx
-    const cx = this.screenW / 2
-
-    ctx.font = 'bold 32px monospace'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.lineWidth = 4
-    ctx.strokeStyle = '#000000'
-    ctx.fillStyle = '#ffffff'
-    ctx.strokeText('SNAPPY BIRD', cx, this.screenH * 0.25)
-    ctx.fillText('SNAPPY BIRD', cx, this.screenH * 0.25)
-
-    ctx.font = '14px monospace'
-    ctx.fillStyle = '#333333'
-    ctx.fillText('Roguelike 飞行生存 · '+Config.VERSION, cx, this.screenH * 0.25 + 30)
-    ctx.font='12px sans-serif'
-    ctx.fillText('六章试炼 · 六大派系 · 通关开启无尽×2',cx,this.screenH*.25+52)
-
-    const blink = Math.floor(this.frameCount / 30) % 2 === 0
-    if (blink) {
-      ctx.font = 'bold 18px monospace'
-      ctx.fillStyle = '#ffffff'
-      ctx.strokeStyle = '#000000'
-      ctx.lineWidth = 3
-      ctx.strokeText('点击屏幕开始', cx, this.screenH * 0.5)
-      ctx.fillText('点击屏幕开始', cx, this.screenH * 0.5)
-    }
-
-    if (this.bestScore > 0) {
-      ctx.font = '14px monospace'
-      ctx.fillStyle = '#333333'
-      ctx.fillText(`最高分: ${this.bestScore}`, cx, this.screenH * 0.58)
-    }
-
-    ctx.font = '12px monospace'
-    ctx.fillStyle = '#555555'
-    ctx.fillText('点击拍翅 · 躲避管道 · 升级能力', cx, this.screenH * 0.72)
-    ctx.fillText('擦边通过获得额外奖励 · 拾取道具', cx, this.screenH * 0.72 + 20)
+    Art.ready(this)
   }
 
   _drawUpgradeOverlay() {
-    const ctx = this.ctx
-    const cx = this.screenW / 2
-
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'
-    ctx.fillRect(0, 0, this.screenW, this.screenH)
-
-    ctx.font = 'bold 24px monospace'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillStyle = '#ffd700'
-    // [v1.5.0] 面板标题按模式切换（大礼包自选/章节祝福/普通升级）
-    const panelTitles = { bossCard: '章节大礼包!', blessing: '章节祝福', levelup: '升级!' }
-    ctx.fillText(panelTitles[this._panelMode] || '升级!', cx, this.safeTop + 28)
-
-    ctx.font = '14px monospace'
-    ctx.fillStyle = '#ffffff'
-    const panelSubs = {
-      bossCard: 'Boss 讨伐奖励 — 三选一',
-      blessing: '选择一道祝福（本局永久）',
-      levelup: `Lv.${this.expSystem.level} — 选择能力`
-    }
-    ctx.fillText(panelSubs[this._panelMode] || panelSubs.levelup, cx, this.safeTop + 56)
-
-    const choices = this._currentChoices || []
-    if (choices.length === 0) return
-
-    const ownedList = this.abilitySystem.getOwnedList()
-    const n = choices.length
-    const gap = 10
-    const maxCardW = 130
-    const cardH = 210
-    const rowGap = 14
-
-    // 四张起分两行，新增武器说明留足五行；短屏标题与卡片分别布局。
-    const useTwoRows = n > 3
-    const perRow = useTwoRows ? Math.ceil(n / 2) : n
-    const cardW = Math.min(maxCardW, (this.screenW - 40 - (perRow - 1) * gap) / perRow)
-    const totalH = useTwoRows ? cardH * 2 + rowGap : cardH
-    const cardY = Math.max(this.safeTop + 86, (this.screenH - totalH) / 2 + 10)
-
-    this._cardBounds = []
-
-    for (let i = 0; i < n; i++) {
-      const ab = choices[i]
-      const _found = ownedList.find(o => o.def.id === ab.id)
-      const currentLevel = (_found ? _found.level : 0) || 0
-      const row = Math.floor(i / perRow)
-      const col = i % perRow
-      // 末行不满时单独居中
-      const rowCount = (useTwoRows && row > 0) ? (n - perRow) : perRow
-      const rowStartX = (this.screenW - (rowCount * cardW + (rowCount - 1) * gap)) / 2
-      const cardX = rowStartX + col * (cardW + gap)
-      const thisCardY = cardY + row * (cardH + rowGap)
-
-      this._cardBounds.push({ x: cardX, y: thisCardY, w: cardW, h: cardH, id: ab.id })
-      // [v1.4.0] 批次2选牌 UI：灰显（缺前置卡）/ 先知协同标注 / 已驯化互斥标记
-      this._drawCard(cardX, thisCardY, cardW, cardH, ab, currentLevel, {
-        greyReason: this._getCardGreyReason(ab.id),
-        tag: (this.abilitySystem.owned.get('oracle') || 0) > 0
-          ? this.abilitySystem.getSynergyTag(ab.id, this.weatherSystem.tamedWeather) : null,
-        tamedMarked: this._isCardTamedMutex(ab.id)
-      })
-    }
+    Art.upgrade(this)
   }
 
   /**
@@ -3537,329 +2735,15 @@ class Game {
   }
 
   _drawCard(x, y, w, h, def, currentLevel, extras) {
-    const ctx = this.ctx
-    // [v1.4.0] extras：{ greyReason, tag, tamedMarked }（批次2选牌 UI）
-    const greyReason = extras && extras.greyReason
-    const tag = extras && extras.tag
-    const tamedMarked = extras && extras.tamedMarked
-
-    // [v1.1.3] 稀有度颜色
-    const rarityColors = {
-      common: { border: '#4a90d9', label: '普通', labelColor: '#aaaaaa' },
-      uncommon: { border: '#2ecc71', label: '稀有', labelColor: '#2ecc71' },
-      rare: { border: '#e74c3c', label: '珍贵', labelColor: '#e74c3c' },
-      epic: { border: '#9b59b6', label: '史诗', labelColor: '#9b59b6' }
-    }
-    const rarity = rarityColors[def.rarity] || rarityColors.common
-    const borderColor = rarity.border
-
-    ctx.fillStyle = 'rgba(30, 30, 40, 0.95)'
-    this._roundRect(x, y, w, h, 8)
-    ctx.fill()
-
-    ctx.strokeStyle = borderColor
-    ctx.lineWidth = 3
-    this._roundRect(x, y, w, h, 8)
-    ctx.stroke()
-
-    // [v1.4.0] 灰显：缺前置卡的整卡内容降透明度（边框保留稀有度色）
-    if (greyReason) ctx.globalAlpha = 0.45
-
-    const cx = x + w / 2
-
-    ctx.font = '32px sans-serif'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillStyle = '#ffffff'
-    if (!drawCombatIcon(ctx, def.id, cx, y + 35, 32)) ctx.fillText(def.icon, cx, y + 35)
-
-    ctx.font = 'bold 14px monospace'
-    ctx.fillStyle = '#ffffff'
-    ctx.fillText(def.name, cx, y + 70)
-
-    ctx.font = '12px monospace'
-    ctx.fillStyle = '#ffd700'
-    const nextLevel = currentLevel + 1
-    if (currentLevel > 0) {
-      ctx.fillText(`Lv.${currentLevel} → Lv.${nextLevel}`, cx, y + 88)
-    } else {
-      ctx.fillText(`新能力! Lv.${nextLevel}`, cx, y + 88)
-    }
-
-    // [v1.1.3] 稀有度标签
-    ctx.font = 'bold 9px monospace'
-    ctx.fillStyle = rarity.labelColor
-    ctx.fillText(`[${rarity.label}]`, cx, y + 103)
-
-    // [v1.4.0] 先知协同标注（⭐核心/🔗协同/⚠️反协同），与分类标签同行
-    const catNames = { passive: '被动', active: '主动', special: '特殊' }
-    const tagText = tag === 'core' ? ' ⭐核心' : tag === 'synergy' ? ' 🔗协同' : tag === 'anti' ? ' ⚠️反协同' : ''
-    const tagColor = tag === 'core' ? '#ffd700' : tag === 'synergy' ? '#2ecc71' : tag === 'anti' ? '#ff6b6b' : '#888888'
-    ctx.font = '10px monospace'
-    ctx.fillStyle = '#888888'
-    ctx.fillText(def.faction ? `${def.faction} · Ch${def.unlockChapter}` : `[${catNames[def.category] || ''}]`, cx, y + 116)
-    if (tagText) {
-      ctx.fillStyle = tagColor
-      ctx.fillText(tagText, cx + 18, y + 116)
-    }
-
-    ctx.font = '10px monospace'
-    ctx.fillStyle = '#cccccc'
-    ctx.textAlign = 'left'
-    ctx.textBaseline = 'top'
-    const effectText = def.effectText(nextLevel)
-    this._wrapText(effectText, x + 8, y + 130, w - 16, 12)
-
-    // [v1.4.0] 灰显原因（底部）与驯化互斥标记（右上角）
-    if (greyReason) {
-      ctx.globalAlpha = 1
-      ctx.font = 'bold 10px monospace'
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.fillStyle = '#ff6b6b'
-      ctx.fillText(greyReason, cx, y + h - 10)
-    }
-    if (tamedMarked) {
-      ctx.font = 'bold 9px monospace'
-      ctx.textAlign = 'right'
-      ctx.textBaseline = 'top'
-      ctx.fillStyle = '#7fff7f'
-      ctx.fillText('已驯化', x + w - 6, y + 6)
-    }
-
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
+    Art.card(this.ctx, { x, y, w, h }, def, currentLevel, extras || {})
   }
 
   // [v1.1.0] 结算界面重设计
   _drawGameOverOverlay() {
-    const ctx = this.ctx
-    const cx = this.screenW / 2
-    const safeTop = this.safeTop
-
-    // 半透明遮罩
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)'
-    ctx.fillRect(0, 0, this.screenW, this.screenH)
-
-    // 标题
-    ctx.font = 'bold 28px monospace'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillStyle = '#ff4444'
-    ctx.fillText(this.chapterSystem.endless ? `无尽终结 · ${Math.floor(this.chapterSystem.endlessFrames/3600)}分${Math.floor(this.chapterSystem.endlessFrames/60)%60}秒` : '游戏结束', cx, safeTop + 40)
-
-    // 分数
-    ctx.font = 'bold 36px monospace'
-    ctx.fillStyle = '#ffffff'
-    ctx.fillText(this.score, cx, safeTop + 85)
-
-    ctx.font = '12px monospace'
-    ctx.fillStyle = '#888888'
-    ctx.fillText('本局得分', cx, safeTop + 110)
-
-    // 数据面板
-    const panelY = safeTop + 135
-    const panelW = this.screenW * 0.8
-    const panelX = (this.screenW - panelW) / 2
-    const panelH = 90
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.08)'
-    this._roundRect(panelX, panelY, panelW, panelH, 8)
-    ctx.fill()
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)'
-    ctx.lineWidth = 1.5
-    this._roundRect(panelX, panelY, panelW, panelH, 8)
-    ctx.stroke()
-
-    // 数据行
-    const colW = panelW / 2
-    const rowH = 26
-    const dataY = panelY + 12
-
-    ctx.font = '13px monospace'
-    ctx.textAlign = 'left'
-
-    // 左列
-    ctx.fillStyle = '#ffd700'
-    ctx.fillText(`最高分: ${this.bestScore}`, panelX + 16, dataY)
-    if (this.score > 0 && this.score >= this.bestScore) {
-      ctx.fillStyle = '#ff6600'
-      ctx.font = 'bold 11px monospace'
-      ctx.fillText('新纪录!', panelX + 16 + 100, dataY)
-      ctx.font = '13px monospace'
-    }
-
-    ctx.fillStyle = '#aaaaaa'
-    const minutes = Math.floor(this.gameTime / 3600)
-    const seconds = Math.floor((this.gameTime % 3600) / 60)
-    ctx.fillText(`存活: ${minutes}'${String(seconds).padStart(2, '0')}"`, panelX + 16, dataY + rowH)
-
-    // 右列
-    ctx.fillStyle = '#aaaaaa'
-    ctx.fillText(`通过管道: ${this.pipesPassed}`, panelX + colW + 16, dataY)
-
-    ctx.fillStyle = '#4a90d9'
-    ctx.fillText(`达到等级: Lv.${this.expSystem.level}`, panelX + colW + 16, dataY + rowH)
-
-    ctx.textAlign = 'center'
-
-    // [v1.5.0] Boss 讨伐徽章行（§4.10：每击杀一只 Boss 留下章节徽章，能力展示上方）
-    let badgeRowH = 0
-    if (this.bossClears.length > 0) {
-      ctx.font = '11px monospace'
-      ctx.fillStyle = '#aee6ff'
-      const story=this.bossClears.filter(c=>!c.endless)
-      const repeat=this.bossClears.filter(c=>c.endless)
-      const text=story.map(c=>`Ch${c.chapter} ${c.method==='kill'?'击败':'生存'}`)
-      for(let row=0;row<Math.ceil(text.length/3);row++)ctx.fillText(text.slice(row*3,row*3+3).join(' · '),cx,panelY+panelH+18+row*15)
-      badgeRowH=Math.ceil(text.length/3)*15+5
-      if(repeat.length) {
-        ctx.fillText(`无尽Boss ${repeat.length}场 · 击败${repeat.filter(c=>c.method==='kill').length}`,cx,panelY+panelH+badgeRowH+13)
-        badgeRowH+=18
-      }
-    }
-    if (this.bossBadges.length > 0) {
-      const badgeY = panelY + panelH + 22 + badgeRowH
-      ctx.font = '12px monospace'
-      ctx.fillStyle = '#ffd700'
-      ctx.fillText('讨伐徽章', cx, badgeY)
-      const bSize = 24
-      const bGap = 8
-      const bTotalW = this.bossBadges.length * (bSize + bGap) - bGap
-      let bx = (this.screenW - bTotalW) / 2
-      for (const chId of this.bossBadges) {
-        ctx.fillStyle = 'rgba(255, 215, 0, 0.18)'
-        ctx.beginPath()
-        ctx.arc(bx + bSize / 2, badgeY + 20, bSize / 2, 0, Math.PI * 2)
-        ctx.fill()
-        ctx.strokeStyle = '#ffd700'
-        ctx.lineWidth = 1.5
-        ctx.stroke()
-        ctx.font = 'bold 10px monospace'
-        ctx.fillStyle = '#ffd700'
-        ctx.fillText(`Ch${chId}`, bx + bSize / 2, badgeY + 20)
-        bx += bSize + bGap
-      }
-      badgeRowH += 44
-    }
-
-    // 能力展示
-    const owned = this.abilitySystem.getOwnedList()
-    if (owned.length > 0) {
-      const abilityY = panelY + panelH + 25 + badgeRowH
-
-      ctx.font = '12px monospace'
-      ctx.fillStyle = '#888888'
-      ctx.fillText('获得能力 '+owned.length+' 张（最近两行）', cx, abilityY)
-
-      const iconSize = 26
-      const iconGap = 6
-      const maxPerRow = Math.floor((this.screenW - 40) / (iconSize + iconGap))
-      const totalW = Math.min(owned.length, maxPerRow) * (iconSize + iconGap) - iconGap
-      const startX = (this.screenW - totalW) / 2
-      const iconY = abilityY + 18
-
-      for (let i = Math.max(0,owned.length-maxPerRow*2); i < owned.length; i++) {
-        const { def, level } = owned[i]
-        const visibleIndex=i-Math.max(0,owned.length-maxPerRow*2)
-        const row = Math.floor(visibleIndex / maxPerRow)
-        const col = visibleIndex % maxPerRow
-        const ix = startX + col * (iconSize + iconGap)
-        const iy = iconY + row * (iconSize + iconGap + 4)
-
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.12)'
-        ctx.beginPath()
-        ctx.arc(ix + iconSize / 2, iy + iconSize / 2, iconSize / 2, 0, Math.PI * 2)
-        ctx.fill()
-
-        ctx.font = '14px sans-serif'
-        ctx.textAlign = 'center'
-        ctx.textBaseline = 'middle'
-        if (!drawCombatIcon(ctx, def.id, ix + iconSize / 2, iy + iconSize / 2 - 1, 18)) ctx.fillText(def.icon, ix + iconSize / 2, iy + iconSize / 2 - 1)
-
-        ctx.font = 'bold 8px monospace'
-        ctx.fillStyle = '#ffd700'
-        ctx.fillText(`L${level}`, ix + iconSize / 2, iy + iconSize - 3)
-      }
-    }
-
-    // [v1.1.1] 双按钮：返回首页 | 重新开始
-    const btnW = 130
-    const btnH = 42
-    const btnGap = 16
-    const totalBtnW = btnW * 2 + btnGap
-    const btnStartX = (this.screenW - totalBtnW) / 2
-    const btnY = this.safeBottom - 56
-
-    // 返回首页按钮（左）
-    const homeBtnX = btnStartX
-    this._homeBtnBounds = { x: homeBtnX, y: btnY, w: btnW, h: btnH }
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)'
-    this._roundRect(homeBtnX, btnY, btnW, btnH, 8)
-    ctx.fill()
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'
-    ctx.lineWidth = 2
-    this._roundRect(homeBtnX, btnY, btnW, btnH, 8)
-    ctx.stroke()
-    ctx.font = 'bold 15px monospace'
-    ctx.fillStyle = '#ffffff'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillText('返回首页', homeBtnX + btnW / 2, btnY + btnH / 2)
-
-    // 重新开始按钮（右）
-    const restartBtnX = btnStartX + btnW + btnGap
-    this._restartBtnBounds = { x: restartBtnX, y: btnY, w: btnW, h: btnH }
-    const blink = Math.floor(this.frameCount / 30) % 2 === 0
-    ctx.fillStyle = blink ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)'
-    this._roundRect(restartBtnX, btnY, btnW, btnH, 8)
-    ctx.fill()
-    ctx.strokeStyle = '#ffffff'
-    ctx.lineWidth = 2
-    this._roundRect(restartBtnX, btnY, btnW, btnH, 8)
-    ctx.stroke()
-    ctx.font = 'bold 15px monospace'
-    ctx.fillStyle = '#ffffff'
-    ctx.fillText('重新开始', restartBtnX + btnW / 2, btnY + btnH / 2)
+    Art.gameover(this)
   }
 
-  // ==================== 工具方法 ====================
 
-  _roundRect(x, y, w, h, r) {
-    const ctx = this.ctx
-    ctx.beginPath()
-    ctx.moveTo(x + r, y)
-    ctx.lineTo(x + w - r, y)
-    ctx.arcTo(x + w, y, x + w, y + r, r)
-    ctx.lineTo(x + w, y + h - r)
-    ctx.arcTo(x + w, y + h, x + w - r, y + h, r)
-    ctx.lineTo(x + r, y + h)
-    ctx.arcTo(x, y + h, x, y + h - r, r)
-    ctx.lineTo(x, y + r)
-    ctx.arcTo(x, y, x + r, y, r)
-    ctx.closePath()
-  }
-
-  _wrapText(text, x, y, maxWidth, lineHeight) {
-    const ctx = this.ctx
-    const chars = text.split('')
-    let line = ''
-    let curY = y
-
-    for (const ch of chars) {
-      const testLine = line + ch
-      if (ctx.measureText(testLine).width > maxWidth && line.length > 0) {
-        ctx.fillText(line, x, curY)
-        line = ch
-        curY += lineHeight
-      } else {
-        line = testLine
-      }
-    }
-    if (line) {
-      ctx.fillText(line, x, curY)
-    }
-  }
 }
 
 module.exports = Game
