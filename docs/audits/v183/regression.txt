@@ -1,4 +1,4 @@
-v1.8.3 verification (2026-10-02)
+v1.8.3 package fix verification (2026-10-02)
 
 ✓ 无连击之心不会获得无敌；持卡按阈值触发
 ✓ 护盾爆发满盾时兑现超载临时生命
@@ -115,9 +115,10 @@ Total 1.8.2 suites: 16
 ✓ 实际Game更新叠加阵风、轻羽和天气强化仍保持可控的单击轨迹
 Total balance suites: 16
 
-  Runtime bytes 8409088; decoded atlas bytes 25165824
-✓ 版本与运行包：全部四张PNG在项目中，RGBA解码预算24MiB，包体低于10MB
+  Runtime bytes 6679623; decoded atlas bytes 25165824
+✓ 版本与运行包：全部四张PNG在项目中，RGBA解码预算24MiB，运行文件低于7MiB（给上传限制预留空间）
 ✓ 资源仅加载一次；未加载/失败有回退，成功后使用本地图集
+✓ 分包成功前只加载主包；成功后再读分包图片；失败仍保留主包和绘制回退
 ✓ 角色与Boss裁切均在图集内，三帧小鸟/四精英/六Boss齐全
 ✓ 73张能力全部有专属图标映射和颜色，语义组合不重复
 ✓ 三屏全部73张卡的满级效果全文绘制，数值文案没有省略
@@ -128,4 +129,4 @@ Total balance suites: 16
 ✓ 图集缺失时六章/Boss/全部天气/实体可绘制，渲染不耗随机数、不改变战斗状态
 ✓ HUD不出现undefined/NaN，羽盾凤凰天气与章节信息可读
 ✓ 沙墙与管道绘制不改变碰撞结果；穿盾预警始终不提前伤人
-v1.8.3: 12 tests passed
+v1.8.3: 13 tests passed

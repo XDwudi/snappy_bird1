@@ -1,5 +1,5 @@
 // v1.8.3: four local atlases, loaded once; rendering never blocks gameplay.
-const files = { actors: 'game/assets/actor_atlas.png', bosses: 'game/assets/boss_atlas.png', scenery: 'game/assets/scenery_atlas.png', materials: 'game/assets/material_atlas.png' }
+const files = { actors: 'game/assets/actor_atlas.png', bosses: 'art-extra/boss_atlas.png', scenery: 'game/assets/scenery_atlas.png', materials: 'art-extra/material_atlas.png' }
 const rects = {
   bird0: ['actors',77,134,270,265], bird1: ['actors',448,134,283,265], bird2: ['actors',845,134,270,265],
   bat: ['actors',1190,130,310,268], gunship: ['actors',11,600,373,285],
@@ -9,18 +9,28 @@ const rects = {
 }
 const images = {}, errors = {}
 let started = false
-function init(factory) {
+function init(factory, loadSubpackage) {
   if (started) return
   if (!factory && typeof wx !== 'undefined' && wx.createImage) factory = () => wx.createImage()
   if (!factory) return
+  if (!loadSubpackage && typeof wx !== 'undefined' && wx.loadSubpackage) loadSubpackage = opts => wx.loadSubpackage(opts)
   started = true
-  Object.keys(files).forEach(key => {
+  const load = key => {
     const img = factory()
     img.onload = () => { images[key] = img }
     img.onerror = () => { errors[key] = true }
     img.src = files[key]
-  })
+  }
+  load('actors')
+  load('scenery')
+  const extra = () => { load('bosses'); load('materials') }
+  if (loadSubpackage) {
+    // Start fetching at boot, while core art and touch input remain usable.
+    // Failed downloads retain the existing procedural pixel fallback.
+    loadSubpackage({ name: 'art-extra', success: extra, fail: () => { errors.extra = true } })
+  } else extra() // Offline tools / older SDK: direct paths, with per-image error fallback.
 }
+
 function draw(ctx, id, x, y, w, h) {
   const r = rects[id]
   if (!r || !images[r[0]]) return false

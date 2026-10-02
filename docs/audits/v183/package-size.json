@@ -1,0 +1,70 @@
+{
+  "note": "Uncompressed local upload candidates; WeChat final compiled size may differ",
+  "totalBytes": 6671705,
+  "packages": [
+    {
+      "name": "main",
+      "root": null,
+      "files": [
+        "game/abilities/AbilityRegistry.js",
+        "game/art/Assets.js",
+        "game/art/Effects.js",
+        "game/art/Entities.js",
+        "game/art/GameArt.js",
+        "game/art/Icons.js",
+        "game/art/Pixel.js",
+        "game/art/World.js",
+        "game/assets/actor_atlas.png",
+        "game/assets/scenery_atlas.png",
+        "game/config/AbilityConfig.js",
+        "game/config/CampaignAbilities.js",
+        "game/config/CampaignConfig.js",
+        "game/config/GameConfig.js",
+        "game/core/Game.js",
+        "game/core/MathUtil.js",
+        "game/entities/Bird.js",
+        "game/entities/Boss.js",
+        "game/entities/BossHazard.js",
+        "game/entities/BossMechanics.js",
+        "game/entities/BossPatterns.js",
+        "game/entities/Collectible.js",
+        "game/entities/EliteMonster.js",
+        "game/entities/Feather.js",
+        "game/entities/Hailstone.js",
+        "game/entities/Item.js",
+        "game/entities/Missile.js",
+        "game/entities/Monster.js",
+        "game/entities/Obstacle.js",
+        "game/entities/Orb.js",
+        "game/entities/Pipe.js",
+        "game/entities/SandWall.js",
+        "game/systems/AbilitySystem.js",
+        "game/systems/ChapterSystem.js",
+        "game/systems/CombatSystem.js",
+        "game/systems/EndlessScaling.js",
+        "game/systems/ExpSystem.js",
+        "game/systems/GameLogger.js",
+        "game/systems/SpawnSystem.js",
+        "game/systems/WeatherSystem.js",
+        "game/weather/HailEffect.js",
+        "game/weather/RainEffect.js",
+        "game/weather/WeatherEffect.js",
+        "game/weather/WindEffect.js",
+        "game.js",
+        "game.json",
+        "utils/Storage.js"
+      ],
+      "bytes": 2849023
+    },
+    {
+      "name": "art-extra",
+      "root": "art-extra",
+      "files": [
+        "art-extra/boss_atlas.png",
+        "art-extra/game.js",
+        "art-extra/material_atlas.png"
+      ],
+      "bytes": 3822682
+    }
+  ]
+}

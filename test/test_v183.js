@@ -8,16 +8,28 @@ function context(){const calls=[],stack=[],state={globalAlpha:1};return new Prox
 function game(w=375,h=667,safe=null){const c=context(),g=new Game({},c,w,h,safe);g.start();return g}
 function choices(g,count){g.state='upgrading';g._currentChoices=R.getAll().slice(0,count);g.render()}
 function state(g){return JSON.stringify({bird:[g.bird.x,g.bird.y,g.bird.velocity,g.bird.collisionWidth,g.bird.collisionHeight],hp:[g.abilitySystem.hp,g.abilitySystem.tempHp,g.abilitySystem.shieldLayers],owned:[...g.abilitySystem.owned],time:[g.gameTime,g.bossFightFrames,g.frameCount],xp:[g.expSystem.level,g.expSystem.exp],boss:g.boss&&[g.boss.x,g.boss.y,g.boss.hp,g.boss.state,g.boss.stateT,g.boss.attackIndex],hazards:g.feathers.map(f=>[f.x,f.y,f.age,f.warn,f.radius]),pipes:g.pipes.map(p=>[p.x,p.topHeight,p.bottomY,p.gap])})}
-test('版本与运行包：全部四张PNG在项目中，RGBA解码预算24MiB，包体低于10MB',()=>{
+test('版本与运行包：全部四张PNG在项目中，RGBA解码预算24MiB，运行文件低于7MiB（给上传限制预留空间）',()=>{
  assert.equal(C.VERSION,'1.8.3');let total=0,decoded=0
  function size(dir){for(const e of fs.readdirSync(dir,{withFileTypes:true})){const f=path.join(dir,e.name);if(e.isDirectory())size(f);else total+=fs.statSync(f).size}}
- size(path.join(__dirname,'../game'));size(path.join(__dirname,'../utils'));total+=fs.statSync(path.join(__dirname,'../game.js')).size
+ size(path.join(__dirname,'../art-extra'));size(path.join(__dirname,'../game'));size(path.join(__dirname,'../utils'));total+=fs.statSync(path.join(__dirname,'../game.js')).size
  for(const f of Object.values(A.files)){const b=fs.readFileSync(path.join(__dirname,'..',f));assert.equal(b.toString('ascii',1,4),'PNG');decoded+=b.readUInt32BE(16)*b.readUInt32BE(20)*4}
- assert.ok(total<10*1000*1000);assert.equal(decoded,24*1024*1024);console.log('  Runtime bytes '+total+'; decoded atlas bytes '+decoded)
+ assert.ok(total<7*1024*1024);assert.equal(decoded,24*1024*1024);console.log('  Runtime bytes '+total+'; decoded atlas bytes '+decoded)
 })
 test('资源仅加载一次；未加载/失败有回退，成功后使用本地图集',()=>{
  const filename=require.resolve('../game/art/Assets');delete require.cache[filename];const fresh=require(filename),imgs=[];fresh.init(()=>{const img={};imgs.push(img);return img});fresh.init(()=>{throw Error('duplicate load')});assert.equal(imgs.length,4)
- const c=context();assert.equal(fresh.draw(c,'bird0',0,0,32,28),false);imgs[0].onload();assert.equal(fresh.draw(c,'bird0',0,0,32,28),true);imgs[1].onerror();assert.equal(fresh.errors.bosses,true);assert.equal(fresh.draw(c,'meadow',0,0,80,80),false)
+ const c=context();assert.equal(fresh.draw(c,'bird0',0,0,32,28),false);imgs[0].onload();assert.equal(fresh.draw(c,'bird0',0,0,32,28),true);imgs[2].onerror();assert.equal(fresh.errors.bosses,true);assert.equal(fresh.draw(c,'meadow',0,0,80,80),false)
+})
+test('分包成功前只加载主包；成功后再读分包图片；失败仍保留主包和绘制回退',()=>{
+ const filename=require.resolve('../game/art/Assets')
+ for(const success of [true,false]){
+  delete require.cache[filename];const fresh=require(filename),imgs=[];let request
+  fresh.init(()=>{const img={};imgs.push(img);return img},opts=>request=opts)
+  assert.equal(request.name,'art-extra');assert.equal(imgs.length,2);assert.ok(imgs.every(v=>v.src.startsWith('game/assets/')))
+  assert.equal(fresh.draw(context(),'meadow',0,0,80,80),false)
+  if(success){request.success();assert.equal(imgs.length,4);assert.ok(imgs.slice(2).every(v=>v.src.startsWith('art-extra/')));imgs[2].onload();assert.equal(fresh.draw(context(),'meadow',0,0,80,80),true)}
+  else{request.fail();assert.equal(imgs.length,2);assert.equal(fresh.errors.extra,true);imgs[0].onload();assert.equal(fresh.draw(context(),'bird0',0,0,32,28),true);assert.equal(fresh.draw(context(),'meadow',0,0,80,80),false)}
+ }
+ const config=JSON.parse(fs.readFileSync(path.join(__dirname,'../game.json'),'utf8'));assert.ok(config.subpackages.some(p=>p.name==='art-extra'&&fs.existsSync(path.join(__dirname,'..',p.root,'game.js'))))
 })
 test('角色与Boss裁切均在图集内，三帧小鸟/四精英/六Boss齐全',()=>{
  assert.equal(Object.keys(A.rects).length,14)

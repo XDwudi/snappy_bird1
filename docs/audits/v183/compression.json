@@ -1,0 +1,38 @@
+{
+  "baseline": "728281b",
+  "dimensions": "1536x1024 unchanged",
+  "rows": [
+    {
+      "file": "game/assets/actor_atlas.png",
+      "beforeBytes": 1595106,
+      "afterBytes": 794967,
+      "clearedInvisibleRGBPixels": 1113487,
+      "visibleRGBAIdentical": true,
+      "canvasPixelsIdentical": true
+    },
+    {
+      "file": "art-extra/boss_atlas.png",
+      "beforeBytes": 2199726,
+      "afterBytes": 1593859,
+      "clearedInvisibleRGBPixels": 790569,
+      "visibleRGBAIdentical": true,
+      "canvasPixelsIdentical": true
+    },
+    {
+      "file": "game/assets/scenery_atlas.png",
+      "beforeBytes": 1860569,
+      "afterBytes": 1623775,
+      "clearedInvisibleRGBPixels": 0,
+      "visibleRGBAIdentical": true,
+      "canvasPixelsIdentical": true
+    },
+    {
+      "file": "art-extra/material_atlas.png",
+      "beforeBytes": 2302615,
+      "afterBytes": 2228732,
+      "clearedInvisibleRGBPixels": 0,
+      "visibleRGBAIdentical": true,
+      "canvasPixelsIdentical": true
+    }
+  ]
+}

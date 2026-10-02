@@ -44,51 +44,6 @@ class Pipe extends Obstacle {
   _doRender(ctx) {
     Art.pipe(ctx, this)
   }
-
-  /**
-   * 绘制管道主体
-   */
-  _drawPipeBody(ctx, x, y, w, h) {
-    const { VISUAL } = Config
-    // [v1.5.0] 章节换色：有 colorSet 用章节色，否则 VISUAL 默认（Ch1 零变化）
-    const cs = this.colorSet
-
-    ctx.fillStyle = cs ? cs.body : VISUAL.PIPE_BODY
-    ctx.fillRect(x, y, w, h)
-
-    ctx.fillStyle = cs ? cs.highlight : VISUAL.PIPE_HIGHLIGHT
-    ctx.fillRect(x + 3, y, 5, h)
-
-    ctx.fillStyle = cs ? cs.shadow : VISUAL.PIPE_SHADOW
-    ctx.fillRect(x + w - 8, y, 5, h)
-
-    ctx.strokeStyle = VISUAL.PIPE_OUTLINE
-    ctx.lineWidth = 2
-    ctx.strokeRect(x, y, w, h)
-  }
-
-  /**
-   * 绘制管道帽
-   */
-  _drawPipeCap(ctx, x, y, isTop) {
-    const { PIPE, VISUAL } = Config
-    const cs = this.colorSet  // [v1.5.0] 章节换色
-    const capW = this.width + PIPE.CAP_OVERHANG * 2
-    const capX = x - PIPE.CAP_OVERHANG
-
-    ctx.fillStyle = cs ? cs.body : VISUAL.PIPE_BODY
-    ctx.fillRect(capX, y, capW, PIPE.CAP_HEIGHT)
-
-    ctx.fillStyle = cs ? cs.highlight : VISUAL.PIPE_HIGHLIGHT
-    ctx.fillRect(capX + 3, y, 5, PIPE.CAP_HEIGHT)
-
-    ctx.fillStyle = cs ? cs.shadow : VISUAL.PIPE_SHADOW
-    ctx.fillRect(capX + capW - 8, y, 5, PIPE.CAP_HEIGHT)
-
-    ctx.strokeStyle = VISUAL.PIPE_OUTLINE
-    ctx.lineWidth = 2
-    ctx.strokeRect(capX, y, capW, PIPE.CAP_HEIGHT)
-  }
 }
 
 module.exports = Pipe

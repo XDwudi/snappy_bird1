@@ -10,6 +10,8 @@ Flappy Bird单指飞行 + roguelike成长的微信小游戏，CommonJS / Canvas 
 
 首次导入或重新生成本地配置后，运行 `node scripts/prepare_wechat.js`，再关闭并重新打开项目。此脚本保留AppID及编译设置，将测试、文档和工具脚本排除出上传包，避免Node测试代码被微信上传编译器解析。上传由用户手动完成。
 
+同日已修复上传包超限：主包约 **2.85MB**，美术资源分包约 **3.82MB**。PNG尺寸、透明度与可见像素保持一致；重新打开微信项目使分包配置生效。
+
 ## 玩法
 
 - 拍翅不吃属性增幅；轻羽只减缓下落，顺风等成长转为火力节奏。20级后经验需求递增，天气卡减负与增益可以共存。
@@ -31,12 +33,13 @@ node test/test_v181.js
 node test/test_v182.js
 node test/test_v182_balance.js
 node test/test_v183.js
+node scripts/check_package.js
 node test/probe_v182_balance.js
 node test/sim_v182_balance.js boss 4
 node test/sim_v182_balance.js endless 8
 ```
 
-115项回归（原有103项机制回归＋12项美术/交互专项）；实际Canvas六章、攻击、教学、73张图标、短屏选卡与安全区检查通过。用户反馈已证明旧模拟不足以代表真人无尽时长；新版模拟仅作压力测试，具体结果与限制见迭代记录。
+116项回归（原有103项机制回归＋13项美术/交互/分包专项）；实际Canvas六章、攻击、教学、73张图标、短屏选卡与安全区检查通过。用户反馈已证明旧模拟不足以代表真人无尽时长；新版模拟仅作压力测试，具体结果与限制见迭代记录。
 
 ## 交接
 

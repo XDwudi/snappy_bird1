@@ -2,7 +2,6 @@ const Art=require('../art/Entities')
 // 六章主题招式与P2连协：观察预警 → 躲避 → 破绽反击。行为计时不消耗随机数。
 const BossMechanics = require('./BossMechanics.js')
 const castPattern = require('./BossPatterns.js')
-const drawBossArt = require('./BossArt.js')
 const Config = require('../config/GameConfig.js')
 const Obstacle = require('./Obstacle.js')
 const MathUtil = require('../core/MathUtil.js')
