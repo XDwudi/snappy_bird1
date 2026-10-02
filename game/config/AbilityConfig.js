@@ -49,23 +49,23 @@ const Abilities = [
     id: 'light_feather',
     name: '轻羽',
     icon: '🪶',
-    desc: '降低重力',
+    desc: '缓降，不改变起跳高度',
     category: ABILITY.CATEGORY.PASSIVE,
     rarity: 'common',       // [v1.1.3]
     maxLevel: 5,
-    // [v1.2.2] N3 幅度减半：-8%→-5%/级（陷阱卡不再主动有害）
-    effectText: (lv) => `重力 -${5 * lv}%`
+    // 1.8.2：只优化下落，不放大单击上升距离。
+    effectText: (lv) => `下落重力-${6*lv}%，最大落速-${5*lv}%；起跳不变`
   },
   {
     id: 'tailwind',
     name: '顺风',
     icon: '🌬️',
-    desc: '提升上升力',
+    desc: '加快羽刃与元素武器节奏',
     category: ABILITY.CATEGORY.PASSIVE,
     rarity: 'common',       // [v1.1.3]
     maxLevel: 5,
-    // [v1.2.2] N3 幅度减半：+10%→+6%/级（陷阱卡不再主动有害）
-    effectText: (lv) => `上升力 +${6 * lv}%`
+    // 1.8.2：移除上升力叠乘，替换为实际攻击节奏。
+    effectText: (lv) => `羽刃/元素武器间隔-${3*lv}%；拍翅力度不变`
   },
   {
     id: 'agile',
@@ -139,7 +139,7 @@ const Abilities = [
     category: ABILITY.CATEGORY.PASSIVE,
     rarity: 'common',
     maxLevel: 3,
-    effectText: (lv) => `风力影响 -${30 * lv}%`
+    effectText: (lv) => `风力-${30*lv}%；驯化风期间武器间隔-${3*lv}%`
   },
   {
     id: 'raincoat',
@@ -149,27 +149,27 @@ const Abilities = [
     category: ABILITY.CATEGORY.PASSIVE,
     rarity: 'uncommon',
     maxLevel: 3,
-    effectText: (lv) => `雨水积累 -${Math.min(100, 40 * lv)}%`
+    effectText: (lv) => `积水-${Math.min(100,40*lv)}%；驯化雨期间武器间隔-${3*lv}%`
   },
   {
     id: 'wind_rider',
     name: '御风者',
     icon: '🪁',
-    desc: '风力转化为助推力',
+    desc: '有风时发射双羽刃',
     category: ABILITY.CATEGORY.PASSIVE,
     rarity: 'rare',
     maxLevel: 3,
-    effectText: (lv) => `风力变助推 +${50 * lv}%`
+    effectText: (lv) => `有风每${6-lv}秒双刃：怪物${lv}伤，Boss每轮${lv+1}伤`
   },
   {
     id: 'climate_adapt',
     name: '气候适应',
     icon: '🌡️',
-    desc: '缩短环境效果持续时间',
+    desc: '减轻天气，保留增益时长',
     category: ABILITY.CATEGORY.PASSIVE,
     rarity: 'rare',
     maxLevel: 3,
-    effectText: (lv) => `环境持续时间 -${15 * lv}%`
+    effectText: (lv) => `风力/雨重力/冰雹密度-${15*lv}%；天气时长不变`
   },
 
   // ==================== 主动技能类 (7) ====================
@@ -248,7 +248,7 @@ const Abilities = [
     category: ABILITY.CATEGORY.ACTIVE,
     rarity: 'rare',
     maxLevel: 3,
-    effectText: (lv) => `冰雹转为护盾，CD ${20 - 3 * (lv - 1)}s`
+    effectText: (lv) => `冰雹转盾，CD ${20 - 3 * (lv - 1)}s；驯化/天气免疫中仍生效`
   },
 
   // ==================== 特殊机制类 (7) ====================
@@ -326,22 +326,22 @@ const Abilities = [
     id: 'berserk',
     name: '狂暴',
     icon: '😤',
-    desc: 'HP为1时全属性提升',
+    desc: '低血时火力加速，操作不变',
     category: ABILITY.CATEGORY.SPECIAL,
     rarity: 'epic',          // [v1.1.3]
     maxLevel: 3,
-    effectText: (lv) => `HP=1时，全属性 +${25 * lv}%`
+    effectText: (lv) => `HP=1：羽刃/元素间隔-${8*lv}%，得分+${25*lv}%；血契时增益减半`
   },
   // [v1.2.0新增] 风暴之子
   {
     id: 'storm_child',
     name: '风暴之子',
     icon: '🌩️',
-    desc: '环境效果期间全属性提升',
+    desc: '天气期间火力加速',
     category: ABILITY.CATEGORY.SPECIAL,
     rarity: 'epic',
     maxLevel: 3,
-    effectText: (lv) => `环境期间全属性 +${20 * lv}%`
+    effectText: (lv) => `天气中羽刃/元素间隔-${4*lv}%，得分+${20*lv}%；操作不变`
   },
 
   // ==================== [v1.4.0] 能力扩展包·批次1：common ×6 ====================
@@ -530,7 +530,7 @@ const Abilities = [
     category: ABILITY.CATEGORY.SPECIAL,
     rarity: 'rare',
     maxLevel: 2,
-    effectText: (lv) => `天气并发≥2种时：debuff-${20 * lv}%，经验×${1 + 0.5 * lv}`
+    effectText: (lv) => `天气≥2种：负面-${20*lv}%，经验加成+${50*lv}%（加算）`
   },
   // R6 蜂群链路：导弹节奏卡；叠层上限 1+lv 硬封顶（防指数回路）；与屠龙者加算（v1.5.0）
   {
@@ -579,7 +579,7 @@ const Abilities = [
     effectText: (lv) => `拾取导弹变${4 + lv}s连发(每秒2枚)`
   },
   // E2 风暴驯化：天气流史诗顶点；驯化对象按获得时天气决定（无天气则下一种），不给挑；
-  // 驯化后对应天气卡作废——抽卡 UI 加"已驯化"互斥标记（D7）
+  // 1.8.2：驯化保留减负卡的转换收益与冰晶转盾。
   {
     id: 'chaos_dice',
     name: '风暴驯化',
@@ -588,7 +588,7 @@ const Abilities = [
     category: ABILITY.CATEGORY.SPECIAL,
     rarity: 'epic',
     maxLevel: 1,
-    effectText: (lv) => '获得时驯化当前天气：风变助推/雨变轻盈/冰雹掉exp不伤人'
+    effectText: (lv) => '驯化一种天气：风不推、雨不加重、冰雹无伤可转盾；减负卡转火力'
   },
   // E3 血契：自残高收益卡；持血契时狂暴增益减半（写死保险丝）；凤凰复活=回满当前上限
   {
@@ -617,11 +617,11 @@ const Abilities = [
     id: 'enlightenment',
     name: '顿悟',
     icon: '💡',
-    desc: '憋经验一次升2级',
+    desc: '大额经验触发第二级半价',
     category: ABILITY.CATEGORY.SPECIAL,
     rarity: 'epic',
     maxLevel: 1,
-    effectText: (lv) => '经验达升级所需200%时一次升2级（每局限3次）'
+    effectText: (lv) => '单次经验足够连升时，第二级半价；每局3次，不含Boss礼包'
   },
   // E6 时之晶：寄生时间扭曲同一触发点（同CD同源，不独立计时，规避N4遮蔽）；
   // 未持时间扭曲时无效，选牌 UI 灰显（先知会标🔗）

@@ -34,6 +34,8 @@ class Bird {
     this.gravity = Config.BIRD.GRAVITY
     this.flapForce = Config.BIRD.FLAP_FORCE
     this.maxFallSpeed = Config.BIRD.MAX_FALL_SPEED
+    this.descentGravityMultiplier = 1
+    this.windForce = 0
 
     // 碰撞箱缩放（可被灵巧能力修改）
     this.collisionScale = 1.0
@@ -67,7 +69,10 @@ class Bird {
    */
   update() {
     // 重力
-    this.velocity += this.gravity
+    const gravity=this.gravity*(this.velocity>=0?this.descentGravityMultiplier:1)
+    // 阵风不能抵消重力；固定拍翅力度，满级组合不会单击冲顶。
+    const wind=Math.max(-gravity*.25,Math.min(gravity*.35,this.windForce))
+    this.velocity += gravity+wind
     if (this.velocity > this.maxFallSpeed) {
       this.velocity = this.maxFallSpeed
     }

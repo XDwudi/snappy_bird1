@@ -24,12 +24,13 @@ class ExpSystem {
 
   /**
    * 计算升到下一级所需经验
-   * 公式：BASE_EXP + (level - 1) * EXP_INCREMENT
+   * 公式：前20级保持线性，之后叠加0.9×(level-20)²
    * @param {number} level - 当前等级
    * @returns {number}
    */
   getExpNeeded(level) {
-    return Config.EXP.BASE_EXP + (level - 1) * Config.EXP.EXP_INCREMENT
+    return Math.ceil(Config.EXP.BASE_EXP + (level - 1) * Config.EXP.EXP_INCREMENT +
+      Config.EXP.LATE_CURVE * Math.pow(Math.max(0,level-Config.EXP.LATE_START_LEVEL),2))
   }
 
   /**
@@ -38,17 +39,17 @@ class ExpSystem {
    * @param {number} multiplier - 经验倍率
    * @returns {number} 实际增加的经验
    */
-  addExp(amount, multiplier) {
+  addExp(amount, multiplier, allowEnlighten = true) {
     const actual = Math.round(amount * multiplier)
     this.exp += actual
 
-    // [v1.4.0] 顿悟：入账后经验 ≥ 升级所需×200% 时一次升 2 级（消耗 200% 额度作为代价），
-    // 每局限 3 次硬刹车（防"全程双升"等级失控）；
-    // 双面板连弹由 Game 侧既有 B2 保护覆盖（关板 45 帧无敌对第二块同样生效），勿另写
-    if (this.enlightenEnabled && this.enlightenUsed < Config.EXP.ENLIGHTEN_MAX_PER_RUN) {
+    // 顿悟：一次入账足够支付当前级+下一级半价时连升两级，最多3次。
+    // Boss定额礼包不触发折扣；普通逐级升级仍按原费用结算。
+    if (allowEnlighten && this.enlightenEnabled && this.enlightenUsed < Config.EXP.ENLIGHTEN_MAX_PER_RUN) {
       const neededNow = this.getExpNeeded(this.level)
-      if (this.exp >= neededNow * Config.EXP.ENLIGHTEN_RATIO) {
-        this.exp -= neededNow * Config.EXP.ENLIGHTEN_RATIO
+      const doubleCost=neededNow+Math.ceil(this.getExpNeeded(this.level+1)*Config.EXP.ENLIGHTEN_SECOND_LEVEL_COST)
+      if (this.exp >= doubleCost) {
+        this.exp -= doubleCost
         this.level += 2
         this.pendingLevelUps += 2
         this.enlightenUsed++

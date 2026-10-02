@@ -30,9 +30,8 @@ class RainEffect extends WeatherEffect {
   getDuration(gameTime, gameCtx) {
     const R = Config.WEATHER.RAIN
     const t = Math.min(1, gameTime / R.DURATION_RAMP_TIME)
-    const adaptLv = gameCtx.abilities.owned.get('climate_adapt') || 0
-    const reduction = adaptLv > 0 ? 1 - 0.15 * adaptLv : 1
-    return Math.round((R.MIN_DURATION + (R.MAX_DURATION - R.MIN_DURATION) * t) * reduction)
+    // 气候适应在负面强度处结算，天气持续时间不变。
+    return Math.round((R.MIN_DURATION + (R.MAX_DURATION - R.MIN_DURATION) * t))
   }
 
   update(gameCtx) {

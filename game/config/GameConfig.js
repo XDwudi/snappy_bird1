@@ -122,6 +122,8 @@ module.exports = {
 
   // ==================== 经验系统 ====================
   EXP: {
+    LATE_START_LEVEL: 20,
+    LATE_CURVE: 0.9,
     BASE_EXP: 18,          // [v1.1.0] 20→18 前期更快
     EXP_INCREMENT: 12,     // [v1.1.0] 15→12 曲线更平缓
     PIPE_PASS_EXP: 10,     // [v1.1.4] 5→10 通过管道经验（经验球经验移除，保留后续版本） 早期成长加速（真机反馈①"让玩家有胡牌爽起来的时候"；主经验源 +20%，升级提前 ~17%）[v1.1.4] 5→10 通过管道经验（经验球经验移除，保留后续版本）
@@ -134,9 +136,8 @@ module.exports = {
     SCORE_SURVIVAL_INTERVAL: 300, // 存活时间得分间隔(帧)，300=5s
 
 
-    // [v1.4.0] 顿悟（enlightenment）：经验达升级所需 200% 时一次升 2 级（消耗 200% 额度），
-    // 每局限 3 次硬刹车（防"全程双升"等级失控）；双面板连弹由既有 B2 保护覆盖，不另写
-    ENLIGHTEN_RATIO: 2,
+    // 大额经验支付当前级和下一等级半价，每局至多三次；Boss定额不参与。
+    ENLIGHTEN_SECOND_LEVEL_COST: 0.5,
     ENLIGHTEN_MAX_PER_RUN: 3
   },
 
@@ -357,13 +358,12 @@ module.exports = {
     SHRINK_RAY_L5_NEAR_MISS_BONUS: 10,
 
     // [v1.4.0] 先知（oracle）：升级面板协同标注表（静态表，必须与代码实际结算一致；只标注不推荐）
-    // ⚠️ 反协同对：顺风耳×御风者（减弱风力=削弱助推）、风暴之子×气候适应（缩短天气=削弱增益窗口）
-    ORACLE_ANTI_PAIRS: [
-      ['wind_reader', 'wind_rider'],
-      ['storm_child', 'climate_adapt']
-    ],
+    // 1.8.2：天气减负不再压缩增益或攻击，旧反协同已消除。
+    ORACLE_ANTI_PAIRS: [],
     // 🔗 协同对（节选主流派官方搭档，与设计 §3.1 流派表一致）
     ORACLE_SYNERGY_PAIRS: [
+      ['wind_reader','wind_rider'], ['storm_child','climate_adapt'],
+      ['chaos_dice','ice_crystal'], ['chaos_dice','raincoat'], ['chaos_dice','wind_reader'],
       ['revenge_pulse', 'toughness'], ['revenge_pulse', 'echo_wing'],
       ['missile_barrage', 'missile_rack'], ['missile_barrage', 'hunter_mark'],
       ['missile_rack', 'missile_storm'], ['missile_link', 'missile_storm'],
@@ -406,13 +406,8 @@ module.exports = {
       { core: ['blood_pact', 'berserk'],
         support: ['physique', 'echo_wing', 'regeneration', 'vitality'] }
     ],
-    // [v1.4.0] 风暴驯化互斥表（D7）：已驯化天气 → 作废/反协同卡，抽卡 UI 加"已驯化"标记
-    // 冰雹驯化→冰晶护体作废（冰雹不再伤人）；风驯化→顺风耳会把助推也削弱；雨驯化→雨衣失去意义
-    TAMED_MUTEX: {
-      hail: ['ice_crystal'],
-      wind: ['wind_reader'],
-      rain: ['raincoat']
-    },
+    // 驯化后减负卡转为火力增益，冰晶仍可转化，均不作废。
+    TAMED_MUTEX: {},
 
     // [v1.5.1] 前置依赖表（真机反馈②"前置卡白占格子"修复）：依赖卡在前置未持有时
     // 直接不进抽卡候选池（AbilityRegistry 全部四个抽卡入口统一口径），
@@ -522,7 +517,6 @@ module.exports = {
 
     // [v1.4.0] 风暴驯化（chaos_dice）：获得时驯化当前天气（无天气则驯化下一种）：
     // 风→50% 助推（恒有利方向）；雨→积水不加重力；冰雹→10% 概率掉 exp 不伤人
-    TAMED_WIND_BOOST_FACTOR: 0.5,
     TAMED_HAIL_EXP_CHANCE: 0.1,
     TAMED_HAIL_EXP_AMOUNT: 5,
 

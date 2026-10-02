@@ -30,10 +30,8 @@ class WindEffect extends WeatherEffect {
   getDuration(gameTime, gameCtx) {
     const W = Config.WEATHER.WIND
     const t = Math.min(1, gameTime / W.DURATION_RAMP_TIME)
-    // 气候适应能力缩减持续时间
-    const adaptLv = gameCtx.abilities.owned.get('climate_adapt') || 0
-    const reduction = adaptLv > 0 ? 1 - 0.15 * adaptLv : 1
-    return Math.round((W.MIN_DURATION + (W.MAX_DURATION - W.MIN_DURATION) * t) * reduction)
+    // 气候适应在负面强度处结算，天气持续时间不变。
+    return Math.round((W.MIN_DURATION + (W.MAX_DURATION - W.MIN_DURATION) * t))
   }
 
   update(gameCtx) {
@@ -44,35 +42,16 @@ class WindEffect extends WeatherEffect {
 
     // 能力修饰
     const windReaderLv = gameCtx.abilities.owned.get('wind_reader') || 0
-    const windRiderLv = gameCtx.abilities.owned.get('wind_rider') || 0
 
-    let force = rawForce
-    // [v1.4.0] 风暴驯化：风→50% 助推（恒有利方向=-rawForce 方向，与御风者翻转方向一致）；
-    // 驯化后风是纯资产，不再吃顺风耳/御风者/定风珠/风暴之眼修饰
-    if (this.isTamed(gameCtx)) {
-      force = -Math.abs(rawForce) * Config.WEATHER.TAMED_WIND_BOOST_FACTOR
-    } else {
-      if (windReaderLv > 0) {
-        force *= (1 - 0.3 * windReaderLv)
-      }
-      if (windRiderLv > 0) {
-        // 御风者：翻转方向并增强
-        force = -force * (1 + 0.5 * windRiderLv)
-      } else {
-        // [v1.4.0] 风暴之眼：并发≥2 时 debuff 缩放（御风者翻转后是增益，不缩）
-        force *= this.getDebuffScale(gameCtx)
-        // [v1.4.0] 定风珠：免疫期风力归零；只免疫负面部分——御风者翻转后的助推（增益）保留
-        if (this.isDebuffImmune(gameCtx)) {
-          force = 0
-        }
-      }
-    }
+    // 御风者改为攻击，不再把向上/向下吹视为必然有利的助推。
+    let force=rawForce*Math.max(0,1-.3*windReaderLv)*this.getDebuffScale(gameCtx)
+    if(this.isTamed(gameCtx)||this.isDebuffImmune(gameCtx))force=0
 
     this.currentForce = force
 
     // 应用风力
     if (this.isVertical) {
-      gameCtx.bird.velocity += force
+      gameCtx.verticalWindForce = (gameCtx.verticalWindForce || 0)+force
     } else {
       // [v1.2.1] 水平风系数 0.3→1.5（配置化），玩法影响与视觉强度对齐
       gameCtx.windScrollModifier += force * Config.WEATHER.WIND.HORIZONTAL_FACTOR
@@ -146,17 +125,14 @@ class WindEffect extends WeatherEffect {
     }
 
     // 小鸟周围风向箭头
-    if (gameCtx && gameCtx.bird && intensity > 0.1) {
+    if (gameCtx && gameCtx.bird && intensity > 0.1 && Math.abs(this.currentForce)>.001) {
       const bx = gameCtx.bird.x
       const by = gameCtx.bird.y
       const arrowDist = 35 + intensity * 10
       const arrowLen = 12 + intensity * 8
 
-      // [v1.2.2] N2 御风者会翻转风力方向，箭头按"有效受力方向"绘制（同步翻转）
-      // [v1.4.0] 风暴驯化：驯化风恒为助推，箭头同样按助推方向绘制
-      const windRiderLv = (gameCtx.abilities && gameCtx.abilities.owned.get('wind_rider')) || 0
-      const boosted = windRiderLv > 0 || this.isTamed(gameCtx)
-      const arrowDir = boosted ? -this.direction : this.direction
+      // 箭头跟随实际风向；驯化或免疫时不画受力箭头。
+      const arrowDir = Math.sign(this.currentForce) || this.direction
 
       ctx.save()
       ctx.translate(bx, by)

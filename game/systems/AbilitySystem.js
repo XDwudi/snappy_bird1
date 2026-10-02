@@ -9,7 +9,7 @@
  * - 管理主动技能冷却（时间扭曲/瞬移/护盾爆发/自愈/弹力护盾/二段跳/冰晶护体）
  * - 管理道具效果状态（速度包减速）
  * - 连击系统 / 经验共鸣 / 狂暴
- * - [v1.2.0] 风暴之子：环境效果期间全属性提升
+ * - [v1.2.0] 风暴之子：环境效果期间增加得分与武器频率
  * - [v1.4.0] 批次1新卡：求生本能(HP=1补盾) / 锐利目光(擦边缩碰撞箱) / 连击种子(断连保留)
  *             镜面护盾(破盾冲击波事件) / 经验潮汐(天气期经验) / 羽舞(二段跳擦边窗口)
  *             定风珠免疫时间戳字段(由 WeatherSystem 写入)
@@ -67,6 +67,8 @@ class AbilitySystem {
     this.allBuffLevel = 0
 
     // [v1.2.0] 环境状态（由WeatherSystem更新，供风暴之子计算）
+    this.weatherTypes = []
+    this.tamedWeather = null
     this.weatherActive = false
 
     // [v1.4.0] 批次1新卡状态
@@ -89,7 +91,7 @@ class AbilitySystem {
     this.weatherConcurrent = 0     // 风暴之眼：当前天气并发数（由 Game 每帧写入）
 
     // [v1.5.0] 章节/Boss 状态（步骤C）
-    this.blessingExpMult = 1       // 成长祝福：经验独立乘区（每层 ×(1+0.25·masterMult)，本局永久）
+    this.blessingExpMult = 1       // 成长祝福：经验加算（每层 ×(1+0.25·masterMult)，本局永久）
     this.blessingItemBonus = 0     // 狩猎祝福：道具率 +pp（每层 +0.08·masterMult，本局永久）
     this.blessingTempHpCapBonus = 0 // 活力祝福：临时HP 上限 +1/次（§4.10"临时HP+1（上限+1）"）
     this.bossesDefeated = 0        // 已击败 Boss 数（R10 战利品陈列叠层计数，由 Game 写入）
@@ -280,7 +282,7 @@ class AbilitySystem {
     const allBuff = this.allBuffLevel
     const buffMul = 1 + 0.05 * allBuff
 
-    // [v1.1.0] 狂暴：HP为1时全属性提升
+    // [v1.1.0] 狂暴：HP为1时增加得分与武器频率
     // [v1.4.0] 血契保险丝：持血契时狂暴增益减半（写死，§6.3 专项验证——本方案最危险组合的熔断）
     const berserkLv = lv('berserk')
     const bloodPactLv = lv('blood_pact')
@@ -290,20 +292,15 @@ class AbilitySystem {
     }
     s.berserkMultiplier = berserkMul
 
-    // [v1.2.0] 风暴之子：环境效果期间全属性提升
+    // [v1.2.0] 风暴之子：环境效果期间增加得分与武器频率
     const stormChildLv = lv('storm_child')
     const stormMul = (this.weatherActive && stormChildLv > 0) ? (1 + 0.20 * stormChildLv) : 1.0
 
-    // 全属性倍率 = buff × 狂暴 × 风暴之子
-    const totalMul = buffMul * berserkMul * stormMul
-
-    // 轻羽: 重力 -5%/级
-    // [v1.2.1] 重力不吃狂暴/风暴之子乘区——重力增大对玩家是debuff，"全属性提升"不应包含它
-    // [v1.2.2] N3 幅度减半：-8%→-5%/级（陷阱卡不再主动有害）
-    s.gravityMultiplier = (1 - 0.05 * lv('light_feather')) * buffMul
-
-    // 顺风: 上升力 +6%/级 [v1.2.2] N3 幅度减半：+10%→+6%/级
-    s.flapForceMultiplier = (1 + 0.06 * lv('tailwind')) * buffMul * berserkMul * stormMul
+    // 操控不进入属性乘区。轻羽只减慢下落，顺风改为武器节奏。
+    s.gravityMultiplier = 1
+    s.flapForceMultiplier = 1
+    s.descentGravityMultiplier = 1-0.06*lv('light_feather')
+    s.maxFallSpeedMultiplier = 1-0.05*lv('light_feather')
 
     // 灵巧: 碰撞箱 -12%/级
     s.collisionScale = Math.max(0.3, 1 - 0.12 * lv('agile'))
@@ -318,34 +315,34 @@ class AbilitySystem {
     s.orbAttractRange = Config.ORB.ATTRACT_RANGE + 50 * lv('magnet')
 
     // 贪婪: 经验获取 +25%/级
-    s.expMultiplier = (1 + 0.25 * lv('greed')) * buffMul * berserkMul * stormMul
+    s.expMultiplier = 1 + 0.25*lv('greed') + 0.05*allBuff
 
     // [v1.4.0] 经验潮汐: 天气期间经验获取 +25%/级（只加经验不加战力，与风暴之子错位）
     const expTideLv = lv('exp_tide')
     if (this.weatherActive && expTideLv > 0) {
-      s.expMultiplier *= (1 + 0.25 * expTideLv)
+      s.expMultiplier += 0.25 * expTideLv
     }
 
-    // [v1.4.0] 风暴之眼: 天气并发≥2 时经验 ×(1+0.5/级)（单天气零收益，与潮汐错位；后期卡）
+    // [v1.4.0] 风暴之眼: 天气并发≥2 时经验加成 +0.5/级（单天气零收益，与潮汐错位；后期卡）
     const eyeLv = lv('eye_of_storm')
     if (eyeLv > 0 && this.weatherConcurrent >= Config.WEATHER.EYE_OF_STORM_MIN_CONCURRENT) {
-      s.expMultiplier *= (1 + Config.WEATHER.EYE_OF_STORM_EXP_PER_LV * eyeLv)
+      s.expMultiplier += Config.WEATHER.EYE_OF_STORM_EXP_PER_LV * eyeLv
     }
 
     // [v1.4.0] 血契: 经验 +30%/级（得分加成在 scoreMultiplier 同步）
     if (bloodPactLv > 0) {
-      s.expMultiplier *= (1 + Config.ABILITY.BLOOD_PACT_BONUS_PER_LV * bloodPactLv)
+      s.expMultiplier += Config.ABILITY.BLOOD_PACT_BONUS_PER_LV * bloodPactLv
     }
 
-    // [v1.5.0] 成长祝福：经验独立乘区（本局永久，E7 章节之主 +50% 已在授予时计入倍率）
-    s.expMultiplier *= this.blessingExpMult
+    // [v1.5.0] 成长祝福：经验加算（本局永久，E7 章节之主 +50% 已在授予时计入倍率）
+    s.expMultiplier += this.blessingExpMult-1
 
-    // [v1.5.0] R10 战利品陈列：每个已击败 Boss 经验 +15%/级（线性叠乘，TROPHY_MAX_STACKS 封顶；
+    // [v1.5.0] R10 战利品陈列：每个已击败 Boss 经验 +15%/级（线性加算，TROPHY_MAX_STACKS 封顶；
     // 未击败前零收益）
     const trophyLv = lv('trophy_wall')
     const trophyStacks = Math.min(this.bossesDefeated, Config.ABILITY.TROPHY_MAX_STACKS)
     if (trophyLv > 0 && trophyStacks > 0) {
-      s.expMultiplier *= (1 + Config.ABILITY.TROPHY_EXP_PER_LV * trophyLv * trophyStacks)
+      s.expMultiplier += Config.ABILITY.TROPHY_EXP_PER_LV * trophyLv * trophyStacks
     }
 
     // [v1.5.0] 道具率加成（pp 转小数）：狩猎祝福 + 战利品陈列（SpawnSystem 生成处读取）
@@ -398,14 +395,19 @@ class AbilitySystem {
 
     const factions={}
     for(const f of this.getFactions()) factions[f.name]=f.tier
-    s.expMultiplier *= 1 + (factions['森芽']||0)*0.08
+    s.expMultiplier += (factions['森芽']||0)*0.08
     s.gapBonus += (factions['沙铸']||0)*6
     s.collisionScale = Math.max(0.3,s.collisionScale-(factions['织影']||0)*0.04)
     s.scrollSpeedMultiplier *= 1-(factions['霜脉']||0)*0.03
     s.weaponBonus = (factions['熔核']||0) + Math.log2(1+this.breakthroughLevel)*0.5
-    s.weaponCadence = 1-(factions['天枢']||0)*0.06
+    const rageCadence=this.hp<=1 ? .08*berserkLv*(bloodPactLv?Config.ABILITY.BLOOD_PACT_BERSERK_FACTOR:1) : 0
+    const stormCadence=this.weatherActive ? .04*stormChildLv : 0
+    const converted=this.weatherTypes.includes(this.tamedWeather)
+      ? (this.tamedWeather==='wind'?lv('wind_reader'):this.tamedWeather==='rain'?lv('raincoat'):0)*.03 : 0
+    s.weaponCadence = Math.max(.45,(1-(factions['天枢']||0)*.06)*(1-.03*lv('tailwind'))*
+      (1-.02*allBuff)*(1-rageCadence)*(1-stormCadence)*(1-converted))
     // 高倍率经验收益递减；保留构筑差异，阻断经验乘区滚雪球到满池。
-    if(s.expMultiplier>3)s.expMultiplier=3+2*(Math.sqrt(1+(s.expMultiplier-3)/2)-1)
+    if(s.expMultiplier>4)s.expMultiplier=4+2*(1-Math.exp(-(s.expMultiplier-4)/2))
     s.itemSpawnBonus=Math.min(.35,s.itemSpawnBonus)
     return s
   }
@@ -415,6 +417,12 @@ class AbilitySystem {
   }
 
   // [v1.2.0] 设置环境活跃状态（由Game.js每帧调用）
+  setWeatherContext(types,tamed) {
+    if(types.join(',')!==this.weatherTypes.join(',') || tamed!==this.tamedWeather) {
+      this.weatherTypes=types.slice();this.tamedWeather=tamed;this.invalidateStats()
+    }
+  }
+
   setWeatherActive(active) {
     if (this.weatherActive !== active) {
       this.weatherActive = active
@@ -436,11 +444,12 @@ class AbilitySystem {
    * @returns {number} 0~1
    */
   getWeatherDebuffScale() {
+    const adapt=1-.15*(this.owned.get('climate_adapt')||0)
     const eyeLv = this.owned.get('eye_of_storm') || 0
     if (eyeLv > 0 && this.weatherConcurrent >= Config.WEATHER.EYE_OF_STORM_MIN_CONCURRENT) {
-      return Math.max(0, 1 - Config.WEATHER.EYE_OF_STORM_DEBUFF_REDUCT_PER_LV * eyeLv)
+      return adapt*Math.max(0, 1 - Config.WEATHER.EYE_OF_STORM_DEBUFF_REDUCT_PER_LV * eyeLv)
     }
-    return 1
+    return adapt
   }
 
   // ==================== 每帧更新 ====================

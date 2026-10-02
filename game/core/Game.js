@@ -629,6 +629,7 @@ class Game {
     if (this.state !== Config.GAME.STATE.PLAYING || this.phoenixAnim) return
 
     // 读取环境系统输出的属性修饰
+    this.bird.windForce = gameCtx.verticalWindForce
     this._weatherGravityBonus = gameCtx.gravityModifier
     this._weatherWindScroll = gameCtx.windScrollModifier
     if (gameCtx.damageFlash > 0) this.damageFlash = gameCtx.damageFlash
@@ -639,6 +640,7 @@ class Game {
 
     // [v1.2.0] 通知能力系统环境活跃状态
     const weatherActiveNow = this.weatherSystem.activeEffects.length > 0
+    this.abilitySystem.setWeatherContext(this.weatherSystem.activeEffects.map(e=>e.type),this.weatherSystem.tamedWeather)
     this.abilitySystem.setWeatherActive(weatherActiveNow)
     // [v1.4.0] 风暴之眼：同步天气并发数（≥2 时 debuff 缩放+经验倍率在 getStats/getWeatherDebuffScale 结算）
     this.abilitySystem.setWeatherConcurrent(this.weatherSystem.activeEffects.length)
@@ -1067,6 +1069,8 @@ class Game {
     const stats = this.abilitySystem.getStats()
     this.bird.gravity = Config.BIRD.GRAVITY * stats.gravityMultiplier
     this.bird.flapForce = Config.BIRD.FLAP_FORCE * stats.flapForceMultiplier
+    this.bird.descentGravityMultiplier=stats.descentGravityMultiplier
+    this.bird.maxFallSpeed=Config.BIRD.MAX_FALL_SPEED*stats.maxFallSpeedMultiplier
     if (this.bird.collisionScale !== stats.collisionScale) {
       this.bird.collisionScale = stats.collisionScale
       this.bird.updateCollisionBox()
@@ -1083,6 +1087,7 @@ class Game {
       abilities: this.abilitySystem,
       interceptProjectile: projectile => this.combat.intercept(projectile),
       weather: this.weatherSystem,  // [v1.4.0] 风暴驯化状态查询（isTamed）
+      verticalWindForce: 0,
       gravityModifier: 0,           // 输出：重力增加比例（由效果写入）
       windScrollModifier: 0,        // 输出：风力滚动速度修饰（由效果写入）
       addFloatingText: (x, y, text, color, life) => this._addFloatingText(x, y, text, color, life),
@@ -2057,10 +2062,10 @@ class Game {
       doubled = true
     }
 
-    const multiplied = this.expSystem.addExp(exp, fixed?1:stats.expMultiplier * (extraMult || 1))
+    const multiplied = this.expSystem.addExp(exp, fixed?1:stats.expMultiplier * (extraMult || 1), !fixed)
 
     // 浮动文字——堆叠不重叠
-    const text = doubled ? `+${exp} EXP x2!` : `+${exp} EXP`
+    const text = `+${multiplied} EXP${doubled?' 共鸣!':''}`
     const color = doubled ? '#9b59b6' : '#ffd700'
     this._addFloatingText(this.bird.x, this.bird.y - 30, text, color, 50)
 

@@ -1,0 +1,50 @@
+{
+  "singleFlap": {
+    "base": {
+      "rise": 67.15000000000003,
+      "frames": 18,
+      "flapForce": -8
+    },
+    "stacked": {
+      "rise": 67.15000000000003,
+      "frames": 18,
+      "flapForce": -8
+    }
+  },
+  "income": [
+    {
+      "baseExpPerSecond": 5,
+      "seconds": 600,
+      "startLevel": 40,
+      "endLevel": 59,
+      "multiplier": 5.494320808390507,
+      "upgrades": 19
+    },
+    {
+      "baseExpPerSecond": 50,
+      "seconds": 600,
+      "startLevel": 40,
+      "endLevel": 108,
+      "multiplier": 5.494320808390507,
+      "upgrades": 68
+    },
+    {
+      "baseExpPerSecond": 100,
+      "seconds": 600,
+      "startLevel": 40,
+      "endLevel": 133,
+      "multiplier": 5.494320808390507,
+      "upgrades": 93
+    }
+  ],
+  "fire": {
+    "base": {
+      "castsPer10s": 12,
+      "cadence": 1
+    },
+    "stacked": {
+      "castsPer10s": 26,
+      "cadence": 0.454784
+    }
+  }
+}

@@ -63,7 +63,7 @@ class CombatSystem {
     const lv = this.level('feather_blade')
     if (lv && this.bladeCD <= 0) {
       this.fire()
-      this.bladeCD = Config.COMBAT.BLADE_INTERVAL[lv - 1]
+      this.bladeCD = Math.round(Config.COMBAT.BLADE_INTERVAL[lv - 1]*this.game.abilitySystem.getStat('weaponCadence'))
     }
     const g = this.game
     this.updateCampaign()
@@ -149,6 +149,9 @@ class CombatSystem {
       this.cooldowns[id]=(this.cooldowns[id]||0)-1
       if(this.cooldowns[id]<=0){this.cooldowns[id]=Math.round(interval(lv)*cadence);callback(lv)}
     }
+    if(g.weatherSystem.hasEffect('wind'))auto('wind_rider',lv=>(6-lv)*60,lv=>{
+      this.fire(lv,lv+1,[-.13,.13],'wind');g._addFloatingText(g.bird.x,g.bird.y-38,'借风双刃','#c5f4ff',30)
+    })
     auto('seed_bolt',lv=>(5-lv)*60,lv=>this.fire(lv,lv+1,[0],'seed'))
     auto('sand_lance',()=>180,lv=>this.fire(lv+1,lv+2,[0],'sand'))
     auto('frost_lance',()=>150,lv=>this.fire(lv+2,lv+3,[0],'frost'))

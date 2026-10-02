@@ -28,9 +28,8 @@ class HailEffect extends WeatherEffect {
   getDuration(gameTime, gameCtx) {
     const H = Config.WEATHER.HAIL
     const t = Math.min(1, gameTime / H.DURATION_RAMP_TIME)
-    const adaptLv = gameCtx.abilities.owned.get('climate_adapt') || 0
-    const reduction = adaptLv > 0 ? 1 - 0.15 * adaptLv : 1
-    return Math.round((H.MIN_DURATION + (H.MAX_DURATION - H.MIN_DURATION) * t) * reduction)
+    // 气候适应在负面强度处结算，天气持续时间不变。
+    return Math.round((H.MIN_DURATION + (H.MAX_DURATION - H.MIN_DURATION) * t))
   }
 
   update(gameCtx) {
@@ -38,7 +37,7 @@ class HailEffect extends WeatherEffect {
 
     // 生成冰雹（sin曲线密度）
     // [v1.4.0] 风暴之眼：并发≥2 时生成间隔按 debuff 缩放倒数放大（密度降低，伤害不可缩放故降频率）
-    const scale = this.getDebuffScale(gameCtx)
+    const scale = this.isTamed(gameCtx) ? 1 : this.getDebuffScale(gameCtx)
     this.spawnTimer+=gameCtx.eliteWeatherPressure?1.5:1
     const interval = Math.max(
       Config.WEATHER.HAIL.SPAWN_INTERVAL_PEAK / Math.max(0.1, this.sinIntensity) / Math.max(0.2, scale),
@@ -108,17 +107,32 @@ class HailEffect extends WeatherEffect {
    *          冰雹链实际顺序：定风珠免疫 → 驯化 → 无敌/时间扭曲 → 羽盾 → 冰晶护体（D8 裁定优先于 §2.6 表内位置，
    *          冰晶转化是冰雹特有的资源化路径，保持"冰雹变护盾"玩家友好语义）→ 统一护盾 → HP → 凤凰
    */
+  _tryConvertHail(hailstone,gameCtx) {
+    const a=gameCtx.abilities,lv=a.owned.get('ice_crystal')||0
+    if(!lv || a.iceCrystalCD>0 || a.shieldLayers>=a.maxShieldLayers)return false
+    const before=a.shieldLayers
+    a.addShieldLayer(1)
+    // 无尽恢复间隔未放行时，不虚报护盾，也不白消耗冷却。
+    if(a.shieldLayers<=before)return false
+    a.iceCrystalCD=(20-3*(lv-1))*60
+    this._addCrackEffect(hailstone.x,hailstone.y,'#64c8ff')
+    gameCtx.addFloatingText(hailstone.x,hailstone.y-20,'冰晶转盾!','#64c8ff',35)
+    return true
+  }
+
   _handleHailCollision(hailstone, gameCtx) {
     const abilities = gameCtx.abilities
 
     // [v1.4.0] 定风珠：免疫期冰雹不造成伤害（视觉碎裂保留，免疫判定在 debuff 应用点）
     if (this.isDebuffImmune(gameCtx)) {
+      this._tryConvertHail(hailstone,gameCtx)
       this._addCrackEffect(hailstone.x, hailstone.y, '#ffffff')
       return
     }
 
-    // [v1.4.0] 风暴驯化：冰雹→10% 概率掉 exp、不伤人（冰晶护体同时作废，D7 互斥标记）
+    // [v1.4.0] 风暴驯化：冰雹→10% 概率掉 exp、不伤人（冰晶护体仍可转盾，恢复间隔与冷却照常）
     if (this.isTamed(gameCtx)) {
+      this._tryConvertHail(hailstone,gameCtx)
       this._addCrackEffect(hailstone.x, hailstone.y, '#b8ff9e')
       if (Math.random() < Config.WEATHER.TAMED_HAIL_EXP_CHANCE &&
           typeof gameCtx.gainExp === 'function') {
@@ -143,15 +157,8 @@ class HailEffect extends WeatherEffect {
 
     // 冰晶护体：冰雹转为护盾
     // [v1.2.1] 护盾已满层时冰晶护体不触发也不进CD，走后续统一护盾链
-    const iceCrystalLv = abilities.owned.get('ice_crystal') || 0
-    const shieldFull = abilities.shieldLayers >= abilities.maxShieldLayers
-    if (iceCrystalLv > 0 && abilities.iceCrystalCD <= 0 && !shieldFull) {
-      abilities.addShieldLayer(1)
-      abilities.iceCrystalCD = (20 - 3 * (iceCrystalLv - 1)) * 60
-      // [v1.2.2] N1 冰晶护体转化（挡下冰雹）也断连击；防御性判断兼容无resetCombo的mock
+    if(this._tryConvertHail(hailstone,gameCtx)) {
       if (typeof abilities.resetCombo === 'function') abilities.resetCombo()
-      this._addCrackEffect(hailstone.x, hailstone.y, '#64c8ff')
-      gameCtx.addFloatingText(hailstone.x, hailstone.y - 20, '护盾+1!', '#64c8ff', 35)
       return
     }
 

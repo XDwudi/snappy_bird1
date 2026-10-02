@@ -2,7 +2,7 @@
 
 Flappy Bird单指飞行 + roguelike成长的微信小游戏，CommonJS / Canvas 2D，无npm运行依赖。
 
-当前为 **1.8.2 测试候选**（2026-10-01）：Boss多轮弹幕与明确穿盾预警、章节开战时限、四种成长精英、低生命红框，保留73张卡与六派系。手机验收尚未完成，微信上传由用户手动进行。
+当前为 **1.8.2 测试候选**（2026-10-02 平衡修订）：继续强化Boss，降低后期经验滚雪球，修复技能叠加导致的飞行失控，并重做天气卡冲突；保留73张卡与六派系。手机验收尚未完成，微信上传由用户手动进行。
 
 ## 运行
 
@@ -11,6 +11,8 @@ Flappy Bird单指飞行 + roguelike成长的微信小游戏，CommonJS / Canvas 
 首次导入或重新生成本地配置后，运行 `node scripts/prepare_wechat.js`，再关闭并重新打开项目。此脚本保留AppID及编译设置，将测试、文档和工具脚本排除出上传包，避免Node测试代码被微信上传编译器解析。上传由用户手动完成。
 
 ## 玩法
+
+- 拍翅不吃属性增幅；轻羽只减缓下落，顺风等成长转为火力节奏。20级后经验需求递增，天气卡减负与增益可以共存。
 
 - 六个Boss各六招及P2连协，并有拆根、诱撞、破卵、蓄热、开阀、按序断路六种破解方式。
 - 每章管数与最低时间达标，或达到最长时间即迎战。Boss可击杀或生存通关；剧情战败20管或35秒后再挑战，不跳章。
@@ -27,13 +29,18 @@ node test/test_v170.js
 node test/test_v180.js
 node test/test_v181.js
 node test/test_v182.js
-node test/sim_v182.js boss 4
-node test/sim_v182.js endless 8
+node test/test_v182_balance.js
+node test/probe_v182_balance.js
+node test/sim_v182_balance.js boss 4
+node test/sim_v182_balance.js endless 8
 ```
 
-87项机制回归；实际Canvas攻击、教学与短屏低血画面检查通过。用户反馈已证明旧模拟不足以代表真人无尽时长；新版模拟仅作压力测试，具体结果与限制见迭代记录。
+103项机制回归；实际Canvas攻击、教学与短屏低血画面检查通过。用户反馈已证明旧模拟不足以代表真人无尽时长；新版模拟仅作压力测试，具体结果与限制见迭代记录。
 
 ## 交接
+
+- [1.8.2现行成长与操控修订](docs/iterations/迭代_v1.8.2_成长与操控平衡修订.md)
+- [修订后技能卡](docs/audits/v182-balance/cards-short-screen.png)
 
 - [1.8.2玩法、数值与验收](docs/iterations/迭代_v1.8.2_Boss压力与遭遇节奏.md)
 - [1.8.2六套Boss指引](docs/audits/v182/boss-guides.png)

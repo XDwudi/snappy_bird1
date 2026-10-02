@@ -19,11 +19,11 @@ module.exports=function cast(boss,bird,skill) {
   const piercing=tier>=3 && ['frost_steps','beam','vent_burst','rail_switch','gate'].includes(skill.kind)
   boss.piercingAttack=piercing
   const dangerWarn=piercing?Math.max(90,warn):warn
-  const waves=1+Math.floor(tier/2)+(boss.phase===2?1:0)
+  const waves=1+Math.floor(tier/2)+(boss.phase===2?1:0)+(tier>=3&&boss.phase===2?1:0)
   const angle=Math.atan2(aim-boss.y,bird.x-boss.x)
   const bolt=(x,y,a,s=speed,extra={})=>{
     for(let wave=0;wave<waves;wave++)emit(Object.assign({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s},extra,
-      {warn:(extra.warn==null?warn:extra.warn)+wave*42}))
+      {warn:(extra.warn==null?warn:extra.warn)+wave*(tier>=3?36:42)}))
   }
   let duration=Math.ceil((w+100)/speed)+60
   switch(skill.kind) {
