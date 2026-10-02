@@ -1,0 +1,60 @@
+{
+  "before": {
+    "coherent": {
+      "runs": 64,
+      "bossReached": 39,
+      "firstKills": 23,
+      "firstSurvival": 3,
+      "fullClear": 1,
+      "pre60Death": 7,
+      "medianSeconds": 167
+    },
+    "random": {
+      "runs": 64,
+      "bossReached": 35,
+      "firstKills": 4,
+      "firstSurvival": 14,
+      "fullClear": 0,
+      "pre60Death": 6,
+      "medianSeconds": 132
+    },
+    "economy": {
+      "runs": 64,
+      "bossReached": 21,
+      "firstKills": 4,
+      "firstSurvival": 6,
+      "fullClear": 0,
+      "pre60Death": 9,
+      "medianSeconds": 93
+    }
+  },
+  "after": {
+    "coherent": {
+      "runs": 64,
+      "bossReached": 44,
+      "firstKills": 41,
+      "firstSurvival": 0,
+      "fullClear": 4,
+      "pre60Death": 7,
+      "medianSeconds": 181
+    },
+    "random": {
+      "runs": 64,
+      "bossReached": 32,
+      "firstKills": 20,
+      "firstSurvival": 0,
+      "fullClear": 0,
+      "pre60Death": 7,
+      "medianSeconds": 117
+    },
+    "economy": {
+      "runs": 64,
+      "bossReached": 29,
+      "firstKills": 16,
+      "firstSurvival": 0,
+      "fullClear": 0,
+      "pre60Death": 7,
+      "medianSeconds": 93
+    }
+  }
+}

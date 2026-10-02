@@ -1,0 +1,4291 @@
+{
+  "summary": {
+    "1": {
+      "runs": 12,
+      "kills": 6,
+      "survival": 1,
+      "defeat": 5,
+      "medianKillSeconds": 80.5,
+      "meanArmorPercent": 73
+    },
+    "2": {
+      "runs": 12,
+      "kills": 11,
+      "survival": 0,
+      "defeat": 1,
+      "medianKillSeconds": 41.9,
+      "meanArmorPercent": 0
+    },
+    "3": {
+      "runs": 8,
+      "kills": 8,
+      "survival": 0,
+      "defeat": 0,
+      "medianKillSeconds": 71.9,
+      "meanArmorPercent": 0
+    },
+    "4": {
+      "runs": 9,
+      "kills": 7,
+      "survival": 0,
+      "defeat": 2,
+      "medianKillSeconds": 123.5,
+      "meanArmorPercent": 94
+    },
+    "5": {
+      "runs": 1,
+      "kills": 1,
+      "survival": 0,
+      "defeat": 0,
+      "medianKillSeconds": 105.2,
+      "meanArmorPercent": 0
+    },
+    "6": {
+      "runs": 3,
+      "kills": 3,
+      "survival": 0,
+      "defeat": 0,
+      "medianKillSeconds": 47.9,
+      "meanArmorPercent": 58
+    }
+  },
+  "rows": [
+    {
+      "chapter": 1,
+      "level": 15,
+      "cards": [
+        [
+          "seed_bolt",
+          2
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "orbit_guard",
+          2
+        ],
+        [
+          "greed",
+          1
+        ],
+        [
+          "shrink_ray",
+          4
+        ],
+        [
+          "phoenix",
+          1
+        ],
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "revenge_pulse",
+          1
+        ]
+      ],
+      "seconds": 72.2,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 71,
+      "breaks": 4,
+      "minPlayerHp": 1,
+      "maxHazards": 6
+    },
+    {
+      "chapter": 1,
+      "level": 13,
+      "cards": [
+        [
+          "seed_bolt",
+          1
+        ],
+        [
+          "thick_skin",
+          1
+        ],
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "shrink_ray",
+          2
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "tailwind",
+          1
+        ]
+      ],
+      "seconds": 78.8,
+      "method": "defeat",
+      "remainingHp": 25,
+      "armorPercent": 73,
+      "breaks": 3,
+      "minPlayerHp": 1,
+      "maxHazards": 6
+    },
+    {
+      "chapter": 1,
+      "level": 14,
+      "cards": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "agile",
+          1
+        ],
+        [
+          "orbit_guard",
+          2
+        ],
+        [
+          "seed_bolt",
+          1
+        ],
+        [
+          "light_feather",
+          1
+        ],
+        [
+          "shrink_ray",
+          1
+        ],
+        [
+          "greed",
+          2
+        ]
+      ],
+      "seconds": 64.6,
+      "method": "defeat",
+      "remainingHp": 66,
+      "armorPercent": 78,
+      "breaks": 2,
+      "minPlayerHp": 1,
+      "maxHazards": 6
+    },
+    {
+      "chapter": 1,
+      "level": 14,
+      "cards": [
+        [
+          "magnet",
+          1
+        ],
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "shrink_ray",
+          2
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "toughness",
+          2
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "seed_bolt",
+          2
+        ],
+        [
+          "agile",
+          1
+        ]
+      ],
+      "seconds": 80.5,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 74,
+      "breaks": 4,
+      "minPlayerHp": 3,
+      "maxHazards": 6
+    },
+    {
+      "chapter": 1,
+      "level": 16,
+      "cards": [
+        [
+          "magnet",
+          1
+        ],
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "shrink_ray",
+          2
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "toughness",
+          2
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "seed_bolt",
+          2
+        ],
+        [
+          "agile",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "greed",
+          1
+        ]
+      ],
+      "seconds": 85.2,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 75,
+      "breaks": 4,
+      "minPlayerHp": 1,
+      "maxHazards": 6
+    },
+    {
+      "chapter": 1,
+      "level": 14,
+      "cards": [
+        [
+          "greed",
+          1
+        ],
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "shrink_ray",
+          1
+        ],
+        [
+          "orbit_guard",
+          2
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "thick_skin",
+          1
+        ],
+        [
+          "seed_bolt",
+          1
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "seed_harvest",
+          1
+        ]
+      ],
+      "seconds": 60.5,
+      "method": "defeat",
+      "remainingHp": 62,
+      "armorPercent": 77,
+      "breaks": 2,
+      "minPlayerHp": 1,
+      "maxHazards": 6
+    },
+    {
+      "chapter": 1,
+      "level": 13,
+      "cards": [
+        [
+          "shrink_ray",
+          1
+        ],
+        [
+          "toughness",
+          2
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "seed_bolt",
+          1
+        ],
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "light_feather",
+          1
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "orbit_guard",
+          1
+        ],
+        [
+          "revenge_pulse",
+          1
+        ]
+      ],
+      "seconds": 91.9,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 75,
+      "breaks": 4,
+      "minPlayerHp": 1,
+      "maxHazards": 6
+    },
+    {
+      "chapter": 1,
+      "level": 15,
+      "cards": [
+        [
+          "pipe_sense",
+          2
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "orbit_guard",
+          1
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "echo_wing",
+          1
+        ],
+        [
+          "shrink_ray",
+          1
+        ]
+      ],
+      "seconds": 49.3,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 61,
+      "breaks": 3,
+      "minPlayerHp": 3,
+      "maxHazards": 6
+    },
+    {
+      "chapter": 1,
+      "level": 13,
+      "cards": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "seed_bolt",
+          1
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "greed",
+          1
+        ],
+        [
+          "orbit_guard",
+          1
+        ],
+        [
+          "light_feather",
+          1
+        ],
+        [
+          "combo_seed",
+          1
+        ]
+      ],
+      "seconds": 86.5,
+      "method": "defeat",
+      "remainingHp": 25,
+      "armorPercent": 76,
+      "breaks": 3,
+      "minPlayerHp": 1,
+      "maxHazards": 6
+    },
+    {
+      "chapter": 1,
+      "level": 16,
+      "cards": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "seed_bolt",
+          1
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "greed",
+          1
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "light_feather",
+          2
+        ],
+        [
+          "combo_seed",
+          1
+        ]
+      ],
+      "seconds": 100,
+      "method": "survival",
+      "remainingHp": 14,
+      "armorPercent": 79,
+      "breaks": 4,
+      "minPlayerHp": 3,
+      "maxHazards": 6
+    },
+    {
+      "chapter": 1,
+      "level": 17,
+      "cards": [
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "greed",
+          2
+        ],
+        [
+          "thick_skin",
+          1
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "magnet",
+          2
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "shrink_ray",
+          1
+        ],
+        [
+          "orbit_guard",
+          1
+        ]
+      ],
+      "seconds": 42.9,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 61,
+      "breaks": 3,
+      "minPlayerHp": 3,
+      "maxHazards": 3
+    },
+    {
+      "chapter": 1,
+      "level": 14,
+      "cards": [
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "orbit_guard",
+          2
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "greed",
+          1
+        ],
+        [
+          "seed_bolt",
+          1
+        ],
+        [
+          "agile",
+          1
+        ]
+      ],
+      "seconds": 65.9,
+      "method": "defeat",
+      "remainingHp": 39,
+      "armorPercent": 76,
+      "breaks": 3,
+      "minPlayerHp": 1,
+      "maxHazards": 6
+    },
+    {
+      "chapter": 2,
+      "level": 26,
+      "cards": [
+        [
+          "pipe_sense",
+          2
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "toughness",
+          2
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "echo_wing",
+          1
+        ],
+        [
+          "shrink_ray",
+          2
+        ],
+        [
+          "combo_seed",
+          2
+        ],
+        [
+          "sand_lance",
+          1
+        ],
+        [
+          "boss_slayer",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "missile_rack",
+          1
+        ]
+      ],
+      "seconds": 48.2,
+      "method": "defeat",
+      "remainingHp": 32,
+      "armorPercent": 0,
+      "breaks": 0,
+      "minPlayerHp": 1,
+      "maxHazards": 16
+    },
+    {
+      "chapter": 2,
+      "level": 27,
+      "cards": [
+        [
+          "pipe_sense",
+          2
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "toughness",
+          2
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "echo_wing",
+          1
+        ],
+        [
+          "shrink_ray",
+          2
+        ],
+        [
+          "combo_seed",
+          2
+        ],
+        [
+          "sand_lance",
+          1
+        ],
+        [
+          "boss_slayer",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "missile_rack",
+          1
+        ],
+        [
+          "greed",
+          1
+        ]
+      ],
+      "seconds": 38.1,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 2,
+      "minPlayerHp": 3,
+      "maxHazards": 16
+    },
+    {
+      "chapter": 2,
+      "level": 30,
+      "cards": [
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "greed",
+          4
+        ],
+        [
+          "thick_skin",
+          1
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "magnet",
+          4
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "shrink_ray",
+          1
+        ],
+        [
+          "orbit_guard",
+          1
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "agile",
+          2
+        ],
+        [
+          "sand_lance",
+          1
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "boss_slayer",
+          1
+        ],
+        [
+          "supply_line",
+          1
+        ]
+      ],
+      "seconds": 44,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 1,
+      "minPlayerHp": 4,
+      "maxHazards": 16
+    },
+    {
+      "chapter": 2,
+      "level": 32,
+      "cards": [
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "regeneration",
+          2
+        ],
+        [
+          "greed",
+          4
+        ],
+        [
+          "thick_skin",
+          2
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "magnet",
+          4
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "shrink_ray",
+          1
+        ],
+        [
+          "orbit_guard",
+          1
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "agile",
+          2
+        ],
+        [
+          "sand_lance",
+          1
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "boss_slayer",
+          1
+        ],
+        [
+          "supply_line",
+          1
+        ]
+      ],
+      "seconds": 40.9,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 1,
+      "minPlayerHp": 4,
+      "maxHazards": 16
+    },
+    {
+      "chapter": 2,
+      "level": 34,
+      "cards": [
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "regeneration",
+          2
+        ],
+        [
+          "greed",
+          4
+        ],
+        [
+          "thick_skin",
+          2
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "magnet",
+          4
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "shrink_ray",
+          2
+        ],
+        [
+          "orbit_guard",
+          1
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "agile",
+          2
+        ],
+        [
+          "sand_lance",
+          1
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "boss_slayer",
+          2
+        ],
+        [
+          "supply_line",
+          1
+        ]
+      ],
+      "seconds": 38.1,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 2,
+      "minPlayerHp": 4,
+      "maxHazards": 16
+    },
+    {
+      "chapter": 2,
+      "level": 28,
+      "cards": [
+        [
+          "pipe_sense",
+          1
+        ],
+        [
+          "greed",
+          2
+        ],
+        [
+          "shrink_ray",
+          1
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "toughness",
+          3
+        ],
+        [
+          "tailwind",
+          3
+        ],
+        [
+          "seed_harvest",
+          2
+        ],
+        [
+          "orbit_guard",
+          1
+        ],
+        [
+          "regeneration",
+          2
+        ],
+        [
+          "thick_skin",
+          1
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "agile",
+          1
+        ],
+        [
+          "sand_lance",
+          1
+        ],
+        [
+          "slow_world",
+          1
+        ],
+        [
+          "nomad",
+          1
+        ]
+      ],
+      "seconds": 52.5,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 1,
+      "minPlayerHp": 3,
+      "maxHazards": 16
+    },
+    {
+      "chapter": 2,
+      "level": 27,
+      "cards": [
+        [
+          "orbit_guard",
+          1
+        ],
+        [
+          "greed",
+          1
+        ],
+        [
+          "revenge_pulse",
+          1
+        ],
+        [
+          "tailwind",
+          2
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "pipe_sense",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "shrink_ray",
+          3
+        ],
+        [
+          "combo_heart",
+          2
+        ],
+        [
+          "magnet",
+          2
+        ],
+        [
+          "phoenix",
+          1
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "sand_lance",
+          1
+        ],
+        [
+          "shield_burst",
+          1
+        ],
+        [
+          "supply_line",
+          1
+        ],
+        [
+          "bounce_shield",
+          1
+        ],
+        [
+          "boss_slayer",
+          1
+        ]
+      ],
+      "seconds": 41.9,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 1,
+      "minPlayerHp": 3,
+      "maxHazards": 16
+    },
+    {
+      "chapter": 2,
+      "level": 28,
+      "cards": [
+        [
+          "shrink_ray",
+          1
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "orbit_guard",
+          2
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "toughness",
+          2
+        ],
+        [
+          "greed",
+          2
+        ],
+        [
+          "magnet",
+          3
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "agile",
+          1
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "light_feather",
+          1
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "phoenix",
+          1
+        ],
+        [
+          "slow_world",
+          2
+        ],
+        [
+          "supply_line",
+          1
+        ],
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "sand_lance",
+          1
+        ],
+        [
+          "double_score",
+          1
+        ],
+        [
+          "nomad",
+          1
+        ],
+        [
+          "vitality",
+          1
+        ]
+      ],
+      "seconds": 48.7,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 1,
+      "minPlayerHp": 3,
+      "maxHazards": 16
+    },
+    {
+      "chapter": 2,
+      "level": 28,
+      "cards": [
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "tailwind",
+          4
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "time_warp",
+          1
+        ],
+        [
+          "toughness",
+          3
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "greed",
+          1
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "orbit_guard",
+          2
+        ],
+        [
+          "thick_skin",
+          1
+        ],
+        [
+          "sand_lance",
+          2
+        ],
+        [
+          "echo_wing",
+          1
+        ],
+        [
+          "physique",
+          1
+        ],
+        [
+          "shield_burst",
+          1
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "bounce_shield",
+          1
+        ],
+        [
+          "slow_world",
+          1
+        ]
+      ],
+      "seconds": 49.2,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 1,
+      "minPlayerHp": 4,
+      "maxHazards": 16
+    },
+    {
+      "chapter": 2,
+      "level": 28,
+      "cards": [
+        [
+          "shrink_ray",
+          1
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "toughness",
+          2
+        ],
+        [
+          "light_feather",
+          1
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "phoenix",
+          2
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "orbit_guard",
+          2
+        ],
+        [
+          "greed",
+          2
+        ],
+        [
+          "thick_skin",
+          2
+        ],
+        [
+          "nomad",
+          1
+        ],
+        [
+          "scavenger",
+          1
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "physique",
+          1
+        ],
+        [
+          "sand_lance",
+          1
+        ],
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "pipe_sense",
+          1
+        ],
+        [
+          "dune_cache",
+          1
+        ]
+      ],
+      "seconds": 38.1,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 2,
+      "minPlayerHp": 3,
+      "maxHazards": 16
+    },
+    {
+      "chapter": 2,
+      "level": 29,
+      "cards": [
+        [
+          "tailwind",
+          2
+        ],
+        [
+          "light_feather",
+          1
+        ],
+        [
+          "revenge_pulse",
+          2
+        ],
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "time_warp",
+          1
+        ],
+        [
+          "greed",
+          3
+        ],
+        [
+          "shrink_ray",
+          3
+        ],
+        [
+          "orbit_guard",
+          1
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "phoenix",
+          1
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "slow_world",
+          1
+        ],
+        [
+          "sand_lance",
+          3
+        ],
+        [
+          "agile",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "boss_slayer",
+          1
+        ]
+      ],
+      "seconds": 39.1,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 2,
+      "minPlayerHp": 3,
+      "maxHazards": 16
+    },
+    {
+      "chapter": 2,
+      "level": 31,
+      "cards": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "greed",
+          3
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "revenge_pulse",
+          1
+        ],
+        [
+          "tailwind",
+          3
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "time_warp",
+          1
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "shrink_ray",
+          1
+        ],
+        [
+          "magnet",
+          2
+        ],
+        [
+          "phoenix",
+          2
+        ],
+        [
+          "sand_lance",
+          2
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "supply_line",
+          1
+        ],
+        [
+          "thick_skin",
+          1
+        ],
+        [
+          "physique",
+          1
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ]
+      ],
+      "seconds": 42.1,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 1,
+      "minPlayerHp": 2,
+      "maxHazards": 16
+    },
+    {
+      "chapter": 3,
+      "level": 36,
+      "cards": [
+        [
+          "pipe_sense",
+          2
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "toughness",
+          2
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "echo_wing",
+          1
+        ],
+        [
+          "shrink_ray",
+          2
+        ],
+        [
+          "combo_seed",
+          2
+        ],
+        [
+          "sand_lance",
+          2
+        ],
+        [
+          "boss_slayer",
+          1
+        ],
+        [
+          "regeneration",
+          2
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "missile_rack",
+          1
+        ],
+        [
+          "greed",
+          2
+        ],
+        [
+          "supply_line",
+          2
+        ],
+        [
+          "chapter_echo",
+          1
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "revenge_pulse",
+          1
+        ]
+      ],
+      "seconds": 55.3,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 0,
+      "minPlayerHp": 2,
+      "maxHazards": 12
+    },
+    {
+      "chapter": 3,
+      "level": 42,
+      "cards": [
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "regeneration",
+          2
+        ],
+        [
+          "greed",
+          4
+        ],
+        [
+          "thick_skin",
+          2
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "magnet",
+          5
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "shrink_ray",
+          3
+        ],
+        [
+          "orbit_guard",
+          2
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "agile",
+          2
+        ],
+        [
+          "sand_lance",
+          2
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "boss_slayer",
+          2
+        ],
+        [
+          "supply_line",
+          2
+        ],
+        [
+          "phoenix",
+          1
+        ],
+        [
+          "light_feather",
+          2
+        ],
+        [
+          "edge_focus",
+          1
+        ]
+      ],
+      "seconds": 85.3,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 0,
+      "minPlayerHp": 2,
+      "maxHazards": 12
+    },
+    {
+      "chapter": 3,
+      "level": 35,
+      "cards": [
+        [
+          "orbit_guard",
+          1
+        ],
+        [
+          "greed",
+          1
+        ],
+        [
+          "revenge_pulse",
+          1
+        ],
+        [
+          "tailwind",
+          3
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "pipe_sense",
+          1
+        ],
+        [
+          "regeneration",
+          2
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "shrink_ray",
+          4
+        ],
+        [
+          "combo_heart",
+          2
+        ],
+        [
+          "magnet",
+          2
+        ],
+        [
+          "phoenix",
+          2
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "sand_lance",
+          1
+        ],
+        [
+          "shield_burst",
+          1
+        ],
+        [
+          "supply_line",
+          1
+        ],
+        [
+          "bounce_shield",
+          1
+        ],
+        [
+          "boss_slayer",
+          1
+        ],
+        [
+          "agile",
+          1
+        ],
+        [
+          "slow_world",
+          1
+        ],
+        [
+          "dune_cache",
+          1
+        ],
+        [
+          "chapter_echo",
+          1
+        ],
+        [
+          "venom_thread",
+          1
+        ]
+      ],
+      "seconds": 75.8,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 0,
+      "minPlayerHp": 1,
+      "maxHazards": 12
+    },
+    {
+      "chapter": 3,
+      "level": 39,
+      "cards": [
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "tailwind",
+          4
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "time_warp",
+          2
+        ],
+        [
+          "toughness",
+          3
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "greed",
+          2
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "orbit_guard",
+          2
+        ],
+        [
+          "thick_skin",
+          1
+        ],
+        [
+          "sand_lance",
+          2
+        ],
+        [
+          "echo_wing",
+          1
+        ],
+        [
+          "physique",
+          1
+        ],
+        [
+          "shield_burst",
+          1
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "bounce_shield",
+          1
+        ],
+        [
+          "slow_world",
+          1
+        ],
+        [
+          "regeneration",
+          3
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "exp_resonance",
+          1
+        ],
+        [
+          "shadow_echo",
+          1
+        ],
+        [
+          "teleport",
+          1
+        ],
+        [
+          "lucky",
+          1
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "dune_cache",
+          1
+        ]
+      ],
+      "seconds": 55.6,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 0,
+      "minPlayerHp": 4,
+      "maxHazards": 12
+    },
+    {
+      "chapter": 3,
+      "level": 37,
+      "cards": [
+        [
+          "shrink_ray",
+          2
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "toughness",
+          2
+        ],
+        [
+          "light_feather",
+          1
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "phoenix",
+          2
+        ],
+        [
+          "tailwind",
+          2
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "orbit_guard",
+          2
+        ],
+        [
+          "greed",
+          2
+        ],
+        [
+          "thick_skin",
+          2
+        ],
+        [
+          "nomad",
+          1
+        ],
+        [
+          "scavenger",
+          1
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "physique",
+          1
+        ],
+        [
+          "sand_lance",
+          3
+        ],
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "pipe_sense",
+          1
+        ],
+        [
+          "dune_cache",
+          1
+        ],
+        [
+          "echo_wing",
+          1
+        ],
+        [
+          "shield_burst",
+          1
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "blood_pact",
+          1
+        ],
+        [
+          "exp_resonance",
+          1
+        ]
+      ],
+      "seconds": 71.9,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 0,
+      "minPlayerHp": 2,
+      "maxHazards": 18
+    },
+    {
+      "chapter": 3,
+      "level": 39,
+      "cards": [
+        [
+          "shrink_ray",
+          2
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "toughness",
+          2
+        ],
+        [
+          "light_feather",
+          1
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "regeneration",
+          2
+        ],
+        [
+          "phoenix",
+          2
+        ],
+        [
+          "tailwind",
+          2
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "orbit_guard",
+          2
+        ],
+        [
+          "greed",
+          2
+        ],
+        [
+          "thick_skin",
+          2
+        ],
+        [
+          "nomad",
+          1
+        ],
+        [
+          "scavenger",
+          1
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "physique",
+          1
+        ],
+        [
+          "sand_lance",
+          3
+        ],
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "pipe_sense",
+          1
+        ],
+        [
+          "dune_cache",
+          1
+        ],
+        [
+          "echo_wing",
+          1
+        ],
+        [
+          "shield_burst",
+          1
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "blood_pact",
+          1
+        ],
+        [
+          "exp_resonance",
+          1
+        ],
+        [
+          "combo_seed",
+          1
+        ]
+      ],
+      "seconds": 61,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 0,
+      "minPlayerHp": 1,
+      "maxHazards": 12
+    },
+    {
+      "chapter": 3,
+      "level": 40,
+      "cards": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "greed",
+          3
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "revenge_pulse",
+          2
+        ],
+        [
+          "tailwind",
+          3
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "time_warp",
+          1
+        ],
+        [
+          "toughness",
+          3
+        ],
+        [
+          "shrink_ray",
+          3
+        ],
+        [
+          "magnet",
+          2
+        ],
+        [
+          "phoenix",
+          2
+        ],
+        [
+          "sand_lance",
+          2
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "supply_line",
+          1
+        ],
+        [
+          "thick_skin",
+          1
+        ],
+        [
+          "physique",
+          1
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "regeneration",
+          2
+        ],
+        [
+          "chapter_echo",
+          1
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "double_score",
+          1
+        ],
+        [
+          "light_feather",
+          1
+        ]
+      ],
+      "seconds": 64.2,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 0,
+      "minPlayerHp": 3,
+      "maxHazards": 12
+    },
+    {
+      "chapter": 3,
+      "level": 38,
+      "cards": [
+        [
+          "pipe_sense",
+          1
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "greed",
+          2
+        ],
+        [
+          "seed_bolt",
+          2
+        ],
+        [
+          "time_warp",
+          1
+        ],
+        [
+          "thick_skin",
+          1
+        ],
+        [
+          "combo_seed",
+          2
+        ],
+        [
+          "revenge_pulse",
+          2
+        ],
+        [
+          "magnet",
+          2
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "phoenix",
+          2
+        ],
+        [
+          "tailwind",
+          2
+        ],
+        [
+          "echo_wing",
+          1
+        ],
+        [
+          "shield_burst",
+          1
+        ],
+        [
+          "dune_cache",
+          2
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "bounce_shield",
+          2
+        ],
+        [
+          "supply_line",
+          1
+        ],
+        [
+          "double_score",
+          1
+        ],
+        [
+          "lucky",
+          1
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "teleport",
+          1
+        ],
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "light_feather",
+          1
+        ],
+        [
+          "boss_slayer",
+          1
+        ],
+        [
+          "nomad",
+          1
+        ]
+      ],
+      "seconds": 131.4,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 0,
+      "minPlayerHp": 3,
+      "maxHazards": 18
+    },
+    {
+      "chapter": 4,
+      "level": 43,
+      "cards": [
+        [
+          "pipe_sense",
+          2
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "toughness",
+          2
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "echo_wing",
+          3
+        ],
+        [
+          "shrink_ray",
+          4
+        ],
+        [
+          "combo_seed",
+          2
+        ],
+        [
+          "sand_lance",
+          3
+        ],
+        [
+          "boss_slayer",
+          1
+        ],
+        [
+          "regeneration",
+          3
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "missile_rack",
+          1
+        ],
+        [
+          "greed",
+          2
+        ],
+        [
+          "supply_line",
+          2
+        ],
+        [
+          "chapter_echo",
+          1
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "revenge_pulse",
+          2
+        ],
+        [
+          "mirror_shield",
+          1
+        ],
+        [
+          "thick_skin",
+          1
+        ]
+      ],
+      "seconds": 99.4,
+      "method": "defeat",
+      "remainingHp": 63,
+      "armorPercent": 93,
+      "breaks": 2,
+      "minPlayerHp": 1,
+      "maxHazards": 20
+    },
+    {
+      "chapter": 4,
+      "level": 44,
+      "cards": [
+        [
+          "pipe_sense",
+          2
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "toughness",
+          3
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "echo_wing",
+          3
+        ],
+        [
+          "shrink_ray",
+          4
+        ],
+        [
+          "combo_seed",
+          2
+        ],
+        [
+          "sand_lance",
+          3
+        ],
+        [
+          "boss_slayer",
+          1
+        ],
+        [
+          "regeneration",
+          3
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "missile_rack",
+          1
+        ],
+        [
+          "greed",
+          2
+        ],
+        [
+          "supply_line",
+          2
+        ],
+        [
+          "chapter_echo",
+          1
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "revenge_pulse",
+          2
+        ],
+        [
+          "mirror_shield",
+          1
+        ],
+        [
+          "thick_skin",
+          1
+        ]
+      ],
+      "seconds": 101.5,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 93,
+      "breaks": 3,
+      "minPlayerHp": 2,
+      "maxHazards": 20
+    },
+    {
+      "chapter": 4,
+      "level": 44,
+      "cards": [
+        [
+          "pipe_sense",
+          2
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "toughness",
+          3
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "echo_wing",
+          3
+        ],
+        [
+          "shrink_ray",
+          4
+        ],
+        [
+          "combo_seed",
+          2
+        ],
+        [
+          "sand_lance",
+          3
+        ],
+        [
+          "boss_slayer",
+          1
+        ],
+        [
+          "regeneration",
+          3
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "missile_rack",
+          1
+        ],
+        [
+          "greed",
+          2
+        ],
+        [
+          "supply_line",
+          2
+        ],
+        [
+          "chapter_echo",
+          1
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "revenge_pulse",
+          2
+        ],
+        [
+          "mirror_shield",
+          1
+        ],
+        [
+          "thick_skin",
+          1
+        ]
+      ],
+      "seconds": 108.4,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 94,
+      "breaks": 3,
+      "minPlayerHp": 2,
+      "maxHazards": 20
+    },
+    {
+      "chapter": 4,
+      "level": 45,
+      "cards": [
+        [
+          "pipe_sense",
+          2
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "toughness",
+          3
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "echo_wing",
+          3
+        ],
+        [
+          "shrink_ray",
+          4
+        ],
+        [
+          "combo_seed",
+          2
+        ],
+        [
+          "sand_lance",
+          3
+        ],
+        [
+          "boss_slayer",
+          1
+        ],
+        [
+          "regeneration",
+          3
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "missile_rack",
+          1
+        ],
+        [
+          "greed",
+          2
+        ],
+        [
+          "supply_line",
+          2
+        ],
+        [
+          "chapter_echo",
+          1
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "revenge_pulse",
+          2
+        ],
+        [
+          "mirror_shield",
+          1
+        ],
+        [
+          "thick_skin",
+          1
+        ],
+        [
+          "frost_lance",
+          1
+        ]
+      ],
+      "seconds": 96.9,
+      "method": "defeat",
+      "remainingHp": 40,
+      "armorPercent": 93,
+      "breaks": 2,
+      "minPlayerHp": 1,
+      "maxHazards": 20
+    },
+    {
+      "chapter": 4,
+      "level": 45,
+      "cards": [
+        [
+          "pipe_sense",
+          2
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "toughness",
+          3
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "echo_wing",
+          3
+        ],
+        [
+          "shrink_ray",
+          4
+        ],
+        [
+          "combo_seed",
+          2
+        ],
+        [
+          "sand_lance",
+          3
+        ],
+        [
+          "boss_slayer",
+          1
+        ],
+        [
+          "regeneration",
+          3
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "missile_rack",
+          1
+        ],
+        [
+          "greed",
+          2
+        ],
+        [
+          "supply_line",
+          2
+        ],
+        [
+          "chapter_echo",
+          1
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "revenge_pulse",
+          2
+        ],
+        [
+          "mirror_shield",
+          1
+        ],
+        [
+          "thick_skin",
+          1
+        ],
+        [
+          "frost_lance",
+          1
+        ]
+      ],
+      "seconds": 121,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 96,
+      "breaks": 2,
+      "minPlayerHp": 1,
+      "maxHazards": 20
+    },
+    {
+      "chapter": 4,
+      "level": 48,
+      "cards": [
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "regeneration",
+          2
+        ],
+        [
+          "greed",
+          4
+        ],
+        [
+          "thick_skin",
+          2
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "tailwind",
+          2
+        ],
+        [
+          "magnet",
+          5
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "shrink_ray",
+          3
+        ],
+        [
+          "orbit_guard",
+          2
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "agile",
+          3
+        ],
+        [
+          "sand_lance",
+          2
+        ],
+        [
+          "combo_heart",
+          2
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "boss_slayer",
+          2
+        ],
+        [
+          "supply_line",
+          2
+        ],
+        [
+          "phoenix",
+          1
+        ],
+        [
+          "light_feather",
+          2
+        ],
+        [
+          "edge_focus",
+          1
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "aegis_overdrive",
+          1
+        ],
+        [
+          "double_score",
+          1
+        ],
+        [
+          "steady_charm",
+          1
+        ]
+      ],
+      "seconds": 133.2,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 95,
+      "breaks": 2,
+      "minPlayerHp": 3,
+      "maxHazards": 20
+    },
+    {
+      "chapter": 4,
+      "level": 40,
+      "cards": [
+        [
+          "orbit_guard",
+          1
+        ],
+        [
+          "greed",
+          1
+        ],
+        [
+          "revenge_pulse",
+          1
+        ],
+        [
+          "tailwind",
+          3
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "pipe_sense",
+          1
+        ],
+        [
+          "regeneration",
+          2
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "shrink_ray",
+          5
+        ],
+        [
+          "combo_heart",
+          2
+        ],
+        [
+          "magnet",
+          2
+        ],
+        [
+          "phoenix",
+          2
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "sand_lance",
+          2
+        ],
+        [
+          "shield_burst",
+          1
+        ],
+        [
+          "supply_line",
+          1
+        ],
+        [
+          "bounce_shield",
+          1
+        ],
+        [
+          "boss_slayer",
+          1
+        ],
+        [
+          "agile",
+          2
+        ],
+        [
+          "slow_world",
+          1
+        ],
+        [
+          "dune_cache",
+          1
+        ],
+        [
+          "chapter_echo",
+          1
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "lucky",
+          1
+        ],
+        [
+          "physique",
+          1
+        ],
+        [
+          "teleport",
+          1
+        ],
+        [
+          "aegis_overdrive",
+          1
+        ]
+      ],
+      "seconds": 123.5,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 94,
+      "breaks": 2,
+      "minPlayerHp": 1,
+      "maxHazards": 20
+    },
+    {
+      "chapter": 4,
+      "level": 40,
+      "cards": [
+        [
+          "orbit_guard",
+          1
+        ],
+        [
+          "greed",
+          1
+        ],
+        [
+          "revenge_pulse",
+          1
+        ],
+        [
+          "tailwind",
+          3
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "pipe_sense",
+          1
+        ],
+        [
+          "regeneration",
+          2
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "shrink_ray",
+          5
+        ],
+        [
+          "combo_heart",
+          2
+        ],
+        [
+          "magnet",
+          2
+        ],
+        [
+          "phoenix",
+          2
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "sand_lance",
+          2
+        ],
+        [
+          "shield_burst",
+          1
+        ],
+        [
+          "supply_line",
+          1
+        ],
+        [
+          "bounce_shield",
+          1
+        ],
+        [
+          "boss_slayer",
+          1
+        ],
+        [
+          "agile",
+          2
+        ],
+        [
+          "slow_world",
+          1
+        ],
+        [
+          "dune_cache",
+          1
+        ],
+        [
+          "chapter_echo",
+          1
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "lucky",
+          1
+        ],
+        [
+          "physique",
+          1
+        ],
+        [
+          "teleport",
+          1
+        ],
+        [
+          "aegis_overdrive",
+          1
+        ]
+      ],
+      "seconds": 128.8,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 95,
+      "breaks": 3,
+      "minPlayerHp": 1,
+      "maxHazards": 20
+    },
+    {
+      "chapter": 4,
+      "level": 48,
+      "cards": [
+        [
+          "shrink_ray",
+          3
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "toughness",
+          3
+        ],
+        [
+          "light_feather",
+          1
+        ],
+        [
+          "magnet",
+          2
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "regeneration",
+          2
+        ],
+        [
+          "phoenix",
+          2
+        ],
+        [
+          "tailwind",
+          2
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "greed",
+          3
+        ],
+        [
+          "thick_skin",
+          2
+        ],
+        [
+          "nomad",
+          1
+        ],
+        [
+          "scavenger",
+          2
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "physique",
+          1
+        ],
+        [
+          "sand_lance",
+          3
+        ],
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "pipe_sense",
+          1
+        ],
+        [
+          "dune_cache",
+          1
+        ],
+        [
+          "echo_wing",
+          1
+        ],
+        [
+          "shield_burst",
+          1
+        ],
+        [
+          "venom_thread",
+          2
+        ],
+        [
+          "blood_pact",
+          1
+        ],
+        [
+          "exp_resonance",
+          1
+        ],
+        [
+          "combo_seed",
+          2
+        ],
+        [
+          "frost_lance",
+          1
+        ],
+        [
+          "shadow_echo",
+          1
+        ]
+      ],
+      "seconds": 144.7,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 95,
+      "breaks": 2,
+      "minPlayerHp": 1,
+      "maxHazards": 20
+    },
+    {
+      "chapter": 5,
+      "level": 54,
+      "cards": [
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "regeneration",
+          2
+        ],
+        [
+          "greed",
+          4
+        ],
+        [
+          "thick_skin",
+          2
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "tailwind",
+          3
+        ],
+        [
+          "magnet",
+          5
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "shrink_ray",
+          5
+        ],
+        [
+          "orbit_guard",
+          2
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "agile",
+          3
+        ],
+        [
+          "sand_lance",
+          3
+        ],
+        [
+          "combo_heart",
+          2
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "boss_slayer",
+          2
+        ],
+        [
+          "supply_line",
+          2
+        ],
+        [
+          "phoenix",
+          1
+        ],
+        [
+          "light_feather",
+          2
+        ],
+        [
+          "edge_focus",
+          1
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "aegis_overdrive",
+          1
+        ],
+        [
+          "double_score",
+          1
+        ],
+        [
+          "steady_charm",
+          1
+        ],
+        [
+          "lucky",
+          1
+        ],
+        [
+          "scavenger",
+          1
+        ],
+        [
+          "frost_lance",
+          1
+        ]
+      ],
+      "seconds": 105.2,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 0,
+      "breaks": 2,
+      "minPlayerHp": 1,
+      "maxHazards": 25
+    },
+    {
+      "chapter": 6,
+      "level": 60,
+      "cards": [
+        [
+          "seed_harvest",
+          2
+        ],
+        [
+          "regeneration",
+          2
+        ],
+        [
+          "greed",
+          4
+        ],
+        [
+          "thick_skin",
+          2
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "tailwind",
+          3
+        ],
+        [
+          "magnet",
+          5
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "shrink_ray",
+          5
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "agile",
+          3
+        ],
+        [
+          "sand_lance",
+          3
+        ],
+        [
+          "combo_heart",
+          2
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "boss_slayer",
+          2
+        ],
+        [
+          "supply_line",
+          2
+        ],
+        [
+          "phoenix",
+          1
+        ],
+        [
+          "light_feather",
+          3
+        ],
+        [
+          "edge_focus",
+          1
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "aegis_overdrive",
+          1
+        ],
+        [
+          "double_score",
+          1
+        ],
+        [
+          "steady_charm",
+          1
+        ],
+        [
+          "lucky",
+          1
+        ],
+        [
+          "scavenger",
+          1
+        ],
+        [
+          "frost_lance",
+          1
+        ],
+        [
+          "missile_storm",
+          1
+        ],
+        [
+          "singularity",
+          1
+        ],
+        [
+          "magma_core",
+          1
+        ]
+      ],
+      "seconds": 49.3,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 60,
+      "breaks": 4,
+      "minPlayerHp": 4,
+      "maxHazards": 35
+    },
+    {
+      "chapter": 6,
+      "level": 61,
+      "cards": [
+        [
+          "seed_harvest",
+          2
+        ],
+        [
+          "regeneration",
+          2
+        ],
+        [
+          "greed",
+          4
+        ],
+        [
+          "thick_skin",
+          2
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "tailwind",
+          3
+        ],
+        [
+          "magnet",
+          5
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "shrink_ray",
+          5
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "agile",
+          3
+        ],
+        [
+          "sand_lance",
+          3
+        ],
+        [
+          "combo_heart",
+          2
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "boss_slayer",
+          2
+        ],
+        [
+          "supply_line",
+          2
+        ],
+        [
+          "phoenix",
+          1
+        ],
+        [
+          "light_feather",
+          3
+        ],
+        [
+          "edge_focus",
+          1
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "aegis_overdrive",
+          1
+        ],
+        [
+          "double_score",
+          1
+        ],
+        [
+          "steady_charm",
+          1
+        ],
+        [
+          "lucky",
+          1
+        ],
+        [
+          "scavenger",
+          1
+        ],
+        [
+          "frost_lance",
+          1
+        ],
+        [
+          "missile_storm",
+          1
+        ],
+        [
+          "singularity",
+          1
+        ],
+        [
+          "magma_core",
+          1
+        ],
+        [
+          "ice_crystal",
+          1
+        ],
+        [
+          "chaos_dice",
+          1
+        ]
+      ],
+      "seconds": 47.9,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 56,
+      "breaks": 4,
+      "minPlayerHp": 2,
+      "maxHazards": 35
+    },
+    {
+      "chapter": 6,
+      "level": 63,
+      "cards": [
+        [
+          "seed_harvest",
+          2
+        ],
+        [
+          "regeneration",
+          2
+        ],
+        [
+          "greed",
+          4
+        ],
+        [
+          "thick_skin",
+          2
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "tailwind",
+          3
+        ],
+        [
+          "magnet",
+          5
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "shrink_ray",
+          5
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "agile",
+          3
+        ],
+        [
+          "sand_lance",
+          3
+        ],
+        [
+          "combo_heart",
+          2
+        ],
+        [
+          "iron_beak",
+          1
+        ],
+        [
+          "combo_seed",
+          1
+        ],
+        [
+          "boss_slayer",
+          2
+        ],
+        [
+          "supply_line",
+          2
+        ],
+        [
+          "phoenix",
+          1
+        ],
+        [
+          "light_feather",
+          3
+        ],
+        [
+          "edge_focus",
+          1
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "aegis_overdrive",
+          1
+        ],
+        [
+          "double_score",
+          1
+        ],
+        [
+          "steady_charm",
+          1
+        ],
+        [
+          "lucky",
+          1
+        ],
+        [
+          "scavenger",
+          1
+        ],
+        [
+          "frost_lance",
+          1
+        ],
+        [
+          "missile_storm",
+          1
+        ],
+        [
+          "singularity",
+          1
+        ],
+        [
+          "magma_core",
+          1
+        ],
+        [
+          "ice_crystal",
+          1
+        ],
+        [
+          "chaos_dice",
+          1
+        ],
+        [
+          "slow_world",
+          1
+        ],
+        [
+          "chapter_echo",
+          1
+        ]
+      ],
+      "seconds": 46.6,
+      "method": "kill",
+      "remainingHp": 0,
+      "armorPercent": 57,
+      "breaks": 4,
+      "minPlayerHp": 4,
+      "maxHazards": 35
+    }
+  ]
+}

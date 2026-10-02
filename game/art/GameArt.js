@@ -6,7 +6,7 @@ function heartHUD(g,x,y,size=12){
 }
 function hud(g){if(g.state==='ready')return;const c=g.ctx,w=g.screenW,top=g.safeTop,a=g.abilitySystem,e=g.expSystem.getExpBarData(),ch=g.chapterSystem.getHudData(),boss=g.chapterSystem.isBossActive()&&g.boss
  c.save();c.globalAlpha=.72;P.box(c,0,0,w,top+70,C.panel,C.edge);c.globalAlpha=1;heartHUD(g,12,top+5)
- P.text(c,g.score,w*.52,top+18,26,C.paper,'center',true);P.text(c,'Lv.'+e.level,w-12,top+14,14,C.gold,'right',true)
+ P.text(c,g.score,w*.52,top+18,26,C.paper,'center',true);P.text(c,'Lv.'+e.level,w*.52,top+36,10,C.gold,'center',true)
  let sx=w-18
  for(const s of [['echo_wing','feather',a.featherShields],['phoenix','phoenix',(a.owned.get('phoenix')||0)-a.phoenixUsed]])if(a.owned.get(s[0])){P.text(c,'×'+s[2],sx,top+34,10,C.muted,'right');I.draw(c,s[0],sx-29,top+34,14);sx-=48}
  P.bar(c,14,top+45,w-28,9,e.progress,C.green)

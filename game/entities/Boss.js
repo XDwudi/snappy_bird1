@@ -52,6 +52,7 @@ class Boss extends Obstacle {
 
     this.combatAge = 0
     this.attackIndex = 0
+    this.comboIndex = 0
     this._attackPhase = 1
     this._windupStartY = this.y
     this.action = null
@@ -85,7 +86,7 @@ class Boss extends Obstacle {
     if (this.phase2Flash > 0) this.phase2Flash--
     if (!['entering', 'dying', 'leaving'].includes(this.state)) {
       this.combatAge = combatFrames == null ? this.combatAge + 1 : combatFrames
-      if (this.combatAge >= this.survivalFrames * .35) this._enterPhase2()
+      if (this.hp < this.maxHp * Config.BOSS.PHASE2_HP_RATIO || this.combatAge >= this.survivalFrames * .35) this._enterPhase2()
     }
     if (this.state === 'entering') {
       const t = Math.min(1, this.stateT / B.INTRO_ENTER_FRAMES)
@@ -138,7 +139,7 @@ class Boss extends Obstacle {
     if (!chained) {
       if (this.phase === 2) {
         const combos=this.variant.combos
-        this.comboQueue=combos[this.attackIndex % combos.length].slice()
+        this.comboQueue=combos[this.comboIndex++ % combos.length].slice()
       } else this.comboQueue=[this.attackIndex % this.variant.skills.length]
       this.comboLength=this.comboQueue.length
       this.comboStep=0

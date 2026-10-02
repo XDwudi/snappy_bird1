@@ -9,7 +9,7 @@ class BossMechanics {
   }
   node(y,kind,index=0) {
     const b=this.boss,m=this
-    const hp=Math.ceil((kind==='cocoon'?4:6)*Math.sqrt(b.power)*(1+b.difficultyTier*.16))
+    const hp=Math.ceil((kind==='root'?3:kind==='cocoon'?4:6)*Math.sqrt(b.power)*(1+b.difficultyTier*.16))
     const n={x:b.screenW*.59,y,width:30,height:30,topHeight:y-15,bottomY:y+15,hp,maxHp:hp,
       kind,index,isMechanic:true,destructible:true,type:'mechanic',age:0,
       takeDamage(damage) {
@@ -22,11 +22,15 @@ class BossMechanics {
   }
   destroy(n) {
     const b=this.boss
-    if(n.kind==='root' && this.nodes.every(x=>x.hp<=0))this.breakArmor(.12,240)
+    if(n.kind==='root' && this.nodes.every(x=>x.hp<=0)) {
+      this.breakArmor(.20,720)
+      // 树根只破一次：永久露出核心；反击来自第二阶段招式，不重置破甲成果。
+      this.nextCycle=Infinity;b._enterPhase2()
+    }
     if(n.kind==='cocoon') {this.strike(.055);this.notice=60}
     if(n.kind==='relay') {
       this.activeNode++
-      if(this.activeNode>=3)this.breakArmor(.18,210)
+      if(this.activeNode>=3){this.breakArmor(.18,600);this.nextCycle=Infinity}
     }
   }
   strike(fraction) {
@@ -64,16 +68,16 @@ class BossMechanics {
       if(this.nodes.length&&this.nodes.every(n=>n.hp<=0)&&this.nextCycle===Infinity)this.nextCycle=this.age+150
     }
     if(theme==='desert'&&b.state==='charging'&&Math.abs(b.chargeY-this.rockY)<45&&b.x<b.screenW*.55&&!this.weak) {
-      this.breakArmor(.15,210);b.x=b.homeX;b.comboQueue=[];b._setState('recover')
+      this.breakArmor(.15,480);b.x=b.homeX;b.comboQueue=[];b._setState('recover')
     }
     if((theme==='glacier'||theme==='volcano')&&!this.weak) {
       // 只需单指保持在绿色环的高度；圈不赋予无敌，须在弹幕间找时机。
-      if(Math.abs(bird.y-this.zoneY)<34)this.zoneTime++
-      else this.zoneTime=Math.max(0,this.zoneTime-2)
+      if(Math.abs(bird.y-this.zoneY)<48)this.zoneTime++
+      else this.zoneTime=Math.max(0,this.zoneTime-1)
       if(this.zoneTime>=45) {
         this.zoneTime=0;this.progress++;this.zoneY=this.zoneY<250?b.groundY-100:190
         if(theme==='volcano') {this.heat=Math.max(0,this.heat-2);this.strike(.045)}
-        if(this.progress>=3)this.breakArmor(theme==='glacier' ? .20 : .10,210)
+        if(this.progress>=3)this.breakArmor(theme==='glacier' ? .20 : .10,480)
       }
     }
   }
@@ -88,23 +92,23 @@ class BossMechanics {
     }
   }
   damageScale() {
-    if(this.weak>0)return 1.5
+    if(this.weak>0)return this.boss.variant.theme==='meadow'?1.75:1.5
     const t=this.boss.variant.theme
-    if(t==='meadow'&&this.nodes.some(n=>n.hp>0))return .45
-    if(t==='glacier')return .5
+    if(t==='meadow')return this.completed?1.25:this.nodes.length ? .55+.20*this.nodes.filter(n=>n.hp<=0).length:1
+    if(t==='glacier')return Math.min(1,.65+.1*this.completed)
     if(t==='storm'&&this.activeNode<3)return .35
     return 1
   }
   label() {
-    if(this.weak)return '机关破解！集中火力'
+    if(this.weak)return '破绽 '+Math.ceil(this.weak/60)+'秒 · 集中火力'
     const alive=this.nodes.filter(n=>n.hp>0).length
     return {
-      meadow:'对准树根发射 · 剩'+alive+'根解除护甲',
+      meadow:this.completed?'树根已破 · 核心永久易伤25%':'对准树根 · 剩'+alive+'根（不会复生）',
       desert:this.boss.state==='windup'||this.boss.state==='charging'?'瞄准已锁定！离开红带，让巨蝎撞柱':'先到绿框高度 · 等冲锋锁定再离开',
       night:'对准紫卵发射 · 剩'+alive+'卵会孵化',
       glacier:'绿框停留蓄热 '+this.progress+'/3 · 碎冰后强攻',
       volcano:'绿框开阀 '+this.progress+'/3 · 热量 '+this.heat+'/4',
-      storm:'对准发光节点 '+Math.min(3,this.activeNode+1)+'/3 · 导弹自动瞄准'
+      storm:this.activeNode>=3?'断路成功 · 核心永久失防':'对准发光节点 '+Math.min(3,this.activeNode+1)+'/3 · 导弹自动瞄准'
     }[this.boss.variant.theme]
   }
   render(ctx,birdX) {

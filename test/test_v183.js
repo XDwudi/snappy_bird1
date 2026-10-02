@@ -9,7 +9,7 @@ function game(w=375,h=667,safe=null){const c=context(),g=new Game({},c,w,h,safe)
 function choices(g,count){g.state='upgrading';g._currentChoices=R.getAll().slice(0,count);g.render()}
 function state(g){return JSON.stringify({bird:[g.bird.x,g.bird.y,g.bird.velocity,g.bird.collisionWidth,g.bird.collisionHeight],hp:[g.abilitySystem.hp,g.abilitySystem.tempHp,g.abilitySystem.shieldLayers],owned:[...g.abilitySystem.owned],time:[g.gameTime,g.bossFightFrames,g.frameCount],xp:[g.expSystem.level,g.expSystem.exp],boss:g.boss&&[g.boss.x,g.boss.y,g.boss.hp,g.boss.state,g.boss.stateT,g.boss.attackIndex],hazards:g.feathers.map(f=>[f.x,f.y,f.age,f.warn,f.radius]),pipes:g.pipes.map(p=>[p.x,p.topHeight,p.bottomY,p.gap])})}
 test('版本与运行包：全部四张PNG在项目中，RGBA解码预算24MiB，运行文件低于7MiB（给上传限制预留空间）',()=>{
- assert.equal(C.VERSION,'1.8.3');let total=0,decoded=0
+ assert.equal(C.VERSION,'1.8.4');let total=0,decoded=0
  function size(dir){for(const e of fs.readdirSync(dir,{withFileTypes:true})){const f=path.join(dir,e.name);if(e.isDirectory())size(f);else total+=fs.statSync(f).size}}
  size(path.join(__dirname,'../art-extra'));size(path.join(__dirname,'../game'));size(path.join(__dirname,'../utils'));total+=fs.statSync(path.join(__dirname,'../game.js')).size
  for(const f of Object.values(A.files)){const b=fs.readFileSync(path.join(__dirname,'..',f));assert.equal(b.toString('ascii',1,4),'PNG');decoded+=b.readUInt32BE(16)*b.readUInt32BE(20)*4}

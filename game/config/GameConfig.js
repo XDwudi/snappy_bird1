@@ -8,7 +8,7 @@
 const Campaign = require('./CampaignConfig.js')
 
 module.exports = {
-  VERSION: '1.8.3',
+  VERSION: '1.8.4',
   // ==================== 小鸟参数 ====================
   BIRD: {
     WIDTH: 34,              // 小鸟视觉宽度
@@ -414,9 +414,15 @@ module.exports = {
     // 不再出现"灰显可点但无效"的残版面板；Game._getCardGreyReason 灰显保留为兜底，
     // 正常路径不再触达。依赖关系沿用 v1.4.0 灰显逻辑登记的全部条目：
     PREREQUISITES: {
+      combo_seed: 'combo_heart',
       iron_feather: 'echo_wing',   // 铁羽需回响之翼（无则羽盾来源不存在）
       time_crystal: 'time_warp'    // 时之晶需时间扭曲（寄生同一触发点，无则无触发位）
     },
+
+    // 至少拥有一种自动武器才提供派生增益，全部抽卡入口共用。
+    WEAPON_PREREQUISITES: ['tailwind','shadow_echo','venom_thread','cinder_execution','storm_chain'],
+    PROJECTILE_WEAPONS: ['feather_blade','seed_bolt','sand_lance','frost_lance','frost_shell','wind_rider'],
+    AUTO_WEAPONS: ['feather_blade','seed_bolt','sand_lance','frost_lance','frost_shell','magma_core','singularity','wind_rider'],
 
     // [v1.1.3] 新能力权重倍率
     // [v1.4.0] §8-R1 预案执行：55 卡池稀释导致流派核心套凑齐率下降（§6.3 ①③ 未达标），1.3→1.5

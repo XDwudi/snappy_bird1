@@ -97,8 +97,8 @@ function mechanics(c,m,birdX){
  }
  if(['desert','glacier','volcano'].includes(t)){
   const y=t==='desert'?m.rockY:m.zoneY
-  if(!m.weak){c.fillStyle=C.green;c.globalAlpha=.08;c.fillRect(birdX-28,y-34,56,68);c.globalAlpha=1;P.brackets(c,birdX-28,y-34,56,68,C.green)
-   P.bar(c,birdX-24,y+38,48,7,t==='desert'?1:m.zoneTime/45,C.green);P.text(c,t==='desert'?'诱撞':t==='glacier'?'蓄热':'开阀',birdX,y-43,11,C.paper,'center',true)}
+  if(!m.weak){const half=t==='desert'?34:48;c.fillStyle=C.green;c.globalAlpha=.08;c.fillRect(birdX-28,y-half,56,half*2);c.globalAlpha=1;P.brackets(c,birdX-28,y-half,56,half*2,C.green)
+   P.bar(c,birdX-24,y+half+4,48,7,t==='desert'?1:m.zoneTime/45,C.green);P.text(c,t==='desert'?'诱撞':t==='glacier'?'蓄热':'开阀',birdX,y-half-9,11,C.paper,'center',true)}
   if(t==='desert'){P.box(c,b.screenW*.52,y-25,18,50,'#977853',C.gold);P.path(c,[[b.screenW*.52+6,y-18],[b.screenW*.52+11,y],[b.screenW*.52+5,y+15]],C.ink,2)}
   else{I.draw(c,t==='glacier'?'flame':'node',b.x-10,y,20);for(let i=0;i<3;i++)P.box(c,b.x+i*12,b.y+b.height/2+10,9,8,i<m.progress?C.gold:C.panel,C.edge)}
  }

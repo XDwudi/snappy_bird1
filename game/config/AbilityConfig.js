@@ -32,7 +32,7 @@ const Abilities = [
   {
     id: 'feather_blade', name: '疾风羽刃', icon: '🪶', desc: '对准敌人，自动直射',
     category: ABILITY.CATEGORY.ACTIVE, rarity: 'uncommon', maxLevel: 3,
-    effectText: lv => `${(150 - 30 * (lv - 1)) / 60}秒直射：怪物1伤/Boss2伤，破绽+1`
+    effectText: lv => `${(150 - 30 * (lv - 1)) / 60}秒直射：怪物${lv}伤/Boss${lv+1}伤，破绽+1`
   },
   {
     id: 'orbit_guard', name: '风环护卫', icon: '🌀', desc: '拦截弹幕并反射羽刃',
@@ -63,9 +63,9 @@ const Abilities = [
     desc: '加快羽刃与元素武器节奏',
     category: ABILITY.CATEGORY.PASSIVE,
     rarity: 'common',       // [v1.1.3]
-    maxLevel: 5,
+    maxLevel: 3,
     // 1.8.2：移除上升力叠乘，替换为实际攻击节奏。
-    effectText: (lv) => `羽刃/元素武器间隔-${3*lv}%；拍翅力度不变`
+    effectText: (lv) => `羽刃/元素武器间隔-${6*lv}%；拍翅力度不变`
   },
   {
     id: 'agile',
@@ -155,11 +155,11 @@ const Abilities = [
     id: 'wind_rider',
     name: '御风者',
     icon: '🪁',
-    desc: '有风时发射双羽刃',
+    desc: '平时双刃，有风时加速',
     category: ABILITY.CATEGORY.PASSIVE,
     rarity: 'rare',
     maxLevel: 3,
-    effectText: (lv) => `有风每${6-lv}秒双刃：怪物${lv}伤，Boss每轮${lv+1}伤`
+    effectText: (lv) => `平时${8-lv}秒/有风${6-lv}秒双刃：怪物${lv}伤，Boss每轮${lv+1}伤`
   },
   {
     id: 'climate_adapt',
@@ -397,7 +397,7 @@ const Abilities = [
     desc: '断连击保留层数',
     category: ABILITY.CATEGORY.SPECIAL,
     rarity: 'common',
-    maxLevel: 3,
+    maxLevel: 1,
     effectText: (lv) => `断连击时保留${lv}层（不超过无敌阈值-1）`
   },
   // C6 管感：纯信息卡零数值，高亮 alpha ≤0.35，Lv2 安全区 ±30px 固定

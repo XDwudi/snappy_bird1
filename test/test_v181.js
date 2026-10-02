@@ -9,16 +9,16 @@ const game=(w=375,h=667)=>{const g=new Game({},{},w,h,null);g.start();return g}
 const fight=(ch,h=667)=>{const g=game(375,h);g.chapterSystem.index=ch;g._spawnBoss();g.chapterSystem.startBossFight();g.boss.x=g.boss.homeX;g.boss._setState('roam');g.boss.update(g.bird);return g}
 const give=(g,id,lv)=>{for(let i=0;i<lv;i++)g.abilitySystem.selectAbility(id)}
 test('版本1.8.1；六Boss有18个不重复专属招式与六种机关',()=>{
- assert.equal(C.VERSION,'1.8.3') // 旧机制回归沿用当前版本
+ assert.equal(C.VERSION,'1.8.4') // 旧机制回归沿用当前版本
  const kinds=C.BOSS.VARIANTS.flatMap(b=>b.skills.map(s=>s.kind))
  assert.ok(kinds.filter(k=>kinds.filter(x=>x===k).length===1).length>=18)
  assert.equal(new Set(Array.from({length:6},(_,i)=>fight(i).boss.mechanics.label())).size,6)
 })
 test('古木双根护甲、破根真实反噬且机关不刷击杀/回血',()=>{
  const g=fight(0),b=g.boss,m=b.mechanics,hp=b.hp
- assert.equal(m.nodes.length,2);assert.equal(m.damageScale(),.45)
+ assert.equal(m.nodes.length,2);assert.equal(m.damageScale(),.55)
  for(const node of m.nodes)g.combat.damageTarget(node,100,'test')
- assert.ok(b.hp<hp);assert.equal(m.weak,240);assert.equal(g.monsterKills,0);assert.equal(g.combat.harvestKills,0)
+ assert.ok(b.hp<hp);assert.equal(m.weak,720);assert.equal(g.monsterKills,0);assert.equal(g.combat.harvestKills,0)
  const after=b.hp;m.nodes[1].takeDamage(100);assert.equal(b.hp,after)
 })
 test('巨蝎只有成功诱撞才反噬；错位冲锋不会白送破绽',()=>{
@@ -33,9 +33,9 @@ test('蛛卵击破阻止孵化；忽略的卵会孵化并出预警弹',()=>{
  assert.equal(g.monsters.length,1);assert.equal(g.feathers.length,2);assert.ok(g.feathers.every(p=>p.warn>=60))
 })
 test('冰像须三次交替蓄热，离开会损失蓄热；碎甲真实降防',()=>{
- const g=fight(3),m=g.boss.mechanics;assert.equal(m.damageScale(),.5)
+ const g=fight(3),m=g.boss.mechanics;assert.equal(m.damageScale(),.65)
  g.bird.y=m.zoneY;for(let i=0;i<20;i++)m.update(g.bird)
- g.bird.y=300;m.update(g.bird);assert.equal(m.zoneTime,18)
+ g.bird.y=300;m.update(g.bird);assert.equal(m.zoneTime,19)
  m.zoneTime=0
  for(let phase=0;phase<3;phase++){g.bird.y=m.zoneY;for(let i=0;i<45;i++)m.update(g.bird)}
  assert.ok(m.weak>0);assert.equal(m.damageScale(),1.5)

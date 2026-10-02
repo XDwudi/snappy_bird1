@@ -34,6 +34,7 @@ module.exports=function cast(boss,bird,skill) {
     case 'vine_steps':
     case 'frost_steps': {
       const ys=skill.kind==='vine_steps'?[g-60,190,g-125]:[190,g-75,260]
+      if(boss.phase===2)ys.push(skill.kind==='vine_steps'?210:g-115)
       ys.forEach((y,i)=>emit({kind:'beam',y,radius:20,warn:dangerWarn+i*78,life:32,piercing}))
       duration=172;break
     }
@@ -57,7 +58,7 @@ module.exports=function cast(boss,bird,skill) {
       break
     }
     case 'web_lattice':
-      for(let i=0;i<2;i++)emit({kind:'gate',x:w,y:clamp(aim+(i?38:-38),210,g-100),gap:138,width:18,vx:-speed*.8,warn:warn+i*105,life:Math.ceil(w/(speed*.8))+40})
+      for(let i=0;i<(boss.phase===2?3:2);i++)emit({kind:'gate',x:w,y:clamp(aim+(i%2?30:-30),210,g-100),gap:148,width:18,vx:-speed*.8,warn:warn+i*105,life:Math.ceil(w/(speed*.8))+40})
       duration=Math.ceil(w/(speed*.8))+150;break
     case 'egg_spiral': {
       const nests=boss.mechanics.nodes.filter(n=>n.hp>0)
@@ -68,13 +69,13 @@ module.exports=function cast(boss,bird,skill) {
       for(let i=0;i<4;i++)bolt(w-35,i%2?g-35:145,i%2?Math.PI+.45:Math.PI-.45,speed,{warn:warn+i*24,radius:9})
       duration+=72;break
     case 'ice_bounce':
-      for(const dy of [-.55,.55])bolt(boss.x,boss.y,Math.PI+dy,speed,{bounce:true,life:180})
+      for(const dy of (boss.phase===2?[-.55,0,.55]:[-.55,.55]))bolt(boss.x,boss.y,Math.PI+dy,speed,{bounce:true,life:180})
       break
     case 'mirror_cross':
       for(const y of [165,g-35])for(const d of [-.12,.12])bolt(w-15,y,Math.atan2(aim-y,bird.x-w)+d,speed,{split:true})
       duration+=45;break
     case 'lava_arcs':
-      for(let i=0;i<3;i++)emit({x:boss.x,y:boss.y,vx:-speed*.75,vy:-4-i*.5,gravity:.075,warn:warn+i*28,radius:9,life:150})
+      for(let i=0;i<(boss.phase===2?5:3);i++)emit({x:boss.x,y:boss.y,vx:-speed*.75,vy:-4-i*.5,gravity:.075,warn:warn+i*28,radius:9,life:150})
       duration=200;break
     case 'magma_bomb':
       for(const offset of [-.18,.18])bolt(boss.x,boss.y,angle+offset,speed*.7,{radius:14,split:true})
@@ -105,13 +106,13 @@ module.exports=function cast(boss,bird,skill) {
     case 'gate': {
       const gap=Math.max(100,c.gateGap-(power-1)*12-(boss.phase===2?8:0))
       const center=clamp(aim+(boss.attackIndex%2? -34:34),135+gap/2,g-22-gap/2)
-      emit({kind:'gate',x:w,y:center,gap,width:26,vx:-speed,vy:0,warn:dangerWarn,piercing,life:Math.ceil((w+60)/speed)})
+      for(let pulse=0;pulse<(tier>=3&&boss.phase===2?2:1);pulse++)emit({kind:'gate',x:w,y:clamp(center+(pulse?32:0),135+gap/2,g-22-gap/2),gap,width:26,vx:-speed,vy:0,warn:dangerWarn+pulse*100,piercing,life:Math.ceil((w+60)/speed)})
       duration=Math.ceil((w+60)/speed);break
     }
     case 'beam': emit({kind:'beam',y:aim,radius:18+tier,life:40,warn:dangerWarn,piercing});duration=50;break
     case 'pincer': {
       const center=clamp(aim,230,g-105)
-      for(const sign of [-1,1]) emit({kind:'beam',y:center+sign*85,radius:20,life:52})
+      for(let pulse=0;pulse<(boss.phase===2?2:1);pulse++)for(const sign of [-1,1]) emit({kind:'beam',y:center+(pulse?24:-24)+sign*85,radius:20,warn:warn+pulse*100,life:40})
       duration=62;break
     }
     case 'rain':

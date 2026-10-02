@@ -2,11 +2,11 @@
 
 Flappy Bird单指飞行 + roguelike成长的微信小游戏，CommonJS / Canvas 2D，无npm运行依赖。
 
-当前为 **1.8.3 美术改造测试候选**（2026-10-02）：采用已确认的首版像素冒险风格，更新六章场景、角色与Boss、全部能力图标、界面和特效；保留1.8.2成长与操控修订的玩法数值。手机验收尚未完成，微信上传由用户手动进行。
+当前为 **1.8.4 Boss与构筑平衡测试候选**（2026-10-02）：保留1.8.3像素美术与分包，六Boss不增血，树根/节点破坏永久生效，延长机关输出窗口、强化二阶段招式，修复无效卡与毒伤。手机长局验收尚未完成，微信上传由用户手动进行。
 
 ## 运行
 
-在微信开发者工具中导入本目录，选择“小游戏”，使用自己的小游戏AppID。编译后点击拍翅，升级选卡。本机项目配置不入Git。当前Nightly工具重开后仍报JSON解析启动异常，详情见[项目现状](docs/STATE.md)。
+在微信开发者工具中导入本目录，选择“小游戏”，使用自己的小游戏AppID。编译后点击拍翅，升级选卡。本机项目配置不入Git。本轮Nightly工具已成功本地启动v1.8.4并响应点击；剩余工具日志与验证范围见[项目现状](docs/STATE.md)。
 
 首次导入或重新生成本地配置后，运行 `node scripts/prepare_wechat.js`，再关闭并重新打开项目。此脚本保留AppID及编译设置，将测试、文档和工具脚本排除出上传包，避免Node测试代码被微信上传编译器解析。上传由用户手动完成。
 
@@ -33,21 +33,26 @@ node test/test_v181.js
 node test/test_v182.js
 node test/test_v182_balance.js
 node test/test_v183.js
+node test/test_v184.js
+node test/sim_v184.js 64
+node test/probe_v184.js
 node scripts/check_package.js
 node test/probe_v182_balance.js
 node test/sim_v182_balance.js boss 4
 node test/sim_v182_balance.js endless 8
 ```
 
-116项回归（原有103项机制回归＋13项美术/交互/分包专项）；实际Canvas六章、攻击、教学、73张图标、短屏选卡与安全区检查通过。用户反馈已证明旧模拟不足以代表真人无尽时长；新版模拟仅作压力测试，具体结果与限制见迭代记录。
+130项回归通过；新版自然成长模拟改前/后各192局，以及45套相同装备的Boss对照。有限观察与反应模型未用真人数据校准，不能代表真人胜率；后期样本较少。实际Canvas检查Boss、破根进展、短屏指引与卡面。
 
 ## 交接
+
+- [1.8.4机制、技能审查与试玩结果](docs/iterations/迭代_v1.8.4_Boss破甲与构筑平衡.md)
 
 - [1.8.3美术改造与验证](docs/iterations/迭代_v1.8.3_像素冒险美术改造.md)
 - [六章实际画面](docs/audits/v183/six-chapters.png) · [飞行画面](docs/audits/v183/flight.png) · [短屏选卡](docs/audits/v183/cards-6-top.png)
 - [素材目录、提示词与维护说明](docs/art/v1.8.3_素材说明.md)
 
-- [1.8.2现行成长与操控修订](docs/iterations/迭代_v1.8.2_成长与操控平衡修订.md)
+- [1.8.2成长与操控基础](docs/iterations/迭代_v1.8.2_成长与操控平衡修订.md)
 - [修订后技能卡](docs/audits/v182-balance/cards-short-screen.png)
 
 - [1.8.2玩法、数值与验收](docs/iterations/迭代_v1.8.2_Boss压力与遭遇节奏.md)

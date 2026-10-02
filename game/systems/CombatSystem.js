@@ -63,7 +63,7 @@ class CombatSystem {
     for (const key of ['bladeCD', 'guardCD', 'revengeCD', 'flash', 'harvestCD', 'chainCD', 'endlessGuardCD']) if (this[key] > 0) this[key]-=(key==='guardCD'||key==='harvestCD'?recovery:1)
     const lv = this.level('feather_blade')
     if (lv && this.bladeCD <= 0) {
-      this.fire()
+      this.fire(lv,lv+1)
       this.bladeCD = Math.round(Config.COMBAT.BLADE_INTERVAL[lv - 1]*this.game.abilitySystem.getStat('weaponCadence'))
     }
     const g = this.game
@@ -87,9 +87,12 @@ class CombatSystem {
         s.hits.add(hit)
         this.damageTarget(hit,hit.isBoss?s.bossDamage:s.damage,s.source)
         if (s.source === 'frost' && !hit.isBoss) hit.frostFrames=120
-        if(!hit.isMechanic && this.level('venom_thread') && hit.hp>0) hit.venom={remaining:180,tick:60,damage:this.level('venom_thread')}
-        if (!hit.isBoss && this.level('storm_chain') && this.chainCD===0) {
-          const next=g.monsters.find(m=>m!==hit && m.hp>0)
+        if(!hit.isMechanic && this.level('venom_thread') && hit.hp>0) {
+          // 刷新持续时间，不重置跳伤时钟：攻速越快不能反而取消毒伤。
+          hit.venom={remaining:180,tick:hit.venom?hit.venom.tick:60,damage:this.level('venom_thread')}
+        }
+        if (!hit.isMechanic && this.level('storm_chain') && this.chainCD===0) {
+          const next=this.targets().find(m=>!m.isMechanic&&m!==hit&&m.hp>0) || (hit.isBoss&&hit.hp>0?hit:null)
           if(next) {this.chainCD=60;this.damageTarget(next,this.level('storm_chain')+2,'chain');g._spawnExplosion(next.x,next.y,'180,240,255',8)}
         }
         s.pierce--
@@ -150,7 +153,7 @@ class CombatSystem {
       this.cooldowns[id]=(this.cooldowns[id]||0)-1
       if(this.cooldowns[id]<=0){this.cooldowns[id]=Math.round(interval(lv)*cadence);callback(lv)}
     }
-    if(g.weatherSystem.hasEffect('wind'))auto('wind_rider',lv=>(6-lv)*60,lv=>{
+    auto('wind_rider',lv=>((g.weatherSystem.hasEffect('wind')?6:8)-lv)*60,lv=>{
       this.fire(lv,lv+1,[-.13,.13],'wind');g._addFloatingText(g.bird.x,g.bird.y-38,'借风双刃','#c5f4ff',30)
     })
     auto('seed_bolt',lv=>(5-lv)*60,lv=>this.fire(lv,lv+1,[0],'seed'))

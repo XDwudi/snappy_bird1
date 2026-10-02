@@ -404,7 +404,7 @@ class AbilitySystem {
     const stormCadence=this.weatherActive ? .04*stormChildLv : 0
     const converted=this.weatherTypes.includes(this.tamedWeather)
       ? (this.tamedWeather==='wind'?lv('wind_reader'):this.tamedWeather==='rain'?lv('raincoat'):0)*.03 : 0
-    s.weaponCadence = Math.max(.45,(1-(factions['天枢']||0)*.06)*(1-.03*lv('tailwind'))*
+    s.weaponCadence = Math.max(.45,(1-(factions['天枢']||0)*.06)*(1-.06*lv('tailwind'))*
       (1-.02*allBuff)*(1-rageCadence)*(1-stormCadence)*(1-converted))
     // 高倍率经验收益递减；保留构筑差异，阻断经验乘区滚雪球到满池。
     if(s.expMultiplier>4)s.expMultiplier=4+2*(1-Math.exp(-(s.expMultiplier-4)/2))

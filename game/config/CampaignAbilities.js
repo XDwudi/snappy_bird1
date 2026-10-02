@@ -12,12 +12,12 @@ const extra=[
  ['sand_lance','破甲沙矛',2,'uncommon',lv=>`每3秒发射穿透${lv+1}个敌人的沙矛，伤害${lv+1}（Boss ${lv+2}）`],
  ['dune_cache','沙丘补给',2,'rare',lv=>`每通过${16-lv*3}根管道获得1层护盾（遵守护盾上限）`],
  ['shadow_echo','暗影复射',3,'rare',lv=>`每4轮新武器弹丸附加暗影弹，伤害${lv+1}（Boss ${lv+2}）`],
- ['venom_thread','蚀影毒丝',3,'rare',lv=>`新武器弹丸命中挂毒3秒，每秒${lv}伤害；重复命中刷新，不叠毒`],
+ ['venom_thread','蚀影毒丝',3,'rare',lv=>`新武器弹丸命中挂毒3秒，每秒${lv}伤害；续毒不重置跳伤，不叠毒`],
  ['frost_lance','霜脉冰枪',4,'rare',lv=>`每2.5秒发射冰枪，伤害${lv+2}（Boss ${lv+3}）；怪物减速50%持续2秒`],
  ['frost_shell','寒晶净域',4,'epic',lv=>`每${12-lv*2}秒清除身边80px内普通弹幕，并向前反击（Boss ${lv+3}伤害）`],
  ['magma_core','熔核震爆',5,'epic',lv=>`每4秒对前方全部敌人造成${lv+2}伤害；Boss ${lv+4}伤害`],
  ['cinder_execution','余烬处决',5,'rare',lv=>`所有新武器对生命低于30%的敌人伤害增加${lv*30}%`],
- ['storm_chain','天雷链路',6,'epic',lv=>`新武器弹丸命中向另一怪物传导${lv+2}伤害；每秒一次、不递归`],
+ ['storm_chain','天雷链路',6,'epic',lv=>`弹丸命中传导${lv+2}伤害；单体Boss也放电，每秒一次`],
  ['singularity','引力坍缩',6,'epic',lv=>`每${10-lv}秒清除120px内普通弹幕，并造成全场${lv+4}伤害（Boss ${lv+6}）`]
 ]
 module.exports=function addCampaignAbilities(abilities) {
