@@ -709,4 +709,4 @@ const Abilities = [
   }
 ]
 
-module.exports = require('./CampaignAbilities.js')(Abilities)
+module.exports = require('./BuildConfig.js').migrate(require('./CampaignAbilities.js')(Abilities))

@@ -1,4 +1,8 @@
+const Storage=require('../../utils/Storage')
+const Random=require('./Random')
 const Art=require('../art/GameArt')
+const BuildSystem=require('../systems/BuildSystem')
+const Rules=require('../config/BuildConfig')
 const FX=require('../art/Effects')
 /**
  * Game.js - 游戏主类 [v1.2.0]
@@ -65,26 +69,6 @@ const ChapterSystem = require('../systems/ChapterSystem.js') // [v1.5.0] 章节�
 const AbilityRegistry = require('../abilities/AbilityRegistry.js')  // [v1.5.0] 大礼包自选面板 roll
 const Logger = require('../systems/GameLogger.js')
 
-// [v1.5.0] 章节祝福池（§4.10：每次过关 3 选 1，本局永久；数值刻意高于一张普通卡）
-// 伪能力定义，复用升级面板卡片渲染（_drawCard 只需要 icon/name/rarity/category/effectText）
-const BOSS_BLESSINGS = [
-  {
-    id: 'bless_vitality', name: '活力祝福', icon: '💚', rarity: 'rare', category: 'special',
-    desc: '生存向',
-    effectText: () => 'HP回满 + 护盾补满 + 临时HP+1（上限+1）'
-  },
-  {
-    id: 'bless_growth', name: '成长祝福', icon: '🌱', rarity: 'rare', category: 'special',
-    desc: '滚雪球向',
-    effectText: () => '经验获取+15%（祝福加算，高倍率递减）'
-  },
-  {
-    id: 'bless_hunt', name: '狩猎祝福', icon: '🏹', rarity: 'rare', category: 'special',
-    desc: '资源向',
-    effectText: () => '道具生成率+8pp（本局永久）+ 立即前方生成3道具'
-  }
-]
-
 class Game {
   /**
    * @param {Object} canvas - Canvas 节点
@@ -127,6 +111,7 @@ class Game {
     // 系统
     this.expSystem = new ExpSystem()
     this.abilitySystem = new AbilitySystem()
+    this.build = new BuildSystem(this)
     this.weatherSystem = new WeatherSystem()   // [v1.2.0] 环境系统
 
     // [v1.5.0] 生成系统：管道/道具/怪物的生成决策（时机/位置/类型roll/保底计时）。
@@ -200,6 +185,7 @@ class Game {
     this._bossVictoryProtectionFrames = 0
     this._bossDyingFrames = 0      // 死亡演出慢动作剩余帧（§4.11：30 帧 0.5×，复用速度包）
     this._bossRewardPending = false // 大礼包结算中（面板链：自选卡→祝福→经验升级→转场）
+    this._mechanicEventsSeen=0
     this.bossFightFrames = 0
     this._bossTimeAccumulator = 0
     this._bossClearMode = null
@@ -288,8 +274,10 @@ class Game {
 
   // ==================== 游戏控制 ====================
 
-  start() {
+  start(restoring=false) {
     Logger.info('Game', '游戏开始', { screenW: this.screenW, screenH: this.screenH })
+    Random.seed(Date.now());if(!restoring)Storage.clearRun()
+    this._lastTick=null;this._clockAccumulator=0
     this.state = Config.GAME.STATE.PLAYING
     this.score = 0
     this._scoreRemainder = 0
@@ -321,6 +309,7 @@ class Game {
     this._bossVictoryProtectionFrames = 0
     this._bossDyingFrames = 0
     this._bossRewardPending = false
+    this._mechanicEventsSeen=0
     this.bossFightFrames = 0
     this._bossClearMode = null
     this.bossClears = []
@@ -330,6 +319,9 @@ class Game {
 
     this.expSystem.reset()
     this.abilitySystem.reset()
+    this.build.reset()
+    this._nextChoiceAt=0;this._trainingSpawned=false;this._trainingRewarded=false;this.victory=false
+    this._lastDamage=null;this.timings={flight:0,boss:0,reading:0,performance:0,pause:0,endless:0}
     this.weatherSystem.reset()    // [v1.2.0] 环境系统重置
     this.chapterSystem.reset()    // [v1.5.0] 章节系统重置（回 Ch1，生成修正清零）
 
@@ -337,6 +329,7 @@ class Game {
     const birdY = this.screenH * 0.45
     this.bird.reset(birdX, birdY)
 
+    this.abilitySystem.selectAbility('feather_blade')
     if (this.onScoreChange) this.onScoreChange(this.score)
     if (this.onExpChange) this.onExpChange(this.expSystem.getExpBarData())
   }
@@ -385,6 +378,7 @@ class Game {
     this._bossVictoryProtectionFrames = 0
     this._bossDyingFrames = 0
     this._bossRewardPending = false
+    this._mechanicEventsSeen=0
     this.bossFightFrames = 0
     this._bossClearMode = null
     this.bossClears = []
@@ -394,6 +388,9 @@ class Game {
 
     this.expSystem.reset()
     this.abilitySystem.reset()
+    this.build.reset()
+    this._nextChoiceAt=0;this._trainingSpawned=false;this._trainingRewarded=false;this.victory=false
+    this._lastDamage=null;this.timings={flight:0,boss:0,reading:0,performance:0,pause:0,endless:0}
     this.weatherSystem.reset()    // [v1.2.0] 环境系统重置
     this.chapterSystem.reset()    // [v1.5.0] 章节系统重置（回 Ch1）
 
@@ -406,106 +403,6 @@ class Game {
   }
 
   // ==================== 升级流程 ====================
-
-  _triggerLevelUp() {
-    Logger.info('LevelUp', '触发升级', { level: this.expSystem.level, pending: this.expSystem.pendingLevelUps })
-    this.state = Config.GAME.STATE.UPGRADING
-    const choices = this.abilitySystem.getChoices(this.expSystem.level)  // [v1.1.3] 传入玩家等级影响稀有度概率
-
-    if (choices.length === 0) {
-      this.abilitySystem.selectAllBuff()
-      this.abilitySystem.invalidateStats()
-      this.expSystem.consumeLevelUp()
-      while(this.expSystem.hasPendingLevelUp()) {
-        this.abilitySystem.selectAllBuff();this.expSystem.consumeLevelUp()
-      }
-      this._addFloatingText(this.screenW/2,this.screenH*.4,'极限突破 +1 · 武器成长','#b6f6ff',90)
-      this._afterUpgrade()
-    } else {
-      this._currentChoices = choices
-      if (this.onLevelUp) {
-        this.onLevelUp(choices, this.expSystem.level, this.abilitySystem.getOwnedList())
-      }
-    }
-  }
-
-  selectAbility(abilityId) {
-    Logger.info('LevelUp', '选择能力', { id: abilityId, panelMode: this._panelMode,
-      currentLevel: this.abilitySystem.owned.get(abilityId) || 0 })
-
-    // [v1.5.0] 面板路由：祝福面板（伪能力，直接生效不消耗升级次数）
-    if (this._panelMode === 'blessing') {
-      this._applyBlessing(abilityId)
-      this._currentChoices = null
-      this._panelMode = 'levelup'
-      // 祝福后接大礼包经验升级面板链（无 pending 则 _afterUpgrade 内收尾）
-      if (this.expSystem.hasPendingLevelUp()) {
-        this._triggerLevelUp()
-      } else {
-        this._afterUpgrade()
-      }
-      return
-    }
-
-    const oldFactions=this.abilitySystem.getFactions()
-    this.abilitySystem.selectAbility(abilityId)
-    const factionEffects={'森芽':['经验+8%','经验+16%'],'沙铸':['间隙+6','间隙+12'],
-      '织影':['体积-4%','体积-8%'],'霜脉':['移速-3%','移速-6%'],
-      '熔核':['武器伤害+1','武器伤害+2'],'天枢':['新武器冷却-6%','新武器冷却-12%']}
-    for(const f of this.abilitySystem.getFactions()) {
-      const old=oldFactions.find(a=>a.name===f.name)
-      if(f.tier>(old?old.tier:0)) this._addFloatingText(this.screenW/2,this.screenH*.32,
-        f.name+'派系 · '+factionEffects[f.name][f.tier-1],'#b6f6ff',150)
-    }
-    this.abilitySystem.invalidateStats()
-
-    // [v1.4.0] 顿悟：同步开关到 ExpSystem
-    this.expSystem.configureEnlighten(this.abilitySystem.owned.get('enlightenment') || 0)
-
-    // [v1.4.0] 风暴驯化：获得时驯化当前天气（并发取最早触发者）；无天气则等下一种（命运感，不给挑）
-    if (abilityId === 'chaos_dice') {
-      this._applyChaosDiceTaming()
-    }
-
-    // [v1.4.0] 铁喙出场教学浮动文字（只提示一次）
-    if (abilityId === 'iron_beak' && !this._ironBeakHintShown) {
-      this._ironBeakHintShown = true
-      this._addFloatingText(this.bird.x, this.bird.y - 45, '无敌中，撞怪反击！', '#ffaa00', 90)
-    }
-
-    // [v1.5.0] 面板路由：大礼包自选面板（真实获得走上方全副作用链，但不消耗经验升级次数，选完接祝福面板）
-    if (this._panelMode === 'bossCard') {
-      this._currentChoices = null
-      this._openBlessingPanel()
-      return
-    }
-
-    this.expSystem.consumeLevelUp()
-    this._currentChoices = null
-    this._afterUpgrade()
-  }
-
-  _afterUpgrade() {
-    if (this.expSystem.hasPendingLevelUp()) {
-      this._triggerLevelUp()
-      return
-    }
-    // [v1.5.0] 大礼包面板链收尾（经验升级链耗尽后才转场）
-    if (this._bossRewardPending) {
-      this._finishBossRewards()
-      return
-    }
-    // [v1.2.2] B2-② 恢复保护：面板关闭后给短暂无敌+垂直速度清零，防止"选完即撞"
-    this.abilitySystem.invincibleFrames = Math.max(
-      this.abilitySystem.invincibleFrames, Config.UPGRADE.RESUME_INVINCIBLE_FRAMES
-    )
-    this.bird.invincibleBlink = Math.max(this.bird.invincibleBlink, 30)
-    this.bird.velocity = 0
-    this.state = Config.GAME.STATE.PLAYING
-    if (this.onExpChange) {
-      this.onExpChange(this.expSystem.getExpBarData())
-    }
-  }
 
   // ==================== 主循环 ====================
 
@@ -538,7 +435,7 @@ class Game {
   _tick() {
     if (!this.running) return
     try {
-      this.update()
+      this.advanceClock(Date.now())
       this.render()
     } catch (e) {
       console.error('[Game] 游戏循环异常:', e)
@@ -575,6 +472,8 @@ class Game {
   // ==================== 更新逻辑 ====================
 
   update() {
+    if(this._suspended)return
+    this._countTime()
     this.frameCount++
     Logger.setFrame(this.frameCount)  // [v1.1.2] 更新日志帧计数
 
@@ -623,6 +522,8 @@ class Game {
 
     if (this._bossVictoryProtectionFrames > 0) this._bossVictoryProtectionFrames--
     this.gameTime++
+    if(this._teleportGrace>0)this._teleportGrace--;this.bird.teleportGrace=this._teleportGrace||0
+    this._updateTraining()
 
     // [v1.2.0] 环境属性修饰器重置
     this._weatherGravityBonus = 0
@@ -649,6 +550,8 @@ class Game {
     // [v1.2.0] 通知能力系统环境活跃状态
     const weatherActiveNow = this.weatherSystem.activeEffects.length > 0
     this.abilitySystem.setWeatherContext(this.weatherSystem.activeEffects.map(e=>e.type),this.weatherSystem.tamedWeather)
+    this.abilitySystem.personalWind=this.combat.windWindow>0
+    this.abilitySystem.invalidateStats()
     this.abilitySystem.setWeatherActive(weatherActiveNow)
     // [v1.4.0] 风暴之眼：同步天气并发数（≥2 时 debuff 缩放+经验倍率在 getStats/getWeatherDebuffScale 结算）
     this.abilitySystem.setWeatherConcurrent(this.weatherSystem.activeEffects.length)
@@ -826,7 +729,7 @@ class Game {
     // 升级检查
     // [v1.5.0] 大礼包结算期间（_bossRewardPending）不走这里：升级面板由面板链
     // （selectAbility→_afterUpgrade→_triggerLevelUp）驱动，防同帧 _triggerLevelUp 踩踏 bossCard 面板
-    if (this.expSystem.hasPendingLevelUp() && !this._bossRewardPending && this._bossDyingFrames <= 0) {
+    if (((this.expSystem.hasPendingLevelUp() && this.build.canReleaseGrowth()) || this.build.refund>0) && this.gameTime >= this._nextChoiceAt && !this._bossRewardPending && this._bossDyingFrames <= 0) {
       // [v1.2.2] B2-① 延后弹板：等小鸟飞出管道间隙再进UPGRADING，避免"过管瞬间弹板、关板即撞下一管"
       // [v1.2.3] B2-③ 保底超时：安全区迟迟不满足时累计延迟帧，超 MAX_DELAY_FRAMES(90帧=1.5s) 强制弹板，
       //           保证任何情况下升级弹窗必出现（v1.2.2 线上 P0：安全区恒不成立导致弹窗卡死）
@@ -1110,6 +1013,7 @@ class Game {
       // [v1.4.0] 驯化冰雹掉 exp 的统一经验入口（含倍率/共鸣/顿悟全链路）
       gainExp: (amount, source) => this._gainExp(amount, source, this.abilitySystem.getStats()),
       triggerPhoenixRevive: () => this._startPhoenixRevive(),
+      recordDamage: () => {this._lastDamage={source:'冰雹',frame:this.gameTime}},
       triggerGameOver: () => {
         if (this.chapterSystem.isBossActive() && this.abilitySystem.maxHp > 1) this._onBossDefeat()
         else this._gameOver()
@@ -1185,6 +1089,19 @@ class Game {
    * @param {number} scrollSpeed - 当前滚动速度（减速对怪物同步生效）
    * @returns {boolean} true=游戏结束或复活，本帧应停止
    */
+  _updateTraining() {
+    if(this.gameTime===1)this._addFloatingText(this.screenW/2,this.screenH*.35,'点击拍翅 · 飞到目标高度','#b6f6ff',180)
+    if(!this._trainingSpawned&&this.gameTime>=480&&this.chapterSystem.index===0&&!this.chapterSystem.isBossActive()){
+      this._trainingSpawned=true
+      const m=new Monster(this.screenW*.7,this.bird.y,'floater',this.screenH-80)
+      m.hp=m.maxHp=2;m.training=true;m._trainingAge=0
+      m.update=function(){this._trainingAge++;this._hitFlash=Math.max(0,(this._hitFlash||0)-1);if(this._trainingAge>900)this.hp=0}
+      m.checkCollision=()=>false;this.monsters.push(m)
+    }
+    if(this.gameTime===1800)this._addFloatingText(this.screenW/2,this.screenH*.35,'靠近边缘有额外经验；优先安全通过','#b6f6ff',180)
+    if(this.gameTime===2700)this._addFloatingText(this.screenW/2,this.screenH*.35,'古木双根：拆上根减飞种，拆下根减根须','#b6f6ff',180)
+  }
+
   _updateMonsters(scrollSpeed) {
     // [v1.4.0] 时之晶冻结：怪物/弹幕（v1.5.0）冻结，鸟可动；友方导弹不冻结
     const frozen = this.abilitySystem.timeCrystalFreezeFrames > 0
@@ -1219,6 +1136,7 @@ class Game {
    */
   _spawnBoss() {
     this.combat.clearShots()
+    this._mechanicEventsSeen=0
     this.bossFightFrames = 0
     this._bossClearMode = null
     this.pipes = []
@@ -1292,8 +1210,9 @@ class Game {
     const feathers = this.feathers
     for (let i = feathers.length - 1; i >= 0; i--) {
       const f = feathers[i]
-      if (!frozen) f.update(timeScale)
+      if(!frozen||f.piercing||['beam','column','gate'].includes(f.kind))f.update(timeScale)
       if (this.combat.intercept(f)) { feathers.splice(i, 1); continue }
+      this.combat.onAvoid(f)
       if (f.checkCollision(this.bird)) {
         feathers.splice(i, 1)
         if (this._handleCollision(f)) return true
@@ -1306,9 +1225,9 @@ class Game {
     if (!boss) return false
     // Boss 本体（dying 也继续 update 做坠落演出；leaving 同理加速离场）
     if(this.chapterSystem.endless) boss.power=this.chapterSystem.getMods().bossPower
-    if (!frozen) {
-      this._bossTimeAccumulator=(this._bossTimeAccumulator||0)+timeScale
-      if(this._bossTimeAccumulator>=1){this._bossTimeAccumulator-=1;boss.update(this.bird,this.bossFightFrames+1)}
+    {
+      this._bossTimeAccumulator=(this._bossTimeAccumulator||0)+timeScale*(frozen?.75:1)
+      if(this._bossTimeAccumulator>=1){this._bossTimeAccumulator-=1;boss.update(this.bird,this.bossFightFrames+1);const e=boss.mechanics.events,before=this._mechanicEventsSeen||0;if(e.length>before){this._mechanicEventsSeen=e.length;const names={cool:'选择冷却阀，降低热量',overload:'选择超载阀，强攻窗口打开',break:'成功破解机关'};this.build.record('mechanic',names[e[e.length-1].type]||'成功处理 '+boss.mechanics.label())}}
     }
     if (boss.hp <= 0 && !this._bossClearMode) this._onBossVictory('kill')
 
@@ -1373,6 +1292,7 @@ class Game {
     if (!boss || this._bossClearMode || this._bossDyingFrames > 0 ||
         !this.chapterSystem.isBossActive() || this.abilitySystem.hp <= 0) return
     this._bossClearMode = method
+    this.build.record('boss',this.boss.name+(method==='kill'?' · 击败':' · 坚持获胜')+(this.abilitySystem.hp===1?' · 一血完成':''))
     this.bossClears.push({ chapter: this.chapterSystem.getBossIndex()+1, endless:this.chapterSystem.endless, method: method, frames: this.bossFightFrames })
     if (method === 'kill') boss.startDying()
     else boss.startLeaving()
@@ -1418,107 +1338,6 @@ class Game {
         })
       }
     }
-  }
-
-  /**
-   * §4.10 章节大礼包（打赢四件套）：②固定一级经验 ③+100 分先行入账（浮动文字可见），
-   * ①特殊 3 选 1 面板（1 史诗+2 珍贵，满级卡已移出）→ ④章节祝福三选一 → 大礼包经验升级面板链
-   * → _finishBossRewards 转场。面板链全程 UPGRADING 语义（世界冻结，无生存压力）。
-   */
-  _startBossRewards() {
-    if (this.chapterSystem.endless) {
-      this._addScore(Config.BOSS.GIFT_SCORE)
-      this.abilitySystem.healHP(1)
-      this._gainExp(this.expSystem.getExpNeeded(this.expSystem.level), 'endless_boss', this.abilitySystem.getStats())
-      this.chapterSystem.endBossFight(true)
-      this._addFloatingText(this.screenW/2,this.screenH*.35,'无尽战利品 +200分 · 一份恢复补给','#b6f6ff',90)
-      this._bossClearMode=null
-      return
-    }
-    this._bossRewardPending = true
-    const stats = this.abilitySystem.getStats()
-
-    // ③ +100 分
-    this._addScore(Config.BOSS.GIFT_SCORE)
-
-    // ② 固定一级经验（按当前等级曲线 18+12×Lv 逐级别累加；走统一 _gainExp 保持
-    //    共鸣/顿悟/陈列/成长祝福全链路）
-    let expSum = 0
-    for (let i = 0; i < Config.BOSS.GIFT_LEVELS; i++) {
-      expSum += this.expSystem.getExpNeeded(this.expSystem.level + i)
-    }
-    this._gainExp(expSum, 'boss_gift', stats)
-    this._addFloatingText(this.screenW / 2, this.screenH * 0.3, '章节奖励 +1级经验 / 100分', '#ffd700', 90)
-
-    // ① 特殊 3 选 1 面板（池空兜底：跳过卡片位直接进祝福）
-    const choices = AbilityRegistry.rollBossRewardChoices(this.abilitySystem.owned, this.expSystem.level, this.chapterSystem.index+1)
-    if (choices) {
-      this._panelMode = 'bossCard'
-      this.state = Config.GAME.STATE.UPGRADING
-      this._currentChoices = choices
-      if (this.onLevelUp) {
-        this.onLevelUp(choices, this.expSystem.level, this.abilitySystem.getOwnedList())
-      }
-    } else {
-      Logger.warn('Boss', '大礼包自选面板无候选（全满级），跳过卡片位')
-      this._openBlessingPanel()
-    }
-    Logger.info('Boss', '章节大礼包入账', { giftExp: expSum, score: this.score })
-  }
-
-  /** ④ 章节祝福三选一面板（§4.10：三选一，本局永久；复用升级面板渲染，伪能力定义） */
-  _openBlessingPanel() {
-    this._panelMode = 'blessing'
-    this.state = Config.GAME.STATE.UPGRADING
-    this._currentChoices = BOSS_BLESSINGS
-    if (this.onLevelUp) {
-      this.onLevelUp(BOSS_BLESSINGS, this.expSystem.level, this.abilitySystem.getOwnedList())
-    }
-  }
-
-  /**
-   * ④ 章节祝福生效（E7 章节之主：祝福效果 +50%，授予时计入，本局永久）
-   * @param {string} id - 'bless_vitality' | 'bless_growth' | 'bless_hunt'
-   */
-  _applyBlessing(id) {
-    const masterMult = (this.abilitySystem.owned.get('chapter_master') || 0) > 0
-      ? Config.BOSS.BLESSING_MASTER_MULT : 1
-    const ab = this.abilitySystem
-    if (id === 'bless_vitality') {
-      // 活力：HP 回满 + 护盾补至上限 + 临时 HP（上限 +1/次）
-      ab.healHP(ab.maxHp)
-      ab.addShieldLayer(ab.maxShieldLayers)
-      ab.blessingTempHpCapBonus += 1
-      ab.grantTempHp(Math.round(1 * masterMult))
-      this._addFloatingText(this.bird.x, this.bird.y - 40, '活力祝福！', '#7fff7f', 75)
-    } else if (id === 'bless_growth') {
-      // 成长：经验 +15%，多次祝福加算，高倍率仍递减
-      ab.blessingExpMult += Config.BOSS.BLESSING_GROWTH_EXP * masterMult
-      this._addFloatingText(this.bird.x, this.bird.y - 40, '成长祝福！', '#ffd700', 75)
-    } else if (id === 'bless_hunt') {
-      // 狩猎：道具率 +8pp（本局永久）+ 立即前方生成 3 道具
-      ab.blessingItemBonus += Config.BOSS.BLESSING_HUNT_ITEM_PP * masterMult
-      for (let i = 0; i < Config.BOSS.BLESSING_HUNT_SPAWN_ITEMS; i++) {
-        this.spawnSystem.spawnRandomItem()
-      }
-      this._addFloatingText(this.bird.x, this.bird.y - 40, '狩猎祝福！', '#ffaa00', 75)
-    }
-    ab.invalidateStats()
-    Logger.info('Boss', '章节祝福生效', { id: id, masterMult: masterMult,
-      expMult: ab.blessingExpMult, itemBonus: ab.blessingItemBonus })
-  }
-
-  /** 大礼包面板链收尾：恢复飞行（B2 同款保护）→ endBossFight(true) 转场（§4.3） */
-  _finishBossRewards() {
-    this._bossRewardPending = false
-    this._panelMode = 'levelup'
-    this.abilitySystem.invincibleFrames = Math.max(
-      this.abilitySystem.invincibleFrames, Config.UPGRADE.RESUME_INVINCIBLE_FRAMES)
-    this.bird.invincibleBlink = Math.max(this.bird.invincibleBlink, 30)
-    this.bird.velocity = 0
-    this.state = Config.GAME.STATE.PLAYING
-    this.chapterSystem.endBossFight(true)
-    if (this.onExpChange) this.onExpChange(this.expSystem.getExpBarData())
   }
 
   // ==================== [v1.5.0 步骤C] 章节进出钩子（联动卡） ====================
@@ -1573,7 +1392,7 @@ class Game {
     if (list.length === 0) return
     let chosen = null
     for (let i = 0; i < Config.ABILITY.ECHO_REROLL_MAX; i++) {
-      const c = list[Math.floor(Math.random() * list.length)]
+      const c = list[Math.floor(Random.random() * list.length)]
       if (c.level < c.def.maxLevel) { chosen = c; break }  // 满级重随机
     }
     if (!chosen) {
@@ -1615,6 +1434,7 @@ class Game {
   _onMonsterKilled(monster) {
     if (monster._killRewarded) return
     monster._killRewarded=true
+    if(monster.training){if(!this._trainingRewarded){this._trainingRewarded=true;this._gainExp(35,'training',this.abilitySystem.getStats());this.build.record('training','对准高度，羽刃命中！')}return}
     this.combat.onKill()
     this._addScore(monster.elite?25:3)
     const tint = monster.elite ? '255, 215, 0' : (monster.monsterType === 'bat' ? '176, 116, 238' : '110, 244, 166')
@@ -1636,7 +1456,7 @@ class Game {
 
     // [v1.4.0] 拾荒者掉落（同屏怪物≤2 + 生成距离450px 天然限速，无需额外刹车）
     const scavLv = this.abilitySystem.owned.get('scavenger') || 0
-    if (scavLv > 0 && Math.random() < Config.MONSTER.SCAVENGER_CHANCE_PER_LV * scavLv) {
+    if (scavLv > 0 && Random.random() < Config.MONSTER.SCAVENGER_CHANCE_PER_LV * scavLv) {
       this.spawnSystem.spawnRandomItem()  // [v1.5.0] 生成决策迁入 SpawnSystem
       Logger.info('Item', '拾荒者掉落道具', { lv: scavLv })
     }
@@ -1655,8 +1475,9 @@ class Game {
    */
   _fireMissile(opts) {
     const rackLv = this.abilitySystem.owned.get('missile_rack') || 0
-    const maxAlive = Config.MISSILE.MAX_ALIVE + rackLv  // [v1.4.0] 上限与挂架等级挂钩（同屏硬刹车）
-    const count = 1 + rackLv
+    const maxAlive = Config.MISSILE.MAX_ALIVE + rackLv + (this.build.hasEvolution('missile')?1:0)  // [v1.4.0] 上限与挂架等级挂钩（同屏硬刹车）
+    const count = 1 + rackLv+(this.build.hasEvolution('missile')?1:0)
+    const batch=++this.combat.batch
     const target = this._pickMissileTarget()
 
     let fired = 0
@@ -1665,10 +1486,12 @@ class Game {
       // 扇形角度：以水平向右为中心对称展开，步长 RACK_FAN_STEP
       const angleOffset = (i - rackLv / 2) * Config.MISSILE.RACK_FAN_STEP
       const missile = new Missile(this.bird.x + this.bird.width / 2, this.bird.y, target, angleOffset)
+      missile.batch=batch
       this.missiles.push(missile)
       fired++
     }
     if (fired <= 0) return
+    if(this.build.hasEvolution('missile')||this.build.specialization==='missile')this.build.record('missile','齐射 ×'+fired)
 
     if (!(opts && opts.silent)) {
       this._addFloatingText(
@@ -1691,8 +1514,7 @@ class Game {
    * @returns {Object|null}
    */
   _pickMissileTarget() {
-    const nodes=this.combat.targets().filter(t=>t.isMechanic)
-    if(nodes.length)return nodes.sort((a,b)=>Math.abs(a.y-this.bird.y)-Math.abs(b.y-this.bird.y))[0]
+    const chosen=this.combat.chooseTarget();if(chosen)return chosen
     // [v1.5.0] Boss 绝对优先（在场且可受击时全部火力锁定 Boss——章节高潮的火力聚焦）
     if (this.boss && this.boss.hp > 0 && this.boss.state !== 'entering' &&
         this.boss.state !== 'dying' && this.boss.state !== 'leaving') {
@@ -1783,9 +1605,10 @@ class Game {
       const bossDamage = Config.MISSILE.DAMAGE * Config.BOSS.MISSILE_DAMAGE_MULT + hunterLv + slayerLv
       this._spawnExplosion(missile.x, missile.y, '255, 200, 60', 8)
       const beforeHP = this.boss.hp
-      this.boss.takeDamage(bossDamage)
-      this.combat.chargeEndless(Math.max(0,beforeHP-this.boss.hp))
-      if (this.boss.hp < beforeHP) this._addFloatingText(this.boss.x, this.boss.y - 36, '-' + (beforeHP - this.boss.hp), '#fff5a6', 28)
+      this.combat.damageTarget(this.boss,bossDamage+(this.build.specialization==='missile'?1:0)+(this.build.apex===0&&this.build.specialization==='missile'?1:0)+(this.build.breakthroughs.missile_barrage||0),'missile',missile.batch)
+      if(this.build.specialization==='missile'&&this.build.apex===1&&this.boss&&this.boss.hp>0)this.combat.fire(1,2,[0],'missile_after')
+
+
       // 蜂群链路命中 Boss 只续窗不叠层（火力转移到召唤物时保留节奏）
       if (linkLv > 0) {
         this.abilitySystem.missileLinkWindow = Config.MISSILE.LINK_WINDOW_FRAMES
@@ -1953,7 +1776,7 @@ class Game {
     this._gainExp(Config.EXP.PIPE_PASS_EXP, 'pipe_pass', stats)
 
     // 连击
-    this.abilitySystem.onPipePass()
+    if(!this.build.hasEvolution('graze'))this.abilitySystem.onPipePass()
 
     // [v1.4.0] 连击之心 Lv3 质变：无敌期间每过 1 管 +5exp（不延长无敌，奖励改经验不碰生存边）
     // 注：onPipePass 在无敌期不累计 combo（N1 修复），本经验奖励是 Lv3 的替代收益出口
@@ -1982,7 +1805,7 @@ class Game {
 
     // [v1.4.0] 缩小射线 Lv5 质变：间隙封顶 Lv4，改擦边判定窗口 +10px
     const shrinkLv = this.abilitySystem.owned.get('shrink_ray') || 0
-    const shrinkBonus = shrinkLv >= 5 ? Config.ABILITY.SHRINK_RAY_L5_NEAR_MISS_BONUS : 0
+    const shrinkBonus = shrinkLv >= 3 ? Config.ABILITY.SHRINK_RAY_L5_NEAR_MISS_BONUS : 0
 
     // [v1.4.0] 幻影舞步：黄金窗（90帧）内擦边判定 ×2、经验 ×(2+lv)；
     // 硬规则：窗内擦边只刷新窗口、不叠加倍率（防指数回路）；窗口期金色残影在 update() 生成
@@ -1993,6 +1816,8 @@ class Game {
     if (phantomActive) windowSize *= 2
 
     if (minDist < windowSize && minDist > 0) {
+      if(this._teleportGrace>0)return
+      this.combat.onGraze()
       pipe.nearMissTriggered = true  // [v1.1.5] 防止同一管道重复触发
       const stats = this.abilitySystem.getStats()
       // 幻影舞步：窗内擦边经验 ×(2+lv)（独立乘区，走统一 _gainExp 保持共鸣/顿悟链路）
@@ -2102,7 +1927,7 @@ class Game {
     switch (item.type) {
       case 'exp_pack': {
         const expGain = Config.ITEM.EXP_PACK_MIN +
-          Math.floor(Math.random() * (Config.ITEM.EXP_PACK_MAX - Config.ITEM.EXP_PACK_MIN + 1))
+          Math.floor(Random.random() * (Config.ITEM.EXP_PACK_MAX - Config.ITEM.EXP_PACK_MIN + 1))
         const stats = this.abilitySystem.getStats()
         this._gainExp(expGain, 'exp_pack', stats)
         break
@@ -2192,6 +2017,7 @@ class Game {
    */
   _handleCollision(pipe) {
     if (this._isVictoryProtected()) return false
+    if(pipe && pipe.training)return false
     // [v1.4.0] 铁喙：受击无敌帧期间撞怪反杀且免伤（对管道无效；对 Boss 免疫，isBoss 分支预留）
     if (pipe && pipe.type === 'monster' && !pipe.isBoss &&
         this.abilitySystem.invincibleFrames > 0) {
@@ -2229,7 +2055,7 @@ class Game {
     // 保住稀缺的羽盾/护盾层）。格挡成功断连击（与羽盾 N1 同语义，受击链内被命中即断）
     if (pipe && (pipe.type === 'monster' || pipe.type === 'boss' || pipe.type === 'feather')) {
       const thickLv = this.abilitySystem.owned.get('thick_skin') || 0
-      if (thickLv > 0 && Math.random() < Config.ABILITY.THICK_SKIN_BLOCK_PER_LV * thickLv) {
+      if (thickLv > 0 && Random.random() < Config.ABILITY.THICK_SKIN_BLOCK_PER_LV * thickLv) {
         this.abilitySystem.resetCombo()
         this.bird.invincibleBlink = 20
         this.shakeFrames = 4
@@ -2293,6 +2119,8 @@ class Game {
     }
 
     // [v1.1.0] 扣血
+    this.combat.grazeCharge=Math.min(this.combat.grazeCharge,this.abilitySystem.owned.get('combo_seed')?2:0)
+    this._lastDamage={source:pipe?(pipe.piercing?'穿盾区域':pipe.isBoss?'Boss碰撞':pipe.type==='monster'?'怪物碰撞':pipe.type==='feather'?'敌方弹幕':'管道边缘'):(this.bird.y<this.screenH*.2?'天花板':'地面'),frame:this.gameTime}
     const dead = this.abilitySystem.takeDamage()
     this.damageFlash = 15   // 红屏闪烁
     this.shakeFrames = 8
@@ -2343,6 +2171,7 @@ class Game {
         // [v1.2.2] N4 瞬移（史诗）优先判定，解除时间扭曲对瞬移的遮蔽；
         // 二者独立CD，各自可触发
         if (this.abilitySystem.tryTeleport()) {
+          this._teleportGrace=30
           this.bird.y = pipe.topHeight + pipe.gap / 2
           this.bird.velocity = 0
           this.bird.invincibleBlink = 30
@@ -2371,7 +2200,7 @@ class Game {
     if (!this.abilitySystem.tryTimeWarp()) return false
     const lv = this.abilitySystem.owned.get('time_crystal') || 0
     if (lv > 0) this.abilitySystem.timeCrystalFreezeFrames = Math.round(
-      (Config.ABILITY.TIME_CRYSTAL_BASE_SEC + Config.ABILITY.TIME_CRYSTAL_PER_LV_SEC * (lv - 1)) * 60)
+      lv * 45)
     this._addFloatingText(this.bird.x, this.bird.y - 40,
       lv > 0 ? '时之晶·冻结!' : '时间扭曲!', '#aee6ff', 50)
     return true
@@ -2463,6 +2292,9 @@ class Game {
       gameTime: this.gameTime,
       abilities: this.abilitySystem.getOwnedList().map(a => `${a.def.id}:L${a.level}`)
     })
+    Storage.clearRun()
+    this.report={version:'1.9.0',victory:this.victory,score:this.score,specialization:this.build.route()?.name||'尚未专精',components:[...this.abilitySystem.owned].filter(([id])=>Rules.components.includes(id)).map(([id,level])=>({name:AbilityRegistry.get(id).name,level})),evolutions:this.build.evolutions.map(id=>Rules.evolutions.find(e=>e.id===id).name),chapters:this.chapterSystem.cleared.size,highlight:this.build.events.slice(-1)[0]?.text||'坚持飞行 '+Math.floor(this.gameTime/60)+'秒',cause:this.victory?'六章胜利':this._lastDamage?.source||'本次旅程结束',timings:{...this.timings}}
+    Storage.saveReport(this.report)
     this.state = Config.GAME.STATE.GAME_OVER
     this.shakeFrames = 12
     this.shakeIntensity = 6
@@ -2683,6 +2515,8 @@ class Game {
 
   handleTouch(x, y) {
     if (this.state === Config.GAME.STATE.READY) {
+      const b=this._resumeBounds
+      if(b&&x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h){this.resumeRun();return}
       this.flap()
     } else if (this.state === Config.GAME.STATE.PLAYING) {
       this.flap()
@@ -2691,7 +2525,7 @@ class Game {
         for (const card of this._cardBounds) {
           if (x >= card.x && x <= card.x + card.w &&
               y >= card.y && y <= card.y + card.h) {
-            this.selectAbility(card.id)
+            this._choiceSelected=card.id;this._choiceSelectedAt=Date.now()
             return
           }
         }
@@ -2764,4 +2598,5 @@ class Game {
 
 }
 
+Object.assign(Game.prototype, require('../systems/Progression'),require('../systems/RunClock'))
 module.exports = Game

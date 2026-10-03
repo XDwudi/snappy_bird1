@@ -107,22 +107,16 @@ function hazard(c,o){
  c.restore()
 }
 function mechanics(c,m,birdX){
- const b=m.boss,t=b.variant.theme;if(['entering','dying','leaving'].includes(b.state))return
- c.save()
- for(const n of m.nodes)if(n.hp>0){const x=n.x+15,y=n.y,active=n.kind!=='relay'||n.index===m.activeNode
-  if(n.kind==='root'){P.path(c,[[x,y],[b.x-8,y],[b.x+b.width/2,b.y]],'#597f61',3);I.draw(c,'root',x,y,34)}
-  else if(n.kind==='cocoon'){c.beginPath();c.ellipse(x,y,11,15,0,0,Math.PI*2);c.fillStyle='#645477';c.fill();c.strokeStyle=C.purple;c.lineWidth=2;c.stroke();for(let j=-8;j<=8;j+=8)P.path(c,[[x-8,y+j],[x+8,y+j+4]],'#ba9dc7',2);P.bar(c,x-12,y+19,24,6,n.age/420,C.purple)}
-  else{P.box(c,x-13,y-13,26,26,active?'#497b89':'#354754',active?C.ice:C.edge);P.text(c,n.index+1,x,y,15,active?C.paper:C.muted,'center',true)}
-  if(active)P.brackets(c,x-18,y-19,36,38,n.kind==='cocoon'?C.purple:C.green)
-  P.bar(c,x-15,y-27,30,6,n.hp/n.maxHp,C.green)
+ const b=m.boss,t=b.variant.theme;if(['entering','dying','leaving'].includes(b.state))return;c.save()
+ for(const n of m.nodes){if(n.hp<=0)continue;const x=n.x+15,y=n.y,active=n.kind!=='relay'||n.index===m.activeNode,next=n.kind==='relay'&&n.index===m.activeNode+1
+  if(n.kind==='root'){P.path(c,[[x,y],[b.x,y],[b.x+b.width/2,b.y]],C.green,2);I.draw(c,'root',x,y,30);P.text(c,n.index?'地刺':'种子',x,y+32,10,C.green,'center')}
+  else if(n.kind==='cocoon'){P.box(c,x-14,y-18,28,36,C.panel,n.index?C.ice:C.purple);P.text(c,n.index?'追':'封',x,y,12,n.index?C.ice:C.purple,'center');P.bar(c,x-16,y+23,32,5,n.age/(n.hatchAt||420),C.purple);P.text(c,Math.ceil(((n.hatchAt||420)-n.age)/60)+'s',x,y+38,10,C.paper,'center')}
+  else{P.box(c,x-13,y-13,26,26,C.panel,active?C.gold:next?C.ice:C.edge);P.text(c,n.index+1,x,y,13,active?C.gold:C.muted,'center');P.text(c,active?'当前':next?'下一路':'未解锁',x,y+27,9,C.muted,'center')}
+  if(active)P.brackets(c,x-19,y-22,38,44,C.green);P.bar(c,x-16,y-30,32,5,n.hp/n.maxHp,C.green)
  }
- if(['desert','glacier','volcano'].includes(t)){
-  const y=t==='desert'?m.rockY:m.zoneY
-  if(!m.weak){const half=t==='desert'?34:48;c.fillStyle=C.green;c.globalAlpha=.08;c.fillRect(birdX-28,y-half,56,half*2);c.globalAlpha=1;P.brackets(c,birdX-28,y-half,56,half*2,C.green)
-   P.bar(c,birdX-24,y+half+4,48,7,t==='desert'?1:m.zoneTime/45,C.green);P.text(c,t==='desert'?'诱撞':t==='glacier'?'蓄热':'开阀',birdX,y-half-9,11,C.paper,'center',true)}
-  if(t==='desert'){P.box(c,b.screenW*.52,y-25,18,50,'#977853',C.gold);P.path(c,[[b.screenW*.52+6,y-18],[b.screenW*.52+11,y],[b.screenW*.52+5,y+15]],C.ink,2)}
-  else{I.draw(c,t==='glacier'?'flame':'valve',b.x-10,y,20);for(let i=0;i<3;i++)P.box(c,b.x+i*12,b.y+b.height/2+10,9,8,i<m.progress?C.gold:C.panel,C.edge)}
- }
+ if(t==='desert'){const y=m.rockY,locked=b.state==='windup'&&b.stateT>=b.warnFrames-60,color=locked?C.red:C.gold;P.brackets(c,birdX-26,y-32,52,64,color);P.box(c,birdX-32,y-58,64,22,C.panel,C.edge);P.text(c,locked?'离开！':'诱撞目标',birdX,y-45,11,color,'center');P.box(c,b.screenW*.52,y-25,18,50,C.panel,C.gold)}
+ if(t==='glacier'&&!m.weak){const half=b.phase===2?40:48;c.globalAlpha=.16;c.fillStyle=C.gold;c.fillRect(birdX-30,m.zoneY-half,60,half*2);c.globalAlpha=1;P.brackets(c,birdX-30,m.zoneY-half,60,half*2,C.gold);P.bar(c,birdX-26,m.zoneY+half+5,52,6,m.zoneTime/180,C.gold);P.box(c,birdX-25,m.zoneY-half-24,50,22,C.panel,C.edge);P.text(c,'暖流',birdX,m.zoneY-half-12,11,C.gold,'center');P.brackets(c,birdX+35,m.nextZoneY-12,18,24,C.muted)}
+ if(t==='volcano')for(const v of m.valves){const color=v.kind==='cool'?C.ice:C.red;P.brackets(c,birdX-30,v.y-32,60,64,m.valveStage==='open'?color:C.edge);P.text(c,v.kind==='cool'?'冷却阀':'超载阀',birdX,v.y-44,11,color,'center');P.text(c,m.valveStage==='open'?'从外进入':'等开放',birdX,v.y+44,10,C.muted,'center')}
  c.restore()
 }
 function combat(c,s){const b=s.game.bird;c.save();for(const shot of s.shots){c.save();c.translate(Math.round(shot.x),Math.round(shot.y));c.rotate(shot.angle);const color=({seed:C.green,sand:C.gold,echo:C.purple,frost:C.ice,revenge:C.red})[shot.source]||C.paper;c.fillStyle=color;c.globalAlpha=.3;c.fillRect(-20,-1,18,2);c.globalAlpha=1

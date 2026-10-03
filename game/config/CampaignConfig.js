@@ -18,28 +18,28 @@ const skills = [
 ]
 const hints={return_seed:'飞种会折返',vine_steps:'上下交替躲根',seed_mines:'离开膨胀孢子',tail_mines:'离开锁定雷点',sand_funnel:'留在两股沙流之间',sandfall:'上下换位 · 穿绿色缺口',web_lattice:'连续穿过错位缺口',egg_spiral:'击卵减少射口',spider_legs:'交替避开斜刺',ice_bounce:'留意上下反弹',frost_steps:'按顺序换层',mirror_cross:'远离交叉落点',lava_arcs:'避开下坠弧线',magma_bomb:'留意熔核裂变',vent_burst:'上下换位 · 穿绿色缺口',polarity:'穿过两极之间',rail_switch:'穿过磁轨绿框',orbit_discharge:'避开环形散射'}
 const guides = [
-  ['飞到树根高度，让导弹优先击碎两枚树根','破根不再复生：12秒强攻，之后永久易伤'],
+  ['飞到树根高度，让导弹优先击碎两枚树根','上根减少飞种，下根减少根须；永久破甲'],
   ['先飞到绿框高度，诱导巨蝎瞄准岩柱','红色冲锋线锁定后，向上或向下离开'],
-  ['飞到紫卵高度，用导弹阻止孵化','紫卵越少，卵巢散射的射口越少'],
-  ['在绿框内累计蓄热，交替完成三次','碎冰后集中火力；紫色冻层会穿盾'],
-  ['绿框停留开阀，交替三次引爆熔核','开阀降低热量；热量满会喷出地火'],
-  ['飞到发光节点高度，按顺序击破三个','节点不再重生；10秒强攻，之后永久失防']
+  ['上卵封路，下卵追踪：7秒内选择击破','紫卵越少，卵巢散射的射口越少'],
+  ['沿缓移暖流蓄热3秒，离开0.8秒开始衰减','每次碎冰永久减甲；紫色冻层会穿盾'],
+  ['阀门预告后开2秒，须从外侧进入','冷却阀消热；超载阀5秒易伤但追加预告地火'],
+  ['飞到发光节点高度，按顺序击破三个','每个节点永久停一路磁轨；虚框提示下一路']
 ]
 const chapters = themes.map((t,i) => ({
   id:i+1, name:t[0], title:`第${['一','二','三','四','五','六'][i]}章 · ${t[0]}`,
-  subtitle:`${t[2]}派系开放 · ${t[8]}管 / 至少${t[9]}秒`, faction:t[2],
-  triggerPipes:t[8], minFrames:t[9]*60, maxFrames:(t[9]+35)*60,
+  subtitle:`${t[2]}派系开放 · ${t[8]}管 / 至少${90+i*5}秒`, faction:t[2],
+  triggerPipes:t[8], minFrames:(90+i*5)*60, maxFrames:(105+i*5)*60,
   mods:{ scrollSpeedAdd:i*0.36, gapAdd:-i*9, pipeDistanceScale:1-i*0.025,
     monsterSpawnDistance:[560,400,360,330,300,280][i], monsterMaxAlive:[1,2,2,3,3,4][i],
     monsterHpMult:1+i*0.45, floaterTrackSpeed:0.7+i*0.13, batSineAmp:40+i*5,
-    eliteChance:0.48+i*0.055, eliteTier:i, eliteHp:[6,12,24,42,66,96][i], bossHp:t[10] },
+    eliteChance:0.48+i*0.055, eliteTier:i, eliteHp:[6,12,24,42,66,96][i], bossHp:[150,230,320,430,540,660][i] },
   visual:{theme:t[1],skyTop:t[4],skyBottom:t[5],clouds:i===0,
     sun:{color:'#ffd93b',radius:36},duneColor:'#d5a061',heatParticles:12,
     ground:{base:t[7],strip:t[6],tileA:t[7],tileB:t[4]},
     pipe:{theme:t[1],body:t[7],highlight:t[6],shadow:t[4]}}
 }))
 const bosses = themes.map((t,i) => ({
-  name:t[3], theme:t[1], tier:i, guide:guides[i], survivalFrames:(100+i*18)*60,
+  name:t[3], theme:t[1], tier:i, guide:guides[i], survivalFrames:(55+i*5)*60,
   gatherText:`${t[0]}异动……${t[3]}苏醒！`,bulletColor:t[6],
   colors:{body:t[7],wing:t[4],belly:t[6],beak:t[6],eye:'#fff2b8',outline:'#172638'},
   skills:skills[i].map(([name,kind])=>({name,kind,hint:hints[kind]})),

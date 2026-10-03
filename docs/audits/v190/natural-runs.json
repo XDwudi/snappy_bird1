@@ -1,0 +1,4335 @@
+{
+  "summary": {
+    "coherent": {
+      "runs": 16,
+      "medianSeconds": 80,
+      "reached": 5,
+      "kills": 5,
+      "survival": 0,
+      "chapters": [
+        2,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        3,
+        1,
+        1
+      ],
+      "levels": [
+        15,
+        5,
+        8,
+        7,
+        5,
+        11,
+        10,
+        4,
+        4,
+        9,
+        4,
+        4,
+        3,
+        19,
+        4,
+        7
+      ]
+    },
+    "random": {
+      "runs": 16,
+      "medianSeconds": 56,
+      "reached": 4,
+      "kills": 2,
+      "survival": 0,
+      "chapters": [
+        2,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "levels": [
+        9,
+        11,
+        9,
+        6,
+        7,
+        5,
+        4,
+        5,
+        4,
+        5,
+        4,
+        9,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    "economy": {
+      "runs": 16,
+      "medianSeconds": 45,
+      "reached": 4,
+      "kills": 2,
+      "survival": 0,
+      "chapters": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2
+      ],
+      "levels": [
+        4,
+        5,
+        4,
+        7,
+        4,
+        8,
+        3,
+        3,
+        15,
+        5,
+        3,
+        4,
+        3,
+        5,
+        3,
+        11
+      ]
+    }
+  },
+  "rows": [
+    {
+      "seed": 20261002,
+      "policy": "coherent",
+      "timings": {
+        "flight": 162.51666666668814,
+        "boss": 32.13333333333279,
+        "reading": 29.999999999999577,
+        "performance": 7.666666666666645,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "regeneration",
+          2
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "greed",
+          1
+        ],
+        [
+          "dune_cache",
+          1
+        ],
+        [
+          "wind_rider",
+          1
+        ]
+      ],
+      "seconds": 195,
+      "dead": true,
+      "chapter": 2,
+      "level": 15,
+      "clears": [
+        {
+          "chapter": 1,
+          "endless": false,
+          "method": "kill",
+          "frames": 1927
+        }
+      ],
+      "entries": [
+        {
+          "chapter": 1,
+          "level": 8,
+          "seconds": 90,
+          "cards": [
+            [
+              "feather_blade",
+              3
+            ],
+            [
+              "seed_bolt",
+              3
+            ],
+            [
+              "regeneration",
+              1
+            ],
+            [
+              "vitality",
+              1
+            ]
+          ]
+        }
+      ],
+      "battles": [
+        {
+          "chapter": 1,
+          "level": 8,
+          "frames": 2018,
+          "armored": 543,
+          "breaks": 1,
+          "remainingHp": 0,
+          "seconds": 33.6
+        }
+      ],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 12,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 19,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 33,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 44,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 57,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 71,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "vitality",
+          "seconds": 79,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 123,
+          "chapter": 1,
+          "mode": "bossGrowth"
+        },
+        {
+          "id": "spec_precision",
+          "seconds": 123,
+          "chapter": 1,
+          "mode": "specialization"
+        },
+        {
+          "id": "rest_continue",
+          "seconds": 123,
+          "chapter": 1,
+          "mode": "rest"
+        },
+        {
+          "id": "vitality",
+          "seconds": 129,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_harvest",
+          "seconds": 135,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "greed",
+          "seconds": 141,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "dune_cache",
+          "seconds": 151,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "wind_rider",
+          "seconds": 165,
+          "chapter": 2,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 3
+    },
+    {
+      "seed": 20268921,
+      "policy": "coherent",
+      "timings": {
+        "flight": 52.29999999999831,
+        "boss": 0,
+        "reading": 7.999999999999977,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "agile",
+          1
+        ]
+      ],
+      "seconds": 52,
+      "dead": true,
+      "chapter": 1,
+      "level": 5,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 9,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 18,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 28,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "agile",
+          "seconds": 43,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20276840,
+      "policy": "coherent",
+      "timings": {
+        "flight": 86.5833333333297,
+        "boss": 0,
+        "reading": 14.000000000000275,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "shrink_ray",
+          1
+        ],
+        [
+          "orbit_guard",
+          3
+        ]
+      ],
+      "seconds": 87,
+      "dead": true,
+      "chapter": 1,
+      "level": 8,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 21,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "tailwind",
+          "seconds": 31,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "shrink_ray",
+          "seconds": 42,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "orbit_guard",
+          "seconds": 58,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "orbit_guard",
+          "seconds": 68,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "orbit_guard",
+          "seconds": 82,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20284759,
+      "policy": "coherent",
+      "timings": {
+        "flight": 86.96666666666302,
+        "boss": 0,
+        "reading": 12.000000000000176,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "regeneration",
+          1
+        ]
+      ],
+      "seconds": 87,
+      "dead": true,
+      "chapter": 1,
+      "level": 7,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 27,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 43,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 55,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 69,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 76,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20292678,
+      "policy": "coherent",
+      "timings": {
+        "flight": 46.01666666666534,
+        "boss": 0,
+        "reading": 7.999999999999977,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "regeneration",
+          2
+        ]
+      ],
+      "seconds": 46,
+      "dead": true,
+      "chapter": 1,
+      "level": 5,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 22,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 33,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 42,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20300597,
+      "policy": "coherent",
+      "timings": {
+        "flight": 125.61666666666082,
+        "boss": 33.26666666666606,
+        "reading": 25.999999999999805,
+        "performance": 7.666666666666645,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "echo_wing",
+          1
+        ],
+        [
+          "regeneration",
+          2
+        ]
+      ],
+      "seconds": 159,
+      "dead": true,
+      "chapter": 2,
+      "level": 11,
+      "clears": [
+        {
+          "chapter": 1,
+          "endless": false,
+          "method": "kill",
+          "frames": 1995
+        }
+      ],
+      "entries": [
+        {
+          "chapter": 1,
+          "level": 8,
+          "seconds": 90,
+          "cards": [
+            [
+              "feather_blade",
+              3
+            ],
+            [
+              "orbit_guard",
+              3
+            ],
+            [
+              "seed_bolt",
+              2
+            ]
+          ]
+        }
+      ],
+      "battles": [
+        {
+          "chapter": 1,
+          "level": 8,
+          "frames": 2086,
+          "armored": 791,
+          "breaks": 1,
+          "remainingHp": 0,
+          "seconds": 34.8
+        }
+      ],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 19,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "orbit_guard",
+          "seconds": 30,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "orbit_guard",
+          "seconds": 44,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "orbit_guard",
+          "seconds": 59,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 74,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 88,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 124,
+          "chapter": 1,
+          "mode": "bossGrowth"
+        },
+        {
+          "id": "spec_precision",
+          "seconds": 124,
+          "chapter": 1,
+          "mode": "specialization"
+        },
+        {
+          "id": "rest_continue",
+          "seconds": 124,
+          "chapter": 1,
+          "mode": "rest"
+        },
+        {
+          "id": "echo_wing",
+          "seconds": 133,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 145,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 156,
+          "chapter": 2,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 3
+    },
+    {
+      "seed": 20308516,
+      "policy": "coherent",
+      "timings": {
+        "flight": 114.03333333332814,
+        "boss": 44.9666666666654,
+        "reading": 23.99999999999992,
+        "performance": 7.666666666666645,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "orbit_guard",
+          3
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "seed_bolt",
+          2
+        ]
+      ],
+      "seconds": 160,
+      "dead": true,
+      "chapter": 2,
+      "level": 10,
+      "clears": [
+        {
+          "chapter": 1,
+          "endless": false,
+          "method": "kill",
+          "frames": 2697
+        }
+      ],
+      "entries": [
+        {
+          "chapter": 1,
+          "level": 8,
+          "seconds": 90,
+          "cards": [
+            [
+              "feather_blade",
+              3
+            ],
+            [
+              "vitality",
+              2
+            ],
+            [
+              "orbit_guard",
+              3
+            ]
+          ]
+        }
+      ],
+      "battles": [
+        {
+          "chapter": 1,
+          "level": 8,
+          "frames": 2788,
+          "armored": 611,
+          "breaks": 1,
+          "remainingHp": 0,
+          "seconds": 46.5
+        }
+      ],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 27,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "vitality",
+          "seconds": 37,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "vitality",
+          "seconds": 46,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "orbit_guard",
+          "seconds": 60,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "orbit_guard",
+          "seconds": 72,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "orbit_guard",
+          "seconds": 87,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "magnet",
+          "seconds": 135,
+          "chapter": 1,
+          "mode": "bossGrowth"
+        },
+        {
+          "id": "spec_precision",
+          "seconds": 135,
+          "chapter": 1,
+          "mode": "specialization"
+        },
+        {
+          "id": "rest_continue",
+          "seconds": 135,
+          "chapter": 1,
+          "mode": "rest"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 144,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 153,
+          "chapter": 2,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 3
+    },
+    {
+      "seed": 20316435,
+      "policy": "coherent",
+      "timings": {
+        "flight": 32.199999999999456,
+        "boss": 0,
+        "reading": 5.999999999999984,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "seed_bolt",
+          1
+        ]
+      ],
+      "seconds": 32,
+      "dead": true,
+      "chapter": 1,
+      "level": 4,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 12,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 18,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 30,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20324354,
+      "policy": "coherent",
+      "timings": {
+        "flight": 32.083333333332796,
+        "boss": 0,
+        "reading": 5.999999999999984,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "seed_bolt",
+          1
+        ]
+      ],
+      "seconds": 32,
+      "dead": true,
+      "chapter": 1,
+      "level": 4,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 10,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 16,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 28,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20332273,
+      "policy": "coherent",
+      "timings": {
+        "flight": 103.21666666666209,
+        "boss": 23.88333333333326,
+        "reading": 14.000000000000275,
+        "performance": 4.499999999999989,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "orbit_guard",
+          2
+        ]
+      ],
+      "seconds": 127,
+      "dead": true,
+      "chapter": 1,
+      "level": 9,
+      "clears": [],
+      "entries": [
+        {
+          "chapter": 1,
+          "level": 8,
+          "seconds": 90,
+          "cards": [
+            [
+              "feather_blade",
+              3
+            ],
+            [
+              "seed_bolt",
+              3
+            ],
+            [
+              "orbit_guard",
+              2
+            ]
+          ]
+        }
+      ],
+      "battles": [
+        {
+          "chapter": 1,
+          "level": 8,
+          "frames": 1531,
+          "armored": 573,
+          "breaks": 1,
+          "remainingHp": 20,
+          "seconds": 25.5
+        }
+      ],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 24,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 34,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 44,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 55,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "orbit_guard",
+          "seconds": 66,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "orbit_guard",
+          "seconds": 75,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 3
+    },
+    {
+      "seed": 20340192,
+      "policy": "coherent",
+      "timings": {
+        "flight": 41.53333333333226,
+        "boss": 0,
+        "reading": 5.999999999999984,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "agile",
+          1
+        ]
+      ],
+      "seconds": 42,
+      "dead": true,
+      "chapter": 1,
+      "level": 4,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 15,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 24,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "agile",
+          "seconds": 33,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20348111,
+      "policy": "coherent",
+      "timings": {
+        "flight": 44.98333333333206,
+        "boss": 0,
+        "reading": 5.999999999999984,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "orbit_guard",
+          1
+        ]
+      ],
+      "seconds": 45,
+      "dead": true,
+      "chapter": 1,
+      "level": 4,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 24,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "orbit_guard",
+          "seconds": 37,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20356030,
+      "policy": "coherent",
+      "timings": {
+        "flight": 40.33333333333233,
+        "boss": 0,
+        "reading": 3.9999999999999907,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ]
+      ],
+      "seconds": 40,
+      "dead": true,
+      "chapter": 1,
+      "level": 3,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 27,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20363949,
+      "policy": "coherent",
+      "timings": {
+        "flight": 244.73333333342023,
+        "boss": 59.5499999999979,
+        "reading": 41.9999999999989,
+        "performance": 16.83333333333366,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [
+        "evo_precision_pierce"
+      ],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "shrink_ray",
+          1
+        ],
+        [
+          "tailwind",
+          3
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "sand_lance",
+          3
+        ],
+        [
+          "agile",
+          1
+        ],
+        [
+          "phoenix",
+          1
+        ],
+        [
+          "light_feather",
+          1
+        ]
+      ],
+      "seconds": 305,
+      "dead": true,
+      "chapter": 3,
+      "level": 19,
+      "clears": [
+        {
+          "chapter": 1,
+          "endless": false,
+          "method": "kill",
+          "frames": 1586
+        },
+        {
+          "chapter": 2,
+          "endless": false,
+          "method": "kill",
+          "frames": 1985
+        }
+      ],
+      "entries": [
+        {
+          "chapter": 1,
+          "level": 8,
+          "seconds": 90,
+          "cards": [
+            [
+              "feather_blade",
+              3
+            ],
+            [
+              "vitality",
+              1
+            ],
+            [
+              "shrink_ray",
+              1
+            ],
+            [
+              "tailwind",
+              1
+            ],
+            [
+              "seed_bolt",
+              2
+            ]
+          ]
+        },
+        {
+          "chapter": 2,
+          "level": 15,
+          "seconds": 212,
+          "cards": [
+            [
+              "feather_blade",
+              3
+            ],
+            [
+              "vitality",
+              2
+            ],
+            [
+              "shrink_ray",
+              1
+            ],
+            [
+              "tailwind",
+              2
+            ],
+            [
+              "seed_bolt",
+              3
+            ],
+            [
+              "sand_lance",
+              3
+            ]
+          ]
+        }
+      ],
+      "battles": [
+        {
+          "chapter": 1,
+          "level": 8,
+          "frames": 1677,
+          "armored": 456,
+          "breaks": 1,
+          "remainingHp": 0,
+          "seconds": 28
+        },
+        {
+          "chapter": 2,
+          "level": 15,
+          "frames": 2076,
+          "armored": 0,
+          "breaks": 1,
+          "remainingHp": 0,
+          "seconds": 34.6
+        }
+      ],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 23,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "vitality",
+          "seconds": 30,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "shrink_ray",
+          "seconds": 41,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "tailwind",
+          "seconds": 51,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 67,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 79,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 117,
+          "chapter": 1,
+          "mode": "bossGrowth"
+        },
+        {
+          "id": "spec_precision",
+          "seconds": 117,
+          "chapter": 1,
+          "mode": "specialization"
+        },
+        {
+          "id": "rest_continue",
+          "seconds": 117,
+          "chapter": 1,
+          "mode": "rest"
+        },
+        {
+          "id": "sand_lance",
+          "seconds": 123,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "sand_lance",
+          "seconds": 131,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "sand_lance",
+          "seconds": 146,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "vitality",
+          "seconds": 158,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "tailwind",
+          "seconds": 172,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "evo_precision_pierce",
+          "seconds": 246,
+          "chapter": 2,
+          "mode": "bossGrowth"
+        },
+        {
+          "id": "rest_continue",
+          "seconds": 246,
+          "chapter": 2,
+          "mode": "rest"
+        },
+        {
+          "id": "agile",
+          "seconds": 252,
+          "chapter": 3,
+          "mode": "levelup"
+        },
+        {
+          "id": "phoenix",
+          "seconds": 258,
+          "chapter": 3,
+          "mode": "levelup"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 264,
+          "chapter": 3,
+          "mode": "levelup"
+        },
+        {
+          "id": "tailwind",
+          "seconds": 270,
+          "chapter": 3,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 8
+    },
+    {
+      "seed": 20371868,
+      "policy": "coherent",
+      "timings": {
+        "flight": 47.966666666665226,
+        "boss": 0,
+        "reading": 5.999999999999984,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "seed_bolt",
+          1
+        ]
+      ],
+      "seconds": 48,
+      "dead": true,
+      "chapter": 1,
+      "level": 4,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 22,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 37,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20379787,
+      "policy": "coherent",
+      "timings": {
+        "flight": 80.39999999999672,
+        "boss": 0,
+        "reading": 12.000000000000176,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "regeneration",
+          1
+        ]
+      ],
+      "seconds": 80,
+      "dead": true,
+      "chapter": 1,
+      "level": 7,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 19,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 31,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 47,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 60,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 75,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20261002,
+      "policy": "random",
+      "timings": {
+        "flight": 109.99999999999504,
+        "boss": 46.24999999999866,
+        "reading": 22.000000000000032,
+        "performance": 9.166666666666702,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "phoenix",
+          1
+        ],
+        [
+          "shield_burst",
+          3
+        ],
+        [
+          "seed_bolt",
+          1
+        ],
+        [
+          "toughness",
+          1
+        ],
+        [
+          "light_feather",
+          1
+        ]
+      ],
+      "seconds": 157,
+      "dead": true,
+      "chapter": 2,
+      "level": 9,
+      "clears": [
+        {
+          "chapter": 1,
+          "endless": false,
+          "method": "kill",
+          "frames": 2774
+        }
+      ],
+      "entries": [
+        {
+          "chapter": 1,
+          "level": 8,
+          "seconds": 90,
+          "cards": [
+            [
+              "feather_blade",
+              2
+            ],
+            [
+              "vitality",
+              1
+            ],
+            [
+              "phoenix",
+              1
+            ],
+            [
+              "shield_burst",
+              3
+            ],
+            [
+              "seed_bolt",
+              1
+            ]
+          ]
+        }
+      ],
+      "battles": [
+        {
+          "chapter": 1,
+          "level": 8,
+          "frames": 2865,
+          "armored": 732,
+          "breaks": 1,
+          "remainingHp": 0,
+          "seconds": 47.8
+        }
+      ],
+      "picks": [
+        {
+          "id": "vitality",
+          "seconds": 12,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "phoenix",
+          "seconds": 19,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 33,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "shield_burst",
+          "seconds": 44,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "shield_burst",
+          "seconds": 55,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "shield_burst",
+          "seconds": 71,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 84,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "toughness",
+          "seconds": 137,
+          "chapter": 1,
+          "mode": "bossGrowth"
+        },
+        {
+          "id": "spec_precision",
+          "seconds": 137,
+          "chapter": 1,
+          "mode": "specialization"
+        },
+        {
+          "id": "rest_continue",
+          "seconds": 137,
+          "chapter": 1,
+          "mode": "rest"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 145,
+          "chapter": 2,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 4
+    },
+    {
+      "seed": 20268921,
+      "policy": "random",
+      "timings": {
+        "flight": 133.38333333333162,
+        "boss": 44.316666666665434,
+        "reading": 25.999999999999805,
+        "performance": 7.666666666666645,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "vitality",
+          2
+        ],
+        [
+          "light_feather",
+          1
+        ],
+        [
+          "time_warp",
+          1
+        ],
+        [
+          "shrink_ray",
+          1
+        ],
+        [
+          "orbit_guard",
+          2
+        ],
+        [
+          "physique",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ]
+      ],
+      "seconds": 178,
+      "dead": true,
+      "chapter": 2,
+      "level": 11,
+      "clears": [
+        {
+          "chapter": 1,
+          "endless": false,
+          "method": "kill",
+          "frames": 2658
+        }
+      ],
+      "entries": [
+        {
+          "chapter": 1,
+          "level": 8,
+          "seconds": 92,
+          "cards": [
+            [
+              "feather_blade",
+              3
+            ],
+            [
+              "vitality",
+              2
+            ],
+            [
+              "light_feather",
+              1
+            ],
+            [
+              "time_warp",
+              1
+            ],
+            [
+              "shrink_ray",
+              1
+            ]
+          ]
+        }
+      ],
+      "battles": [
+        {
+          "chapter": 1,
+          "level": 8,
+          "frames": 2749,
+          "armored": 644,
+          "breaks": 1,
+          "remainingHp": 0,
+          "seconds": 45.8
+        }
+      ],
+      "picks": [
+        {
+          "id": "vitality",
+          "seconds": 9,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 18,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 27,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 38,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "vitality",
+          "seconds": 54,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "time_warp",
+          "seconds": 63,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "shrink_ray",
+          "seconds": 81,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "orbit_guard",
+          "seconds": 137,
+          "chapter": 1,
+          "mode": "bossGrowth"
+        },
+        {
+          "id": "spec_precision",
+          "seconds": 137,
+          "chapter": 1,
+          "mode": "specialization"
+        },
+        {
+          "id": "rest_continue",
+          "seconds": 137,
+          "chapter": 1,
+          "mode": "rest"
+        },
+        {
+          "id": "physique",
+          "seconds": 148,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "orbit_guard",
+          "seconds": 162,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 176,
+          "chapter": 2,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 3
+    },
+    {
+      "seed": 20276840,
+      "policy": "random",
+      "timings": {
+        "flight": 103.43333333332875,
+        "boss": 51.29999999999837,
+        "reading": 14.000000000000275,
+        "performance": 4.499999999999989,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "agile",
+          2
+        ],
+        [
+          "thick_skin",
+          1
+        ],
+        [
+          "missile_barrage",
+          1
+        ],
+        [
+          "time_warp",
+          1
+        ]
+      ],
+      "seconds": 155,
+      "dead": true,
+      "chapter": 1,
+      "level": 9,
+      "clears": [],
+      "entries": [
+        {
+          "chapter": 1,
+          "level": 7,
+          "seconds": 91,
+          "cards": [
+            [
+              "feather_blade",
+              2
+            ],
+            [
+              "magnet",
+              1
+            ],
+            [
+              "agile",
+              1
+            ],
+            [
+              "thick_skin",
+              1
+            ],
+            [
+              "missile_barrage",
+              1
+            ],
+            [
+              "time_warp",
+              1
+            ]
+          ]
+        }
+      ],
+      "battles": [
+        {
+          "chapter": 1,
+          "level": 7,
+          "frames": 3176,
+          "armored": 1026,
+          "breaks": 1,
+          "remainingHp": 19,
+          "seconds": 52.9
+        }
+      ],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "magnet",
+          "seconds": 21,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "agile",
+          "seconds": 31,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "thick_skin",
+          "seconds": 49,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "missile_barrage",
+          "seconds": 65,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "time_warp",
+          "seconds": 81,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "agile",
+          "seconds": 121,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 3
+    },
+    {
+      "seed": 20284759,
+      "policy": "random",
+      "timings": {
+        "flight": 76.58333333333027,
+        "boss": 0,
+        "reading": 10.000000000000076,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "light_feather",
+          1
+        ],
+        [
+          "tailwind",
+          2
+        ]
+      ],
+      "seconds": 77,
+      "dead": true,
+      "chapter": 1,
+      "level": 6,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 25,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "tailwind",
+          "seconds": 37,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "tailwind",
+          "seconds": 47,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 63,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20292678,
+      "policy": "random",
+      "timings": {
+        "flight": 77.23333333333024,
+        "boss": 0,
+        "reading": 12.000000000000176,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "agile",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "seed_bolt",
+          1
+        ],
+        [
+          "shield_burst",
+          1
+        ]
+      ],
+      "seconds": 77,
+      "dead": true,
+      "chapter": 1,
+      "level": 7,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 24,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "agile",
+          "seconds": 36,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 44,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 57,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "shield_burst",
+          "seconds": 71,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 2
+    },
+    {
+      "seed": 20300597,
+      "policy": "random",
+      "timings": {
+        "flight": 56.0499999999981,
+        "boss": 0,
+        "reading": 7.999999999999977,
+        "performance": 1.4999999999999996,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "phoenix",
+          1
+        ]
+      ],
+      "seconds": 56,
+      "dead": true,
+      "chapter": 1,
+      "level": 5,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "tailwind",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "phoenix",
+          "seconds": 19,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 33,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 44,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20308516,
+      "policy": "random",
+      "timings": {
+        "flight": 38.233333333332446,
+        "boss": 0,
+        "reading": 5.999999999999984,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "regeneration",
+          1
+        ]
+      ],
+      "seconds": 38,
+      "dead": true,
+      "chapter": 1,
+      "level": 4,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "regeneration",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 22,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 34,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20316435,
+      "policy": "random",
+      "timings": {
+        "flight": 58.9666666666646,
+        "boss": 0,
+        "reading": 7.999999999999977,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "combo_heart",
+          1
+        ]
+      ],
+      "seconds": 59,
+      "dead": true,
+      "chapter": 1,
+      "level": 5,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 12,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 19,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 35,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "combo_heart",
+          "seconds": 49,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20324354,
+      "policy": "random",
+      "timings": {
+        "flight": 36.89999999999919,
+        "boss": 0,
+        "reading": 5.999999999999984,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "tailwind",
+          2
+        ],
+        [
+          "regeneration",
+          1
+        ]
+      ],
+      "seconds": 37,
+      "dead": true,
+      "chapter": 1,
+      "level": 4,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "tailwind",
+          "seconds": 10,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 19,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "tailwind",
+          "seconds": 33,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20332273,
+      "policy": "random",
+      "timings": {
+        "flight": 46.533333333331974,
+        "boss": 0,
+        "reading": 7.999999999999977,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "agile",
+          1
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "seed_harvest",
+          1
+        ]
+      ],
+      "seconds": 47,
+      "dead": true,
+      "chapter": 1,
+      "level": 5,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "agile",
+          "seconds": 22,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "tailwind",
+          "seconds": 33,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_harvest",
+          "seconds": 43,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20340192,
+      "policy": "random",
+      "timings": {
+        "flight": 41.03333333333229,
+        "boss": 0,
+        "reading": 5.999999999999984,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "light_feather",
+          1
+        ],
+        [
+          "seed_harvest",
+          1
+        ]
+      ],
+      "seconds": 41,
+      "dead": true,
+      "chapter": 1,
+      "level": 4,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "light_feather",
+          "seconds": 15,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_harvest",
+          "seconds": 23,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 37,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20348111,
+      "policy": "random",
+      "timings": {
+        "flight": 120.01666666666114,
+        "boss": 5.466666666666653,
+        "reading": 14.000000000000275,
+        "performance": 9.000000000000027,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "time_warp",
+          1
+        ],
+        [
+          "light_feather",
+          1
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "seed_bolt",
+          1
+        ],
+        [
+          "tailwind",
+          1
+        ]
+      ],
+      "seconds": 125,
+      "dead": true,
+      "chapter": 1,
+      "level": 9,
+      "clears": [],
+      "entries": [
+        {
+          "chapter": 1,
+          "level": 7,
+          "seconds": 90,
+          "cards": [
+            [
+              "feather_blade",
+              3
+            ],
+            [
+              "time_warp",
+              1
+            ],
+            [
+              "light_feather",
+              1
+            ],
+            [
+              "vitality",
+              1
+            ],
+            [
+              "seed_bolt",
+              1
+            ]
+          ]
+        },
+        {
+          "chapter": 1,
+          "level": 9,
+          "seconds": 120,
+          "cards": [
+            [
+              "feather_blade",
+              3
+            ],
+            [
+              "time_warp",
+              1
+            ],
+            [
+              "light_feather",
+              1
+            ],
+            [
+              "vitality",
+              1
+            ],
+            [
+              "seed_bolt",
+              1
+            ],
+            [
+              "tailwind",
+              1
+            ]
+          ]
+        }
+      ],
+      "battles": [
+        {
+          "chapter": 1,
+          "level": 7,
+          "frames": 267,
+          "armored": 267,
+          "breaks": 0,
+          "remainingHp": 139,
+          "seconds": 4.5
+        },
+        {
+          "chapter": 1,
+          "level": 9,
+          "frames": 257,
+          "armored": 257,
+          "breaks": 0,
+          "remainingHp": 139,
+          "seconds": 4.3
+        }
+      ],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "time_warp",
+          "seconds": 27,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 39,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "vitality",
+          "seconds": 53,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 72,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 84,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "tailwind",
+          "seconds": 103,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 3
+    },
+    {
+      "seed": 20356030,
+      "policy": "random",
+      "timings": {
+        "flight": 46.416666666665314,
+        "boss": 0,
+        "reading": 5.999999999999984,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "combo_heart",
+          1
+        ]
+      ],
+      "seconds": 46,
+      "dead": true,
+      "chapter": 1,
+      "level": 4,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "tailwind",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 27,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "combo_heart",
+          "seconds": 40,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20363949,
+      "policy": "random",
+      "timings": {
+        "flight": 41.21666666666561,
+        "boss": 0,
+        "reading": 5.999999999999984,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "combo_heart",
+          1
+        ]
+      ],
+      "seconds": 41,
+      "dead": true,
+      "chapter": 1,
+      "level": 4,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 22,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "combo_heart",
+          "seconds": 34,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20371868,
+      "policy": "random",
+      "timings": {
+        "flight": 44.94999999999873,
+        "boss": 0,
+        "reading": 5.999999999999984,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "shield_burst",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ]
+      ],
+      "seconds": 45,
+      "dead": true,
+      "chapter": 1,
+      "level": 4,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "shield_burst",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 22,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 37,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20379787,
+      "policy": "random",
+      "timings": {
+        "flight": 46.566666666665306,
+        "boss": 0,
+        "reading": 5.999999999999984,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "thick_skin",
+          1
+        ]
+      ],
+      "seconds": 47,
+      "dead": true,
+      "chapter": 1,
+      "level": 4,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "regeneration",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "vitality",
+          "seconds": 25,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "thick_skin",
+          "seconds": 39,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20261002,
+      "policy": "economy",
+      "timings": {
+        "flight": 34.56666666666599,
+        "boss": 0,
+        "reading": 5.999999999999984,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "greed",
+          1
+        ],
+        [
+          "light_feather",
+          1
+        ],
+        [
+          "agile",
+          1
+        ]
+      ],
+      "seconds": 35,
+      "dead": true,
+      "chapter": 1,
+      "level": 4,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "greed",
+          "seconds": 12,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 18,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "agile",
+          "seconds": 30,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20268921,
+      "policy": "economy",
+      "timings": {
+        "flight": 55.81666666666478,
+        "boss": 0,
+        "reading": 7.999999999999977,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "time_warp",
+          1
+        ],
+        [
+          "missile_barrage",
+          1
+        ],
+        [
+          "shrink_ray",
+          1
+        ],
+        [
+          "light_feather",
+          1
+        ]
+      ],
+      "seconds": 56,
+      "dead": true,
+      "chapter": 1,
+      "level": 5,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "time_warp",
+          "seconds": 9,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "missile_barrage",
+          "seconds": 22,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "shrink_ray",
+          "seconds": 30,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 41,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20276840,
+      "policy": "economy",
+      "timings": {
+        "flight": 45.283333333332045,
+        "boss": 0,
+        "reading": 5.999999999999984,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "thick_skin",
+          1
+        ],
+        [
+          "magnet",
+          1
+        ],
+        [
+          "seed_bolt",
+          1
+        ]
+      ],
+      "seconds": 45,
+      "dead": true,
+      "chapter": 1,
+      "level": 4,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "thick_skin",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "magnet",
+          "seconds": 21,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 34,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20284759,
+      "policy": "economy",
+      "timings": {
+        "flight": 94.33333333332926,
+        "boss": 47.94999999999856,
+        "reading": 12.000000000000176,
+        "performance": 5.999999999999984,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "phoenix",
+          1
+        ],
+        [
+          "agile",
+          2
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "vitality",
+          1
+        ]
+      ],
+      "seconds": 142,
+      "dead": true,
+      "chapter": 1,
+      "level": 7,
+      "clears": [],
+      "entries": [
+        {
+          "chapter": 1,
+          "level": 7,
+          "seconds": 90,
+          "cards": [
+            [
+              "feather_blade",
+              2
+            ],
+            [
+              "phoenix",
+              1
+            ],
+            [
+              "agile",
+              2
+            ],
+            [
+              "regeneration",
+              1
+            ],
+            [
+              "vitality",
+              1
+            ]
+          ]
+        }
+      ],
+      "battles": [
+        {
+          "chapter": 1,
+          "level": 7,
+          "frames": 2975,
+          "armored": 1208,
+          "breaks": 1,
+          "remainingHp": 50,
+          "seconds": 49.6
+        }
+      ],
+      "picks": [
+        {
+          "id": "phoenix",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "agile",
+          "seconds": 27,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 43,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "agile",
+          "seconds": 55,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "vitality",
+          "seconds": 71,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 89,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 3
+    },
+    {
+      "seed": 20292678,
+      "policy": "economy",
+      "timings": {
+        "flight": 43.61666666666547,
+        "boss": 0,
+        "reading": 5.999999999999984,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "light_feather",
+          1
+        ]
+      ],
+      "seconds": 44,
+      "dead": true,
+      "chapter": 1,
+      "level": 4,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "tailwind",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 22,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 33,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20300597,
+      "policy": "economy",
+      "timings": {
+        "flight": 93.43333333332932,
+        "boss": 2.799999999999995,
+        "reading": 14.000000000000275,
+        "performance": 4.499999999999989,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "light_feather",
+          2
+        ],
+        [
+          "seed_bolt",
+          1
+        ],
+        [
+          "seed_harvest",
+          1
+        ],
+        [
+          "vitality",
+          1
+        ]
+      ],
+      "seconds": 96,
+      "dead": true,
+      "chapter": 1,
+      "level": 8,
+      "clears": [],
+      "entries": [
+        {
+          "chapter": 1,
+          "level": 8,
+          "seconds": 90,
+          "cards": [
+            [
+              "feather_blade",
+              2
+            ],
+            [
+              "tailwind",
+              1
+            ],
+            [
+              "light_feather",
+              2
+            ],
+            [
+              "seed_bolt",
+              1
+            ],
+            [
+              "seed_harvest",
+              1
+            ],
+            [
+              "vitality",
+              1
+            ]
+          ]
+        }
+      ],
+      "battles": [
+        {
+          "chapter": 1,
+          "level": 8,
+          "frames": 266,
+          "armored": 266,
+          "breaks": 0,
+          "remainingHp": 150,
+          "seconds": 4.4
+        }
+      ],
+      "picks": [
+        {
+          "id": "tailwind",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 19,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 33,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 44,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_harvest",
+          "seconds": 54,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 69,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "vitality",
+          "seconds": 78,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 3
+    },
+    {
+      "seed": 20308516,
+      "policy": "economy",
+      "timings": {
+        "flight": 33.61666666666604,
+        "boss": 0,
+        "reading": 3.9999999999999907,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "light_feather",
+          2
+        ]
+      ],
+      "seconds": 34,
+      "dead": true,
+      "chapter": 1,
+      "level": 3,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "light_feather",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 25,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20316435,
+      "policy": "economy",
+      "timings": {
+        "flight": 27.18333333333307,
+        "boss": 0,
+        "reading": 3.9999999999999907,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "tailwind",
+          1
+        ]
+      ],
+      "seconds": 27,
+      "dead": true,
+      "chapter": 1,
+      "level": 3,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "tailwind",
+          "seconds": 12,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 18,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20324354,
+      "policy": "economy",
+      "timings": {
+        "flight": 177.36666666669996,
+        "boss": 49.14999999999849,
+        "reading": 29.999999999999577,
+        "performance": 12.16666666666685,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "light_feather",
+          3
+        ],
+        [
+          "venom_thread",
+          1
+        ],
+        [
+          "regeneration",
+          1
+        ],
+        [
+          "wind_rider",
+          2
+        ],
+        [
+          "storm_child",
+          1
+        ]
+      ],
+      "seconds": 227,
+      "dead": true,
+      "chapter": 2,
+      "level": 15,
+      "clears": [
+        {
+          "chapter": 1,
+          "endless": false,
+          "method": "kill",
+          "frames": 2044
+        }
+      ],
+      "entries": [
+        {
+          "chapter": 1,
+          "level": 9,
+          "seconds": 90,
+          "cards": [
+            [
+              "feather_blade",
+              2
+            ],
+            [
+              "tailwind",
+              1
+            ],
+            [
+              "seed_bolt",
+              2
+            ],
+            [
+              "light_feather",
+              3
+            ]
+          ]
+        },
+        {
+          "chapter": 1,
+          "level": 10,
+          "seconds": 132,
+          "cards": [
+            [
+              "feather_blade",
+              2
+            ],
+            [
+              "tailwind",
+              1
+            ],
+            [
+              "seed_bolt",
+              2
+            ],
+            [
+              "light_feather",
+              3
+            ]
+          ]
+        }
+      ],
+      "battles": [
+        {
+          "chapter": 1,
+          "level": 9,
+          "frames": 1002,
+          "armored": 951,
+          "breaks": 1,
+          "remainingHp": 117,
+          "seconds": 16.7
+        },
+        {
+          "chapter": 1,
+          "level": 10,
+          "frames": 2135,
+          "armored": 605,
+          "breaks": 1,
+          "remainingHp": 0,
+          "seconds": 35.6
+        }
+      ],
+      "picks": [
+        {
+          "id": "tailwind",
+          "seconds": 10,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 16,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 24,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 36,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 51,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 63,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 74,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 167,
+          "chapter": 1,
+          "mode": "bossGrowth"
+        },
+        {
+          "id": "spec_precision",
+          "seconds": 167,
+          "chapter": 1,
+          "mode": "specialization"
+        },
+        {
+          "id": "rest_continue",
+          "seconds": 167,
+          "chapter": 1,
+          "mode": "rest"
+        },
+        {
+          "id": "venom_thread",
+          "seconds": 173,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "regeneration",
+          "seconds": 179,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "wind_rider",
+          "seconds": 185,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "storm_child",
+          "seconds": 191,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "wind_rider",
+          "seconds": 197,
+          "chapter": 2,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 3
+    },
+    {
+      "seed": 20332273,
+      "policy": "economy",
+      "timings": {
+        "flight": 57.083333333331375,
+        "boss": 0,
+        "reading": 7.999999999999977,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "vitality",
+          1
+        ],
+        [
+          "greed",
+          1
+        ],
+        [
+          "light_feather",
+          1
+        ]
+      ],
+      "seconds": 57,
+      "dead": true,
+      "chapter": 1,
+      "level": 5,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "vitality",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "greed",
+          "seconds": 24,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 34,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 47,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20340192,
+      "policy": "economy",
+      "timings": {
+        "flight": 31.983333333332798,
+        "boss": 0,
+        "reading": 3.9999999999999907,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "light_feather",
+          1
+        ],
+        [
+          "agile",
+          1
+        ]
+      ],
+      "seconds": 32,
+      "dead": true,
+      "chapter": 1,
+      "level": 3,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "light_feather",
+          "seconds": 15,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "agile",
+          "seconds": 24,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20348111,
+      "policy": "economy",
+      "timings": {
+        "flight": 44.98333333333206,
+        "boss": 0,
+        "reading": 5.999999999999984,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          3
+        ],
+        [
+          "seed_harvest",
+          1
+        ]
+      ],
+      "seconds": 45,
+      "dead": true,
+      "chapter": 1,
+      "level": 4,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "feather_blade",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 24,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_harvest",
+          "seconds": 37,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20356030,
+      "policy": "economy",
+      "timings": {
+        "flight": 36.96666666666585,
+        "boss": 0,
+        "reading": 3.9999999999999907,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          1
+        ],
+        [
+          "agile",
+          1
+        ],
+        [
+          "magnet",
+          1
+        ]
+      ],
+      "seconds": 37,
+      "dead": true,
+      "chapter": 1,
+      "level": 3,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "agile",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "magnet",
+          "seconds": 27,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20363949,
+      "policy": "economy",
+      "timings": {
+        "flight": 50.56666666666508,
+        "boss": 0,
+        "reading": 7.999999999999977,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "tailwind",
+          1
+        ],
+        [
+          "greed",
+          1
+        ],
+        [
+          "echo_wing",
+          1
+        ]
+      ],
+      "seconds": 51,
+      "dead": true,
+      "chapter": 1,
+      "level": 5,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "tailwind",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 28,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "greed",
+          "seconds": 41,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "echo_wing",
+          "seconds": 49,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20371868,
+      "policy": "economy",
+      "timings": {
+        "flight": 32.01666666666613,
+        "boss": 0,
+        "reading": 3.9999999999999907,
+        "performance": 0,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "shield_burst",
+          1
+        ]
+      ],
+      "seconds": 32,
+      "dead": true,
+      "chapter": 1,
+      "level": 3,
+      "clears": [],
+      "entries": [],
+      "battles": [],
+      "picks": [
+        {
+          "id": "shield_burst",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 22,
+          "chapter": 1,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 0
+    },
+    {
+      "seed": 20379787,
+      "policy": "economy",
+      "timings": {
+        "flight": 137.35000000000144,
+        "boss": 44.73333333333208,
+        "reading": 25.999999999999805,
+        "performance": 7.666666666666645,
+        "pause": 0,
+        "endless": 0
+      },
+      "evolutions": [],
+      "owned": [
+        [
+          "feather_blade",
+          2
+        ],
+        [
+          "combo_heart",
+          1
+        ],
+        [
+          "light_feather",
+          3
+        ],
+        [
+          "seed_bolt",
+          3
+        ],
+        [
+          "orbit_guard",
+          2
+        ],
+        [
+          "time_warp",
+          1
+        ]
+      ],
+      "seconds": 183,
+      "dead": true,
+      "chapter": 2,
+      "level": 11,
+      "clears": [
+        {
+          "chapter": 1,
+          "endless": false,
+          "method": "kill",
+          "frames": 2683
+        }
+      ],
+      "entries": [
+        {
+          "chapter": 1,
+          "level": 7,
+          "seconds": 90,
+          "cards": [
+            [
+              "feather_blade",
+              1
+            ],
+            [
+              "combo_heart",
+              1
+            ],
+            [
+              "light_feather",
+              3
+            ],
+            [
+              "seed_bolt",
+              2
+            ]
+          ]
+        }
+      ],
+      "battles": [
+        {
+          "chapter": 1,
+          "level": 7,
+          "frames": 2774,
+          "armored": 755,
+          "breaks": 1,
+          "remainingHp": 0,
+          "seconds": 46.2
+        }
+      ],
+      "picks": [
+        {
+          "id": "combo_heart",
+          "seconds": 13,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 22,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 39,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 55,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "light_feather",
+          "seconds": 66,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 83,
+          "chapter": 1,
+          "mode": "levelup"
+        },
+        {
+          "id": "orbit_guard",
+          "seconds": 135,
+          "chapter": 1,
+          "mode": "bossGrowth"
+        },
+        {
+          "id": "spec_precision",
+          "seconds": 135,
+          "chapter": 1,
+          "mode": "specialization"
+        },
+        {
+          "id": "rest_continue",
+          "seconds": 135,
+          "chapter": 1,
+          "mode": "rest"
+        },
+        {
+          "id": "orbit_guard",
+          "seconds": 141,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "seed_bolt",
+          "seconds": 151,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "time_warp",
+          "seconds": 162,
+          "chapter": 2,
+          "mode": "levelup"
+        },
+        {
+          "id": "feather_blade",
+          "seconds": 179,
+          "chapter": 2,
+          "mode": "levelup"
+        }
+      ],
+      "maxHazards": 3
+    }
+  ]
+}

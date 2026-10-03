@@ -1,0 +1,120 @@
+{
+  "source": "natural-runs.json, same 192 runs as first audit",
+  "notes": "First boss entry per chapter per run only; surviving subset, not longitudinal matched players. Median averages two middle values for even n; P90 uses nearest rank. Pairwise overlaps are dependent observations; no population estimate.",
+  "chapters": [
+    {
+      "chapter": 1,
+      "samples": 101,
+      "uniqueMedian": 11,
+      "uniqueP90": 12,
+      "ranksMedian": 14,
+      "fourCardFactionsMedian": 1,
+      "levelMedian": 15
+    },
+    {
+      "chapter": 2,
+      "samples": 25,
+      "uniqueMedian": 19,
+      "uniqueP90": 21,
+      "ranksMedian": 28,
+      "fourCardFactionsMedian": 2,
+      "levelMedian": 28
+    },
+    {
+      "chapter": 3,
+      "samples": 21,
+      "uniqueMedian": 24,
+      "uniqueP90": 26,
+      "ranksMedian": 37,
+      "fourCardFactionsMedian": 2,
+      "levelMedian": 36
+    },
+    {
+      "chapter": 4,
+      "samples": 14,
+      "uniqueMedian": 29,
+      "uniqueP90": 33,
+      "ranksMedian": 46,
+      "fourCardFactionsMedian": 3,
+      "levelMedian": 44
+    },
+    {
+      "chapter": 5,
+      "samples": 13,
+      "uniqueMedian": 34,
+      "uniqueP90": 38,
+      "ranksMedian": 56,
+      "fourCardFactionsMedian": 3,
+      "levelMedian": 52
+    },
+    {
+      "chapter": 6,
+      "samples": 12,
+      "uniqueMedian": 37.5,
+      "uniqueP90": 46,
+      "ranksMedian": 63.5,
+      "fourCardFactionsMedian": 4,
+      "levelMedian": 58.5
+    }
+  ],
+  "chapter6Overlap": {
+    "builds": 12,
+    "pairs": 66,
+    "jaccardMedian": 0.5
+  },
+  "isolatedMechanicTraces": {
+    "notes": "Identical initial HP/tier, no hazards or physics, instant following of current zone; compares rules only.",
+    "glacier": [
+      {
+        "frame": 45,
+        "zoneY": 487,
+        "progress": 1,
+        "weak": 0,
+        "completed": 0,
+        "hp": 1000
+      },
+      {
+        "frame": 90,
+        "zoneY": 190,
+        "progress": 2,
+        "weak": 0,
+        "completed": 0,
+        "hp": 1000
+      },
+      {
+        "frame": 135,
+        "zoneY": 487,
+        "progress": 0,
+        "weak": 480,
+        "completed": 1,
+        "hp": 800
+      }
+    ],
+    "volcano": [
+      {
+        "frame": 45,
+        "zoneY": 487,
+        "progress": 1,
+        "weak": 0,
+        "completed": 0,
+        "hp": 955
+      },
+      {
+        "frame": 90,
+        "zoneY": 190,
+        "progress": 2,
+        "weak": 0,
+        "completed": 0,
+        "hp": 910
+      },
+      {
+        "frame": 135,
+        "zoneY": 487,
+        "progress": 0,
+        "weak": 480,
+        "completed": 1,
+        "hp": 765
+      }
+    ]
+  }
+}

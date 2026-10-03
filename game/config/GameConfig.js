@@ -8,7 +8,7 @@
 const Campaign = require('./CampaignConfig.js')
 
 module.exports = {
-  VERSION: '1.8.6',
+  VERSION: '1.9.0',
   // ==================== 小鸟参数 ====================
   BIRD: {
     WIDTH: 34,              // 小鸟视觉宽度
@@ -124,8 +124,8 @@ module.exports = {
   EXP: {
     LATE_START_LEVEL: 20,
     LATE_CURVE: 0.9,
-    BASE_EXP: 18,          // [v1.1.0] 20→18 前期更快
-    EXP_INCREMENT: 12,     // [v1.1.0] 15→12 曲线更平缓
+    BASE_EXP: 70,          // [v1.1.0] 20→18 前期更快
+    EXP_INCREMENT: 18,     // [v1.1.0] 15→12 曲线更平缓
     PIPE_PASS_EXP: 10,     // [v1.1.4] 5→10 通过管道经验（经验球经验移除，保留后续版本） 早期成长加速（真机反馈①"让玩家有胡牌爽起来的时候"；主经验源 +20%，升级提前 ~17%）[v1.1.4] 5→10 通过管道经验（经验球经验移除，保留后续版本）
     ORB_EXP: 10,           // 拾取经验球经验
     NEAR_MISS_EXP: 15,     // 擦边奖励经验

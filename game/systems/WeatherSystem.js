@@ -1,3 +1,4 @@
+const Random=require('../core/Random')
 /**
  * WeatherSystem.js - 环境系统管理器 [v1.2.0新增]
  *
@@ -189,7 +190,7 @@ class WeatherSystem {
     const chance = (this.elitePressure ? .45 : 0) + W.BASE_CHANCE +
       (W.MAX_CHANCE - W.BASE_CHANCE) * Math.min(1, gameTime / W.CHANCE_RAMP_TIME)
 
-    if (Math.random() > chance) return
+    if (Random.random() > chance) return
 
     // 选择可触发的效果
     const available = ALL_TYPES.filter(t =>
@@ -199,7 +200,7 @@ class WeatherSystem {
     if (available.length === 0) return
 
     // 随机选择一个
-    const type = available[Math.floor(Math.random() * available.length)]
+    const type = available[Math.floor(Random.random() * available.length)]
     this._triggerEffect(type, gameCtx)
   }
 

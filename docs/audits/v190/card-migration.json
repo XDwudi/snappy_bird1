@@ -1,0 +1,1429 @@
+[
+  {
+    "id": "feather_blade",
+    "name": "疾风羽刃",
+    "rarity": "uncommon",
+    "slotType": "component",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "blade"
+    ],
+    "exclusiveBranches": [
+      "evo_precision_pierce",
+      "evo_precision_fan"
+    ],
+    "effects": [
+      "2.5秒直射：怪物1伤/Boss2伤，破绽+1",
+      "2秒直射：怪物2伤/Boss3伤，破绽+1",
+      "1.5秒直射：怪物3伤/Boss4伤，破绽+1"
+    ]
+  },
+  {
+    "id": "orbit_guard",
+    "name": "风环护卫",
+    "rarity": "uncommon",
+    "slotType": "component",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "reflect"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "挡1枚弹幕/冰雹并反射，8秒恢复；不挡碰撞/沙墙",
+      "挡1枚弹幕/冰雹并反射，6秒恢复；不挡碰撞/沙墙",
+      "挡1枚弹幕/冰雹并反射，4秒恢复；不挡碰撞/沙墙"
+    ]
+  },
+  {
+    "id": "revenge_pulse",
+    "name": "逆羽反击",
+    "rarity": "uncommon",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 1,
+    "prerequisiteAny": [
+      "orbit_guard",
+      "shield_burst"
+    ],
+    "sourceTags": [
+      "reflect",
+      "shield"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "失盾/伤发3刃：怪物1伤；Boss每轮2伤，4秒冷却",
+      "失盾/伤发3刃：怪物2伤；Boss每轮3伤，4秒冷却",
+      "失盾/伤发3刃：怪物3伤；Boss每轮4伤，4秒冷却"
+    ]
+  },
+  {
+    "id": "light_feather",
+    "name": "轻羽",
+    "rarity": "common",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 5,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "light_feather"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "下落重力-6%，最大落速-5%；起跳不变",
+      "下落重力-18%，最大落速-15%；起跳不变",
+      "下落重力-30%，最大落速-25%；起跳不变"
+    ]
+  },
+  {
+    "id": "tailwind",
+    "name": "顺风",
+    "rarity": "common",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 1,
+    "prerequisiteAny": [
+      "feather_blade",
+      "seed_bolt",
+      "sand_lance"
+    ],
+    "sourceTags": [
+      "blade",
+      "seed",
+      "sand"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "羽刃/灵种/沙矛间隔-6%；羽刃3＋顺风2可进化",
+      "羽刃/灵种/沙矛间隔-12%；羽刃3＋顺风2可进化",
+      "羽刃/灵种/沙矛间隔-18%；羽刃3＋顺风2可进化"
+    ]
+  },
+  {
+    "id": "agile",
+    "name": "灵巧",
+    "rarity": "uncommon",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 5,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "agile"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "碰撞箱 -12%",
+      "碰撞箱 -36%",
+      "碰撞箱 -60%"
+    ]
+  },
+  {
+    "id": "magnet",
+    "name": "磁吸",
+    "rarity": "uncommon",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 5,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "magnet"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "道具吸引范围 +50px",
+      "道具吸引范围 +150px",
+      "道具吸引范围 +250px"
+    ]
+  },
+  {
+    "id": "greed",
+    "name": "贪婪",
+    "rarity": "uncommon",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 5,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "greed"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "经验获取 +25%",
+      "经验获取 +75%",
+      "经验获取 +125%"
+    ]
+  },
+  {
+    "id": "toughness",
+    "name": "坚韧",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 1,
+    "prerequisiteAny": [
+      "shield_burst"
+    ],
+    "sourceTags": [
+      "shield"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "护盾上限+1，产盾周期缩短8%（需护盾爆发）",
+      "护盾上限+2，产盾周期缩短16%（需护盾爆发）",
+      "护盾上限+3，产盾周期缩短24%（需护盾爆发）"
+    ]
+  },
+  {
+    "id": "vitality",
+    "name": "活力之心",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "vitality"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "最大HP +1（上限3）",
+      "最大HP +2（上限4）"
+    ]
+  },
+  {
+    "id": "physique",
+    "name": "体魄",
+    "rarity": "uncommon",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 2,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "physique"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "受击无敌 +0.5s",
+      "受击无敌 +1s",
+      "受击无敌 +1.5s"
+    ]
+  },
+  {
+    "id": "wind_reader",
+    "name": "顺风耳",
+    "rarity": "common",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 6,
+    "prerequisiteAny": [
+      "wind_rider"
+    ],
+    "sourceTags": [
+      "wind"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "真实风力-30%；个人风窗延长0.2秒",
+      "真实风力-60%；个人风窗延长0.4秒",
+      "真实风力-90%；个人风窗延长0.6000000000000001秒"
+    ]
+  },
+  {
+    "id": "raincoat",
+    "name": "雨衣",
+    "rarity": "uncommon",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 6,
+    "prerequisiteAny": [
+      "wind_rider"
+    ],
+    "sourceTags": [
+      "wind"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "积水-40%；雨驯化时风刃间隔-3%",
+      "积水-80%；雨驯化时风刃间隔-6%",
+      "积水-100%；雨驯化时风刃间隔-9%"
+    ]
+  },
+  {
+    "id": "wind_rider",
+    "name": "御风者",
+    "rarity": "rare",
+    "slotType": "component",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 2,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "wind"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "每5秒双风刃并开启2秒个人风窗；风刃1伤/Boss2",
+      "每4秒双风刃并开启2秒个人风窗；风刃2伤/Boss3",
+      "每3秒双风刃并开启2秒个人风窗；风刃3伤/Boss4"
+    ]
+  },
+  {
+    "id": "climate_adapt",
+    "name": "气候适应",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 4,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "climate_adapt"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "风力/雨重力/冰雹密度-15%；天气时长不变",
+      "风力/雨重力/冰雹密度-30%；天气时长不变",
+      "风力/雨重力/冰雹密度-45%；天气时长不变"
+    ]
+  },
+  {
+    "id": "time_warp",
+    "name": "时间扭曲",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 5,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "time_warp"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "减速50%，CD 20s",
+      "减速50%，CD 14s",
+      "减速50%，CD 8s"
+    ]
+  },
+  {
+    "id": "teleport",
+    "name": "瞬移闪避",
+    "rarity": "epic",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 3,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "teleport"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "接近管道边缘时瞬移至缺口，CD 30s",
+      "接近管道边缘时瞬移至缺口，CD 25s",
+      "接近管道边缘时瞬移至缺口，CD 20s"
+    ]
+  },
+  {
+    "id": "shield_burst",
+    "name": "护盾爆发",
+    "rarity": "uncommon",
+    "slotType": "component",
+    "maxLevel": 3,
+    "legacyMaxLevel": 5,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "shield"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "每25s获得1层护盾",
+      "每19s获得1层护盾",
+      "每13s获得1层护盾"
+    ]
+  },
+  {
+    "id": "phoenix",
+    "name": "凤凰之翼",
+    "rarity": "epic",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "phoenix"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "复活次数+1/级，回到屏幕中上部，HP回满当前上限",
+      "复活次数+1/级，回到屏幕中上部，HP回满当前上限"
+    ]
+  },
+  {
+    "id": "regeneration",
+    "name": "自愈",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "regeneration"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "每30s恢复1HP",
+      "每25s恢复1HP",
+      "每20s恢复1HP"
+    ]
+  },
+  {
+    "id": "bounce_shield",
+    "name": "弹力护盾",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 2,
+    "prerequisiteAny": [
+      "shield_burst"
+    ],
+    "sourceTags": [
+      "shield"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "护盾碰撞弹开，上限+1；不额外自动产盾",
+      "护盾碰撞弹开，上限+2；不额外自动产盾",
+      "护盾碰撞弹开，上限+3；不额外自动产盾"
+    ]
+  },
+  {
+    "id": "ice_crystal",
+    "name": "冰晶护体",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 4,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "ice_crystal"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "真实冰雹转盾CD20秒；无天气受击无敌+0.1秒",
+      "真实冰雹转盾CD17秒；无天气受击无敌+0.2秒",
+      "真实冰雹转盾CD14秒；无天气受击无敌+0.30000000000000004秒"
+    ]
+  },
+  {
+    "id": "slow_world",
+    "name": "慢速世界",
+    "rarity": "uncommon",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 5,
+    "unlockChapter": 2,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "slow_world"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "障碍速度 -10%",
+      "障碍速度 -30%",
+      "障碍速度 -50%"
+    ]
+  },
+  {
+    "id": "double_score",
+    "name": "双倍积分",
+    "rarity": "uncommon",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 5,
+    "unlockChapter": 2,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "double_score"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "管道得分 ×2",
+      "管道得分 ×4",
+      "管道得分 ×6"
+    ]
+  },
+  {
+    "id": "lucky",
+    "name": "幸运光环",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 3,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "lucky"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "升级选项 +1（共4选1）",
+      "升级选项 +2（共5选1）",
+      "升级选项 +3（共6选1），必含1张稀有及以上"
+    ]
+  },
+  {
+    "id": "combo_heart",
+    "name": "连击之心",
+    "rarity": "uncommon",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "combo_heart"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "连过4管得1秒保护；进化后改为过管/擦边充能爆发",
+      "连过3管得1秒保护；进化后改为过管/擦边充能爆发",
+      "连过2管得1秒保护；进化后改为过管/擦边充能爆发"
+    ]
+  },
+  {
+    "id": "shrink_ray",
+    "name": "缩小射线",
+    "rarity": "uncommon",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 5,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "shrink_ray"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "管道间隙 +20px",
+      "管道间隙 +60px",
+      "管道间隙 +80px，擦边窗口 +10px"
+    ]
+  },
+  {
+    "id": "exp_resonance",
+    "name": "经验共鸣",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 3,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "exp_resonance"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "20%概率获得双倍经验（不含Boss定额）",
+      "40%概率获得双倍经验（不含Boss定额）",
+      "60%概率获得双倍经验（不含Boss定额）"
+    ]
+  },
+  {
+    "id": "berserk",
+    "name": "狂暴",
+    "rarity": "epic",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 5,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "berserk"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "1HP时首个攻击组件间隔-8%，过管分+25%；血契收益减半",
+      "1HP时首个攻击组件间隔-16%，过管分+50%；血契收益减半",
+      "1HP时首个攻击组件间隔-24%，过管分+75%；血契收益减半"
+    ]
+  },
+  {
+    "id": "storm_child",
+    "name": "风暴之子",
+    "rarity": "epic",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 2,
+    "prerequisiteAny": [
+      "wind_rider"
+    ],
+    "sourceTags": [
+      "wind"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "真实天气或个人风窗中风刃增伤1；过管得分+20%（不叠窗）",
+      "真实天气或个人风窗中风刃增伤2；过管得分+40%（不叠窗）",
+      "真实天气或个人风窗中风刃增伤3；过管得分+60%（不叠窗）"
+    ]
+  },
+  {
+    "id": "survivor_instinct",
+    "name": "求生本能",
+    "rarity": "common",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 3,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "survivor_instinct"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "HP=1时获得1层护盾（每局1次）",
+      "HP=1时获得1层护盾（每局2次）"
+    ]
+  },
+  {
+    "id": "edge_focus",
+    "name": "锐利目光",
+    "rarity": "common",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 3,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "edge_focus"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "擦边后60帧碰撞箱-15%",
+      "擦边后60帧碰撞箱-30%",
+      "擦边后60帧碰撞箱-45%"
+    ]
+  },
+  {
+    "id": "scavenger",
+    "name": "拾荒者",
+    "rarity": "common",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 2,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "scavenger"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "击杀怪物20%掉随机道具",
+      "击杀怪物40%掉随机道具",
+      "击杀怪物60%掉随机道具"
+    ]
+  },
+  {
+    "id": "supply_line",
+    "name": "补给线",
+    "rarity": "common",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 2,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "supply_line"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "每75s保底生成1个随机道具",
+      "每60s保底生成1个随机道具"
+    ]
+  },
+  {
+    "id": "combo_seed",
+    "name": "连击种子",
+    "rarity": "common",
+    "slotType": "passive",
+    "maxLevel": 1,
+    "legacyMaxLevel": 1,
+    "unlockChapter": 1,
+    "prerequisiteAny": [
+      "combo_heart"
+    ],
+    "sourceTags": [
+      "combo_heart"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "断连击时保留1层（不超过无敌阈值-1）"
+    ]
+  },
+  {
+    "id": "pipe_sense",
+    "name": "管感",
+    "rarity": "common",
+    "slotType": "basic_ui",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "pipe_sense"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "高亮下一根管道间隙轮廓",
+      "高亮下一根管道间隙轮廓+安全区"
+    ]
+  },
+  {
+    "id": "missile_rack",
+    "name": "导弹挂架",
+    "rarity": "uncommon",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 2,
+    "prerequisiteAny": [
+      "missile_barrage"
+    ],
+    "sourceTags": [
+      "missile"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "每次发射导弹+1枚（扇形）",
+      "每次发射导弹+2枚（扇形）",
+      "每次发射导弹+3枚（扇形）"
+    ]
+  },
+  {
+    "id": "iron_beak",
+    "name": "铁喙",
+    "rarity": "uncommon",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 2,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "iron_beak"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "无敌期碰撞怪物：反杀且免伤（伤害1）",
+      "无敌期碰撞怪物：反杀且免伤（伤害2）"
+    ]
+  },
+  {
+    "id": "steady_charm",
+    "name": "定风珠",
+    "rarity": "uncommon",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 4,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "steady_charm"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "天气开始/结束6s内免疫其debuff",
+      "天气开始/结束9s内免疫其debuff"
+    ]
+  },
+  {
+    "id": "mirror_shield",
+    "name": "镜面护盾",
+    "rarity": "uncommon",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 2,
+    "prerequisiteAny": [
+      "orbit_guard",
+      "shield_burst"
+    ],
+    "sourceTags": [
+      "reflect",
+      "shield"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "成功拦截积1层，3层反射；失盾保留冲击波",
+      "成功拦截积2层，3层反射；失盾保留冲击波"
+    ]
+  },
+  {
+    "id": "exp_tide",
+    "name": "经验潮汐",
+    "rarity": "uncommon",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 6,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "exp_tide"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "天气期间经验获取+25%",
+      "天气期间经验获取+50%",
+      "天气期间经验获取+75%"
+    ]
+  },
+  {
+    "id": "missile_barrage",
+    "name": "火力覆盖",
+    "rarity": "rare",
+    "slotType": "component",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "missile"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "每14s自动发射1枚导弹",
+      "每12s自动发射1枚导弹",
+      "每10s自动发射1枚导弹"
+    ]
+  },
+  {
+    "id": "aegis_overdrive",
+    "name": "超载神盾",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 4,
+    "prerequisiteAny": [
+      "shield_burst"
+    ],
+    "sourceTags": [
+      "shield"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "护盾恢复CD-15%",
+      "护盾恢复CD-30%",
+      "护盾满层时新护盾转+1黄色临时心(上限+2)"
+    ]
+  },
+  {
+    "id": "hunter_mark",
+    "name": "猎手标记",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 5,
+    "prerequisiteAny": [
+      "missile_barrage"
+    ],
+    "sourceTags": [
+      "missile"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "导弹伤害+1，击杀连锁爆炸60px",
+      "导弹伤害+2，击杀连锁爆炸70px"
+    ]
+  },
+  {
+    "id": "echo_wing",
+    "name": "回响之翼",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "echo_wing"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "每过9管存1层羽盾(挡1次伤)",
+      "每过7管存1层羽盾(挡1次伤)",
+      "每过5管存1层羽盾(挡1次伤)"
+    ]
+  },
+  {
+    "id": "eye_of_storm",
+    "name": "风暴之眼",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 6,
+    "prerequisiteAny": [
+      "wind_rider"
+    ],
+    "sourceTags": [
+      "wind"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "双天气或个人风窗中负面-20%；仅真实双天气经验+50%",
+      "双天气或个人风窗中负面-40%；仅真实双天气经验+100%"
+    ]
+  },
+  {
+    "id": "missile_link",
+    "name": "蜂群链路",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 6,
+    "prerequisiteAny": [
+      "missile_barrage"
+    ],
+    "sourceTags": [
+      "missile"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "命中怪物/管道后1.5s内导弹+1伤，最多2层；Boss仅续时不加伤，机关不续时",
+      "命中怪物/管道后1.5s内导弹+1伤，最多3层；Boss仅续时不加伤，机关不续时"
+    ]
+  },
+  {
+    "id": "iron_feather",
+    "name": "铁羽",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 4,
+    "prerequisiteAny": [
+      "echo_wing"
+    ],
+    "sourceTags": [
+      "echo_wing"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "羽盾上限+1，羽盾破裂时30帧无敌",
+      "羽盾上限+1，羽盾破裂时60帧无敌"
+    ]
+  },
+  {
+    "id": "oracle",
+    "name": "先知",
+    "rarity": "rare",
+    "slotType": "basic_ui",
+    "maxLevel": 1,
+    "legacyMaxLevel": 1,
+    "unlockChapter": 6,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "oracle"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "升级面板标注每张卡与当前构筑的协同度"
+    ]
+  },
+  {
+    "id": "missile_storm",
+    "name": "导弹风暴",
+    "rarity": "epic",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 5,
+    "prerequisiteAny": [
+      "missile_barrage"
+    ],
+    "sourceTags": [
+      "missile"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "拾取导弹变5s连发(每秒2枚)",
+      "拾取导弹变6s连发(每秒2枚)"
+    ]
+  },
+  {
+    "id": "chaos_dice",
+    "name": "风暴驯化",
+    "rarity": "epic",
+    "slotType": "passive",
+    "maxLevel": 1,
+    "legacyMaxLevel": 1,
+    "unlockChapter": 6,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "chaos_dice"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "驯化一种天气：风不推、雨不加重、冰雹无伤可转盾；减负卡转火力"
+    ]
+  },
+  {
+    "id": "blood_pact",
+    "name": "血契",
+    "rarity": "epic",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 3,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "blood_pact"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "最大HP-1，过管得分/经验+30%，受击无敌+1s",
+      "最大HP-1，过管得分/经验+60%，受击无敌+2s"
+    ]
+  },
+  {
+    "id": "phantom_edge",
+    "name": "幻影舞步",
+    "rarity": "epic",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 2,
+    "prerequisiteAny": [
+      "combo_heart"
+    ],
+    "sourceTags": [
+      "combo_heart"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "真实管道擦边触发1.5秒幻影窗，经验提高；弹幕擦边可为连段充能（每秒一次）",
+      "真实管道擦边触发1.5秒幻影窗，经验提高；弹幕擦边可为连段充能（每秒一次）"
+    ]
+  },
+  {
+    "id": "enlightenment",
+    "name": "顿悟",
+    "rarity": "epic",
+    "slotType": "passive",
+    "maxLevel": 1,
+    "legacyMaxLevel": 1,
+    "unlockChapter": 6,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "enlightenment"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "单次经验足够连升时，第二级半价；每局3次，不含Boss礼包"
+    ]
+  },
+  {
+    "id": "time_crystal",
+    "name": "时之晶",
+    "rarity": "epic",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 4,
+    "prerequisiteAny": [
+      "time_warp"
+    ],
+    "sourceTags": [
+      "time_warp"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "时间扭曲时普通怪/普通弹冻结0.75秒；Boss只减速，不冻结招式",
+      "时间扭曲时普通怪/普通弹冻结1.5秒；Boss只减速，不冻结招式"
+    ]
+  },
+  {
+    "id": "thick_skin",
+    "name": "坚韧外皮",
+    "rarity": "common",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "thick_skin"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "怪物/弹幕伤害18%概率格挡（对管道无效）",
+      "怪物/弹幕伤害36%概率格挡（对管道无效）"
+    ]
+  },
+  {
+    "id": "boss_slayer",
+    "name": "屠龙者",
+    "rarity": "uncommon",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 2,
+    "prerequisiteAny": [
+      "missile_barrage"
+    ],
+    "sourceTags": [
+      "missile"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "导弹对Boss伤害+1，Boss战受击无敌+0.5s",
+      "导弹对Boss伤害+2，Boss战受击无敌+1s"
+    ]
+  },
+  {
+    "id": "nomad",
+    "name": "旅者",
+    "rarity": "uncommon",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 2,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "nomad"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "进入新章节：+1层护盾、+20exp",
+      "进入新章节：+2层护盾、+40exp"
+    ]
+  },
+  {
+    "id": "chapter_echo",
+    "name": "章节回响",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 3,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "chapter_echo"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "进入新章节：随机1张已持卡临时+1级（本章有效）",
+      "进入新章节：随机1张已持卡临时+2级（本章有效）"
+    ]
+  },
+  {
+    "id": "trophy_wall",
+    "name": "战利品陈列",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 2,
+    "legacyMaxLevel": 2,
+    "unlockChapter": 5,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "trophy_wall"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "每次击杀Boss：经验+15%、道具率+5pp；最多6层，道具总加成上限35pp",
+      "每次击杀Boss：经验+30%、道具率+10pp；最多6层，道具总加成上限35pp"
+    ]
+  },
+  {
+    "id": "chapter_master",
+    "name": "章节之主",
+    "rarity": "epic",
+    "slotType": "passive",
+    "maxLevel": 1,
+    "legacyMaxLevel": 1,
+    "unlockChapter": 2,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "chapter_master"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "取得后下次普通面板必含史诗；此后每章首面板保底，无尽也可兑现下次"
+    ]
+  },
+  {
+    "id": "seed_bolt",
+    "name": "灵种飞弹",
+    "rarity": "uncommon",
+    "slotType": "component",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "seed"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "每4秒发射追踪灵种，伤害1（Boss 2）",
+      "每3秒发射追踪灵种，伤害2（Boss 3）",
+      "每2秒发射追踪灵种，伤害3（Boss 4）"
+    ]
+  },
+  {
+    "id": "seed_harvest",
+    "name": "生机收割",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 1,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "seed_harvest"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "击杀7只回复1HP，冷却12秒；冷却中达标保留，冷却后下次击杀触发",
+      "击杀5只回复1HP，冷却12秒；冷却中达标保留，冷却后下次击杀触发",
+      "击杀3只回复1HP，冷却12秒；冷却中达标保留，冷却后下次击杀触发"
+    ]
+  },
+  {
+    "id": "sand_lance",
+    "name": "破甲沙矛",
+    "rarity": "uncommon",
+    "slotType": "component",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 2,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "sand"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "每3秒发射穿透2个敌人的沙矛，伤害2（Boss 3）",
+      "每3秒发射穿透3个敌人的沙矛，伤害3（Boss 4）",
+      "每3秒发射穿透4个敌人的沙矛，伤害4（Boss 5）"
+    ]
+  },
+  {
+    "id": "dune_cache",
+    "name": "沙丘补给",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 2,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "dune_cache"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "每通过13根管道获得1层护盾（遵守护盾上限）",
+      "每通过10根管道获得1层护盾（遵守护盾上限）",
+      "每通过7根管道获得1层护盾（遵守护盾上限）"
+    ]
+  },
+  {
+    "id": "shadow_echo",
+    "name": "暗影复射",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 3,
+    "prerequisiteAny": [
+      "feather_blade",
+      "seed_bolt",
+      "sand_lance"
+    ],
+    "sourceTags": [
+      "blade",
+      "seed",
+      "sand"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "首个已装备弹道核心每4轮复射，伤害2；派生弹不再触发",
+      "首个已装备弹道核心每4轮复射，伤害3；派生弹不再触发",
+      "首个已装备弹道核心每4轮复射，伤害4；派生弹不再触发"
+    ]
+  },
+  {
+    "id": "venom_thread",
+    "name": "蚀影毒丝",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 2,
+    "prerequisiteAny": [
+      "frost_lance",
+      "seed_bolt"
+    ],
+    "sourceTags": [
+      "frost",
+      "seed"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "冰枪优先、否则灵种命中挂毒3秒，每秒1伤；派生不挂毒",
+      "冰枪优先、否则灵种命中挂毒3秒，每秒2伤；派生不挂毒",
+      "冰枪优先、否则灵种命中挂毒3秒，每秒3伤；派生不挂毒"
+    ]
+  },
+  {
+    "id": "frost_lance",
+    "name": "霜脉冰枪",
+    "rarity": "rare",
+    "slotType": "component",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 2,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "frost"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "每2.5秒发射冰枪，伤害3（Boss 4）；怪物减速50%持续2秒",
+      "每2.5秒发射冰枪，伤害4（Boss 5）；怪物减速50%持续2秒",
+      "每2.5秒发射冰枪，伤害5（Boss 6）；怪物减速50%持续2秒"
+    ]
+  },
+  {
+    "id": "frost_shell",
+    "name": "寒晶净域",
+    "rarity": "epic",
+    "slotType": "component",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 4,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "frost_shell"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "每10秒清除身边80px内普通弹幕，并向前反击（Boss 4伤害）",
+      "每8秒清除身边80px内普通弹幕，并向前反击（Boss 5伤害）",
+      "每6秒清除身边80px内普通弹幕，并向前反击（Boss 6伤害）"
+    ]
+  },
+  {
+    "id": "magma_core",
+    "name": "熔核震爆",
+    "rarity": "epic",
+    "slotType": "component",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 5,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "magma"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "每4秒对前方全部敌人造成3伤害；Boss 5伤害",
+      "每4秒对前方全部敌人造成4伤害；Boss 6伤害",
+      "每4秒对前方全部敌人造成5伤害；Boss 7伤害"
+    ]
+  },
+  {
+    "id": "cinder_execution",
+    "name": "余烬处决",
+    "rarity": "rare",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 5,
+    "prerequisiteAny": [
+      "frost_lance",
+      "magma_core",
+      "singularity"
+    ],
+    "sourceTags": [
+      "frost",
+      "magma",
+      "singularity"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "冰枪/熔核/坍缩对低于30%HP敌人增伤30%",
+      "冰枪/熔核/坍缩对低于30%HP敌人增伤60%",
+      "冰枪/熔核/坍缩对低于30%HP敌人增伤90%"
+    ]
+  },
+  {
+    "id": "storm_chain",
+    "name": "天雷链路",
+    "rarity": "epic",
+    "slotType": "passive",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 6,
+    "prerequisiteAny": [
+      "frost_lance",
+      "seed_bolt",
+      "wind_rider"
+    ],
+    "sourceTags": [
+      "frost",
+      "seed",
+      "wind"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "冰枪/灵种/风刃中的首个核心传导3伤，每秒一次；派生不连锁",
+      "冰枪/灵种/风刃中的首个核心传导4伤，每秒一次；派生不连锁",
+      "冰枪/灵种/风刃中的首个核心传导5伤，每秒一次；派生不连锁"
+    ]
+  },
+  {
+    "id": "singularity",
+    "name": "引力坍缩",
+    "rarity": "epic",
+    "slotType": "component",
+    "maxLevel": 3,
+    "legacyMaxLevel": 3,
+    "unlockChapter": 6,
+    "prerequisiteAny": [],
+    "sourceTags": [
+      "singularity"
+    ],
+    "exclusiveBranches": [],
+    "effects": [
+      "每9秒清除120px内普通弹幕，并造成全场5伤害（Boss 7）",
+      "每8秒清除120px内普通弹幕，并造成全场6伤害（Boss 8）",
+      "每7秒清除120px内普通弹幕，并造成全场7伤害（Boss 9）"
+    ]
+  }
+]

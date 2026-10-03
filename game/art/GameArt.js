@@ -21,7 +21,7 @@ function hud(g){
  c.save();P.box(c,0,0,w,l.headerBottom,C.panel,C.edge);heartHUD(g,12,top+2,11)
  fit(c,g.score,w*.52,top+10,w*.23,22,C.paper,'center',true)
  fit(c,'护盾 '+a.shieldLayers+'/'+a.maxShieldLayers,12,top+30,w*.36,10,C.ice)
- fit(c,'Lv.'+e.level,w*.52,top+28,w*.23,10,C.gold,'center',true)
+ fit(c,'Lv.'+e.level+((g.expSystem.pendingLevelUps||g.build.refund)?(g.build.canReleaseGrowth()?' 待选':' 下章')+(g.expSystem.pendingLevelUps+g.build.refund):''),w*.52,top+28,w*.23,10,C.gold,'center',true)
  let sx=w-12
  for(const s of [['echo_wing',a.featherShields],['phoenix',(a.owned.get('phoenix')||0)-a.phoenixUsed]])if(a.owned.get(s[0])){
   fit(c,(s[0]==='echo_wing'?'羽盾×':'复活×')+s[1],sx,top+27,44,9,C.muted,'right');sx-=46
@@ -85,6 +85,8 @@ function ready(g){const c=g.ctx,w=g.screenW,h=g.screenH,y=Math.max(g.safeTop+30,
  P.box(c,24,y,w-48,107,C.panel,C.edge);P.text(c,'SNAPPY BIRD',w/2,y+31,Math.min(29,w/12),C.paper,'center',true);P.text(c,'六章试炼 / 像素飞行冒险',w/2,y+63,12,C.green,'center');P.text(c,'v'+Config.VERSION,w/2,y+85,10,C.muted,'center')
  const by=h*.58;P.box(c,w/2-94,by,188,44,C.panel,C.gold);I.draw(c,'light_feather',w/2-62,by+22,25);P.text(c,'点击屏幕开始',w/2+15,by+22,16,C.paper,'center',true)
  P.box(c,32,h*.72,w-64,71,C.panel,C.edge);P.text(c,'点击拍翅 · 穿越障碍 · 升级选卡',w/2,h*.72+24,11,C.paper,'center');P.text(c,'通关六章，开启无尽冒险',w/2,h*.72+46,11,C.muted,'center')
+ const saved=require('../../utils/Storage').loadRun();g._resumeBounds=saved&&saved.version==='1.9.0'?{x:w/2-94,y:by-56,w:188,h:44}:null
+ if(g._resumeBounds){P.box(c,w/2-94,by-56,188,44,C.panel,C.green);P.text(c,'继续已保存旅程',w/2,by-34,14,C.green,'center',true)}
  if(g.bestScore>0)P.text(c,'最高纪录 '+g.bestScore,w/2,by+65,12,C.ink,'center',true);c.restore()
 }
 const rarity={common:[C.ice,'普通'],uncommon:[C.green,'稀有'],rare:[C.gold,'珍贵'],epic:[C.purple,'史诗']}
@@ -119,15 +121,18 @@ function upgrade(g){const c=g.ctx,w=g.screenW,h=g.screenH,choices=g._currentChoi
  P.text(c,g._choiceScrollMax>0?'上下滑动查看全部 '+choices.length+' 项 · 点击选择':'点击卡牌获得能力',w/2,g.safeBottom-9,10,C.muted,'center');c.restore()
 }
 function gameover(g){const c=g.ctx,w=g.screenW,h=g.screenH,top=g.safeTop+20;c.save();c.fillStyle='rgba(15,29,44,.90)';c.fillRect(0,0,w,h)
- P.text(c,g.chapterSystem.endless?'无尽旅程结束':'本次冒险结束',w/2,top+16,23,C.paper,'center',true);P.text(c,g.score,w/2,top+65,38,C.gold,'center',true)
+ P.text(c,g.victory?'六章通关！':g.chapterSystem.endless?'无尽旅程结束':'本次冒险结束',w/2,top+16,23,C.paper,'center',true);P.text(c,g.score,w/2,top+65,38,C.gold,'center',true)
  const py=top+103;P.box(c,20,py,w-40,95,C.panel,C.edge)
  P.text(c,'最高纪录 '+g.bestScore,34,py+23,12,C.gold);P.text(c,'等级 Lv.'+g.expSystem.level,w-34,py+23,12,C.ice,'right')
  P.text(c,'存活 '+Math.floor(g.gameTime/3600)+'分'+Math.floor(g.gameTime/60)%60+'秒',34,py+49,11,C.paper);P.text(c,'通过 '+g.pipesPassed+' 管',w-34,py+49,11,C.paper,'right')
  const kills=g.bossClears.filter(v=>v.method==='kill').length;P.text(c,'首领通关 '+g.bossClears.length+' · 击败 '+kills+' · 生存 '+(g.bossClears.length-kills),w/2,py+73,11,C.green,'center')
  const badges=g.bossClears.slice(-6).map(v=>(v.endless?'∞':'Ch'+v.chapter)+(v.method==='kill'?'击败':'生存')).join(' · ');if(badges)P.text(c,badges,w/2,py+108,9,C.gold,'center')
- const owned=g.abilitySystem.getOwnedList(),rowY=py+132;P.text(c,'本局能力 '+owned.length+' 张',w/2,rowY,12,C.muted,'center')
- const cols=Math.floor((w-48)/34),available=Math.max(1,Math.min(3,Math.floor((g.safeBottom-104-rowY)/38))),show=owned.slice(-cols*available)
- show.forEach((v,k)=>{const x=24+k%cols*34,y=rowY+17+Math.floor(k/cols)*38;P.box(c,x,y,29,33,C.panel,C.edge);I.draw(c,v.def.id,x+14,y+13,23);P.text(c,v.level,x+14,y+27,8,C.gold,'center')})
+ const r=g.report||{},rowY=py+133
+ const lines=[(r.specialization||'尚未专精')+' · 已通关'+(r.chapters||0)+'/6章',(r.components||[]).map(v=>v.name+'Lv.'+v.level).join(' / '),'进化：'+((r.evolutions||[]).join(' / ')||'未成型'),'本局亮点：'+(r.highlight||'持续飞行'),'结束原因：'+(r.cause||'旅程结束')]
+ const tips={'穿盾区域':'紫色菱纹危险会穿盾，请在预警结束前离开','管道边缘':'提前小幅拍翅，观察下一管道轮廓','地面':'下降时提前拍翅，避免连续快速点击','天花板':'减少连续拍翅，留出顶部空间','Boss碰撞':'冲锋锁定后向另一高度移动','冰雹':'避开冰雹下落路线，留意真实天气预告','敌方弹幕':'跟随预警变向，不要依赖护盾硬接'}
+ if(!g.victory)lines.push(tips[r.cause]||'下一局优先围绕一个组件选择支持卡')
+ let yy=rowY;for(const text of lines){for(const line of P.lines(c,text,w-48,11)){if(yy<g.safeBottom-103)P.text(c,line,24,yy,11,C.paper);yy+=16}yy+=4}
+ if(r.timings){const t=r.timings;fit(c,'飞行 '+Math.round(t.flight)+'s · Boss '+Math.round(t.boss)+'s · 选卡 '+Math.round(t.reading)+'s · 无尽 '+Math.round(t.endless)+'s',w/2,g.safeBottom-83,w-36,10,C.muted,'center')}
  const bw=(w-56)/2,by=g.safeBottom-59;g._homeBtnBounds={x:20,y:by,w:bw,h:44};g._restartBtnBounds={x:36+bw,y:by,w:bw,h:44}
  P.box(c,20,by,bw,44,C.panel,C.edge);P.text(c,'返回首页',20+bw/2,by+22,14,C.paper,'center')
  P.box(c,36+bw,by,bw,44,C.panel,C.gold);P.text(c,'再飞一次',36+bw*1.5,by+22,14,C.gold,'center',true)
@@ -149,3 +154,5 @@ function touchStart(g,x,y){if(g.state!=='upgrading'){g.handleTouch(x,y);return}g
 function touchMove(g,x,y){const t=g._choiceGesture;if(!t||g.state!=='upgrading')return;if(Math.abs(y-t.y)>6||Math.abs(x-t.x)>10)t.moved=true;if(t.moved)g._choiceScroll=Math.max(0,Math.min(g._choiceScrollMax||0,t.start+t.y-y))}
 function touchEnd(g,x,y){const t=g._choiceGesture;g._choiceGesture=null;if(!t||t.moved||g.state!=='upgrading'||t.ref!==g._currentChoices)return;if(Math.abs(y-t.y)<8&&Math.abs(x-t.x)<10)g.handleTouch(x,y)}
 module.exports={init,background:W.background,scenery:W.scenery,ground:W.ground,layout,hud,footer,heartHUD,bossHP,ready,upgrade,gameover,transition,intro,touchStart,touchMove,touchEnd,card}
+
+Object.assign(module.exports,require('./Selection'))

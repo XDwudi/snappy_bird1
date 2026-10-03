@@ -1,0 +1,229 @@
+{
+  "protocol": "Fixed flap physics, no hazards. Reachability of mechanic routes only; does not prove every composed barrage is avoidable.",
+  "results": [
+    {
+      "screen": [
+        320,
+        568
+      ],
+      "initial": "high",
+      "velocity": -5,
+      "warmCompletedSeconds": 3.5,
+      "taps": 5,
+      "valveHeightsReachable": [
+        true,
+        true
+      ]
+    },
+    {
+      "screen": [
+        320,
+        568
+      ],
+      "initial": "high",
+      "velocity": 8,
+      "warmCompletedSeconds": 3.1,
+      "taps": 5,
+      "valveHeightsReachable": [
+        true,
+        true
+      ]
+    },
+    {
+      "screen": [
+        320,
+        568
+      ],
+      "initial": "low",
+      "velocity": -5,
+      "warmCompletedSeconds": 3.2,
+      "taps": 6,
+      "valveHeightsReachable": [
+        true,
+        true
+      ]
+    },
+    {
+      "screen": [
+        320,
+        568
+      ],
+      "initial": "low",
+      "velocity": 8,
+      "warmCompletedSeconds": 3.2,
+      "taps": 7,
+      "valveHeightsReachable": [
+        true,
+        true
+      ]
+    },
+    {
+      "screen": [
+        375,
+        667
+      ],
+      "initial": "high",
+      "velocity": -5,
+      "warmCompletedSeconds": 3.5833333333333335,
+      "taps": 5,
+      "valveHeightsReachable": [
+        true,
+        true
+      ]
+    },
+    {
+      "screen": [
+        375,
+        667
+      ],
+      "initial": "high",
+      "velocity": 8,
+      "warmCompletedSeconds": 3.1666666666666665,
+      "taps": 5,
+      "valveHeightsReachable": [
+        true,
+        true
+      ]
+    },
+    {
+      "screen": [
+        375,
+        667
+      ],
+      "initial": "low",
+      "velocity": -5,
+      "warmCompletedSeconds": 3.35,
+      "taps": 7,
+      "valveHeightsReachable": [
+        true,
+        true
+      ]
+    },
+    {
+      "screen": [
+        375,
+        667
+      ],
+      "initial": "low",
+      "velocity": 8,
+      "warmCompletedSeconds": 3.3333333333333335,
+      "taps": 7,
+      "valveHeightsReachable": [
+        true,
+        true
+      ]
+    },
+    {
+      "screen": [
+        390,
+        844
+      ],
+      "initial": "high",
+      "velocity": -5,
+      "warmCompletedSeconds": 3.716666666666667,
+      "taps": 5,
+      "valveHeightsReachable": [
+        true,
+        true
+      ]
+    },
+    {
+      "screen": [
+        390,
+        844
+      ],
+      "initial": "high",
+      "velocity": 8,
+      "warmCompletedSeconds": 3.3,
+      "taps": 5,
+      "valveHeightsReachable": [
+        true,
+        true
+      ]
+    },
+    {
+      "screen": [
+        390,
+        844
+      ],
+      "initial": "low",
+      "velocity": -5,
+      "warmCompletedSeconds": 3.6333333333333333,
+      "taps": 8,
+      "valveHeightsReachable": [
+        true,
+        true
+      ]
+    },
+    {
+      "screen": [
+        390,
+        844
+      ],
+      "initial": "low",
+      "velocity": 8,
+      "warmCompletedSeconds": 3.6,
+      "taps": 9,
+      "valveHeightsReachable": [
+        true,
+        true
+      ]
+    },
+    {
+      "screen": [
+        430,
+        932
+      ],
+      "initial": "high",
+      "velocity": -5,
+      "warmCompletedSeconds": 3.783333333333333,
+      "taps": 5,
+      "valveHeightsReachable": [
+        true,
+        true
+      ]
+    },
+    {
+      "screen": [
+        430,
+        932
+      ],
+      "initial": "high",
+      "velocity": 8,
+      "warmCompletedSeconds": 3.3666666666666667,
+      "taps": 5,
+      "valveHeightsReachable": [
+        true,
+        true
+      ]
+    },
+    {
+      "screen": [
+        430,
+        932
+      ],
+      "initial": "low",
+      "velocity": -5,
+      "warmCompletedSeconds": 3.75,
+      "taps": 9,
+      "valveHeightsReachable": [
+        true,
+        true
+      ]
+    },
+    {
+      "screen": [
+        430,
+        932
+      ],
+      "initial": "low",
+      "velocity": 8,
+      "warmCompletedSeconds": 3.7333333333333334,
+      "taps": 9,
+      "valveHeightsReachable": [
+        true,
+        true
+      ]
+    }
+  ]
+}

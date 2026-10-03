@@ -1,3 +1,4 @@
+const Random=require('../core/Random')
 /**
  * AbilitySystem.js - 能力系统核心 [v1.2.0]
  *
@@ -15,6 +16,7 @@
  *             定风珠免疫时间戳字段(由 WeatherSystem 写入)
  */
 
+const BuildRules = require('../config/BuildConfig')
 const Config = require('../config/GameConfig.js')
 const Registry = require('../abilities/AbilityRegistry.js')
 const Logger = require('./GameLogger.js')
@@ -44,6 +46,7 @@ class AbilitySystem {
     this.timeWarpCD = 0
     this.teleportCD = 0
     this.shieldBurstTimer = 0
+    this.shieldBreakthrough=0
     this.regenerationTimer = 0      // [v1.1.0] 自愈计时器
     this.iceCrystalCD = 0           // [v1.2.0] 冰晶护体CD
 
@@ -161,7 +164,7 @@ class AbilitySystem {
 
   selectAbility(id) {
     const def = Registry.get(id)
-    if (!def) return
+    if (!BuildRules.valid(def, this.owned, this.chapter)) return false
 
     const currentLevel = this.owned.get(id) || 0
     if (currentLevel >= def.maxLevel) return
@@ -218,16 +221,10 @@ class AbilitySystem {
       })
     }
 
-    // 首次获得凤凰初始化次数，升级保留已消耗次数
-    if (id === 'phoenix' && this.owned.get(id) === 1) {
-      this.phoenixUsed = 0
-    }
-  }
-
-  selectAllBuff() {
-    if (this.allBuffLevel < Config.ABILITY.MAX_ALL_BUFF_LEVEL) this.allBuffLevel++
-    else this.breakthroughLevel++
     this.invalidateStats()
+    return true
+    // 凤凰使用账本只在整局reset重置。
+
   }
 
   // ==================== 属性计算 ====================
@@ -238,7 +235,7 @@ class AbilitySystem {
       const def=Registry.get(id)
       if(lv>0 && def && def.faction) counts[def.faction]=(counts[def.faction]||0)+1
     }
-    return Object.keys(counts).map(name=>({name,count:counts[name],tier:counts[name]>=4?2:counts[name]>=2?1:0}))
+    return Object.keys(counts).map(name=>({name,count:counts[name],tier:0}))
   }
 
   getStat(key) {
@@ -278,7 +275,7 @@ class AbilitySystem {
       itemSpawnBonus: 0,       // [v1.5.0] 道具率加成（狩猎祝福/战利品陈列，SpawnSystem 读取）
     }
 
-    const lv = (id) => this.owned.get(id) || 0
+    const lv = (id) => BuildRules.effective(id, this.owned.get(id) || 0)
     const allBuff = this.allBuffLevel
     const buffMul = 1 + 0.05 * allBuff
 
@@ -294,7 +291,7 @@ class AbilitySystem {
 
     // [v1.2.0] 风暴之子：环境效果期间增加得分与武器频率
     const stormChildLv = lv('storm_child')
-    const stormMul = (this.weatherActive && stormChildLv > 0) ? (1 + 0.20 * stormChildLv) : 1.0
+    const stormMul = ((this.weatherActive||this.personalWind) && stormChildLv > 0) ? (1 + 0.20 * stormChildLv) : 1.0
 
     // 操控不进入属性乘区。轻羽只减慢下落，顺风改为武器节奏。
     s.gravityMultiplier = 1
@@ -393,19 +390,10 @@ class AbilitySystem {
     // [v1.2.0] 冰晶护体
     s.hasIceCrystal = lv('ice_crystal') > 0
 
-    const factions={}
-    for(const f of this.getFactions()) factions[f.name]=f.tier
-    s.expMultiplier += (factions['森芽']||0)*0.08
-    s.gapBonus += (factions['沙铸']||0)*6
-    s.collisionScale = Math.max(0.3,s.collisionScale-(factions['织影']||0)*0.04)
-    s.scrollSpeedMultiplier *= 1-(factions['霜脉']||0)*0.03
-    s.weaponBonus = (factions['熔核']||0) + Math.log2(1+this.breakthroughLevel)*0.5
-    const rageCadence=this.hp<=1 ? .08*berserkLv*(bloodPactLv?Config.ABILITY.BLOOD_PACT_BERSERK_FACTOR:1) : 0
-    const stormCadence=this.weatherActive ? .04*stormChildLv : 0
-    const converted=this.weatherTypes.includes(this.tamedWeather)
-      ? (this.tamedWeather==='wind'?lv('wind_reader'):this.tamedWeather==='rain'?lv('raincoat'):0)*.03 : 0
-    s.weaponCadence = Math.max(.45,(1-(factions['天枢']||0)*.06)*(1-.06*lv('tailwind'))*
-      (1-.02*allBuff)*(1-rageCadence)*(1-stormCadence)*(1-converted))
+    // Factions now label origins only; combat power belongs to equipped components.
+    s.weaponBonus = 0
+    s.weaponCadence = 1
+    s.invincibleBonus = Math.min(120,s.invincibleBonus+(this.owned.get('ice_crystal')||0)*6)
     // 高倍率经验收益递减；保留构筑差异，阻断经验乘区滚雪球到满池。
     if(s.expMultiplier>4)s.expMultiplier=4+2*(1-Math.exp(-(s.expMultiplier-4)/2))
     s.itemSpawnBonus=Math.min(.35,s.itemSpawnBonus)
@@ -446,7 +434,7 @@ class AbilitySystem {
   getWeatherDebuffScale() {
     const adapt=1-.15*(this.owned.get('climate_adapt')||0)
     const eyeLv = this.owned.get('eye_of_storm') || 0
-    if (eyeLv > 0 && this.weatherConcurrent >= Config.WEATHER.EYE_OF_STORM_MIN_CONCURRENT) {
+    if (eyeLv > 0 && (this.personalWind||this.weatherConcurrent >= Config.WEATHER.EYE_OF_STORM_MIN_CONCURRENT)) {
       return adapt*Math.max(0, 1 - Config.WEATHER.EYE_OF_STORM_DEBUFF_REDUCT_PER_LV * eyeLv)
     }
     return adapt
@@ -505,28 +493,6 @@ class AbilitySystem {
       }
     }
 
-    // [v1.1.5] 坚韧护盾恢复（30s恢复1层）
-    const toughnessLv = this.owned.get('toughness') || 0
-    if (toughnessLv > 0 && this.shieldLayers < this.maxShieldLayers) {
-      this.shieldRecoverTimer += recoveryRate
-      // [v1.4.0] 超载神盾：护盾恢复CD缩短
-      if (this.shieldRecoverTimer >= Config.SHIELD.TOUGHNESS_RECOVER_CD * this._getOverdriveCDScale()) {
-        if(this.addShieldLayer(1)>0)this.shieldRecoverTimer = 0
-        Logger.info('Shield', '坚韧护盾恢复', { layers: this.shieldLayers, max: this.maxShieldLayers })
-      }
-    }
-
-    // [v1.1.5] 弹力护盾恢复（20s-5s/级恢复1层）
-    const bounceShieldLv = this.owned.get('bounce_shield') || 0
-    if (bounceShieldLv > 0 && this.shieldLayers < this.maxShieldLayers) {
-      this.bounceShieldRecoverTimer += recoveryRate
-      const cd = this._getBounceShieldRecoverCD()
-      if (this.bounceShieldRecoverTimer >= cd) {
-        if(this.addShieldLayer(1)>0)this.bounceShieldRecoverTimer = 0
-        Logger.info('Shield', '弹力护盾恢复', { layers: this.shieldLayers, max: this.maxShieldLayers })
-      }
-    }
-
     // [v1.1.0] 自愈
     if (this.hasStat('hasRegeneration') && this.hp < this.maxHp) {
       this.regenerationTimer -= recoveryRate
@@ -553,7 +519,7 @@ class AbilitySystem {
   // ==================== CD 计算 ====================
 
   _getTimeWarpCD() {
-    const lv = this.owned.get('time_warp') || 0
+    const lv = BuildRules.effective('time_warp', this.owned.get('time_warp') || 0)
     return (20 - 3 * (lv - 1)) * 60
   }
 
@@ -566,7 +532,9 @@ class AbilitySystem {
   // [v1.4.0] 火力覆盖：自动导弹间隔（秒转帧）
   _getMissileBarrageCD() {
     const lv = this.owned.get('missile_barrage') || 0
-    return (Config.MISSILE.BARRAGE_BASE_SEC - Config.MISSILE.BARRAGE_REDUCTION_SEC * (lv - 1)) * 60
+    const first=[...this.owned.keys()].find(id=>BuildRules.components.includes(id)&&id!=='shield_burst')
+    const cadence=first==='missile_barrage'&&this.hp<=1?1-.08*(this.owned.get('berserk')||0)*(this.owned.has('blood_pact')?.5:1):1
+    return (Config.MISSILE.BARRAGE_BASE_SEC - Config.MISSILE.BARRAGE_REDUCTION_SEC * (lv - 1)) * 60*cadence
   }
 
   // 临时等级变化只同步属性，不执行选卡的一次性收益。
@@ -591,9 +559,9 @@ class AbilitySystem {
   }
 
   _getShieldBurstCD() {
-    const lv = this.owned.get('shield_burst') || 0
+    const lv = BuildRules.effective('shield_burst', this.owned.get('shield_burst') || 0)
     // [v1.4.0] 超载神盾：护盾恢复CD缩短（护盾爆发属"护盾恢复"语义）
-    return Math.round((25 - 3 * (lv - 1)) * 60 * this._getOverdriveCDScale())
+    return Math.round((25 - 3 * (lv - 1)) * 60 * this._getOverdriveCDScale() * (1-.08*(this.owned.get('toughness')||0)) * (1-.05*(this.shieldBreakthrough||0)))
   }
 
   // [v1.1.0] 自愈CD
@@ -851,7 +819,7 @@ class AbilitySystem {
     this.comboCount += this.recoveryRate
     const threshold = this.getStat('comboThreshold')
     if ((this.owned.get('combo_heart') || 0) > 0 && this.comboCount >= threshold) {
-      this.invincibleFrames = 180  // [v1.1.2] 300→180帧(3s)，避免永久无敌
+      this.invincibleFrames = 60  // [v1.1.2] 300→180帧(3s)，避免永久无敌
       Logger.info('Combo', '连击无敌触发', { comboCount: this.comboCount, threshold, invincibleFrames: 180 })
       this.comboCount = 0
     }
@@ -921,7 +889,7 @@ class AbilitySystem {
    */
   checkExpResonance() {
     const chance = this.getStat('expResonanceChance')
-    return chance > 0 && Math.random() < chance
+    return chance > 0 && Random.random() < chance
   }
 
   // ==================== 工具 ====================
