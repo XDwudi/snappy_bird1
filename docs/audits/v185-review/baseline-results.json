@@ -1,0 +1,73 @@
+{
+  "baseline": "98d7da0",
+  "totalChecks": 152,
+  "suites": [
+    {
+      "file": "test/test_v160.js",
+      "exitCode": 0,
+      "checks": 15,
+      "summary": "15 项机制回归通过"
+    },
+    {
+      "file": "test/test_v170.js",
+      "exitCode": 0,
+      "checks": 12,
+      "summary": "12 项 v1.7.0 机制通过"
+    },
+    {
+      "file": "test/test_v180.js",
+      "exitCode": 0,
+      "checks": 21,
+      "summary": "Total 1.8.0 suites: 21"
+    },
+    {
+      "file": "test/test_v181.js",
+      "exitCode": 0,
+      "checks": 23,
+      "summary": "Total 1.8.1 suites: 23"
+    },
+    {
+      "file": "test/test_v182.js",
+      "exitCode": 0,
+      "checks": 16,
+      "summary": "Total 1.8.2 suites: 16"
+    },
+    {
+      "file": "test/test_v182_balance.js",
+      "exitCode": 0,
+      "checks": 16,
+      "summary": "Total balance suites: 16"
+    },
+    {
+      "file": "test/test_v183.js",
+      "exitCode": 0,
+      "checks": 13,
+      "summary": "v1.8.3: 13 tests passed"
+    },
+    {
+      "file": "test/test_v184.js",
+      "exitCode": 0,
+      "checks": 14,
+      "summary": "v1.8.4: 14 tests passed"
+    },
+    {
+      "file": "test/test_projectile_hits.js",
+      "exitCode": 0,
+      "checks": 10,
+      "summary": "10 projectile hit tests passed"
+    },
+    {
+      "file": "test/test_ui_layout.js",
+      "exitCode": 0,
+      "checks": 5
+    },
+    {
+      "file": "test/test_v185.js",
+      "exitCode": 0,
+      "checks": 7
+    }
+  ],
+  "canvas": "@napi-rs/canvas; output redirected to /tmp/snappy-review-185",
+  "packageCheck": "Blocked: local project.config.json absent (not tracked)",
+  "runtimeSyntaxFiles": 45
+}

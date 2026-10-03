@@ -93,6 +93,7 @@ class WeatherSystem {
         effect.update(gameCtx)
         effect.elapsed = hold
       }
+      this._updateRainResidual(gameCtx, 0)
       return
     }
 
@@ -132,8 +133,12 @@ class WeatherSystem {
     }
 
     // 4. 雨效果结束后继续干燥
+    this._updateRainResidual(gameCtx, Config.WEATHER.RAIN.DRY_RATE)
+  }
+
+  _updateRainResidual(gameCtx, dryRate) {
     if (this.rainResidual) {
-      this.rainResidual.dry(Config.WEATHER.RAIN.DRY_RATE)
+      this.rainResidual.dry(dryRate)
       // [v1.2.1] 干燥期间按当前rainLevel比例回写重力修饰，雨停后重力平滑归零
       // [v1.4.0] 定风珠：雨结束免疫期内不回写重力 debuff（免疫判定在 debuff 应用点）
       // [v1.4.0] 风暴驯化：雨已驯化 → 积水永不加重力（残留期同样豁免）
@@ -279,6 +284,7 @@ class WeatherSystem {
   onFlap() {
     const rain = this.activeEffects.find(e => e.type === 'rain')
     if (rain) rain.onFlap()
+    if (this.rainResidual && this.rainResidual !== rain) this.rainResidual.onFlap()
   }
 
   /**

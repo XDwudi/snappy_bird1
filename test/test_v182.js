@@ -6,7 +6,7 @@ let n=0;const test=(name,fn)=>{fn();n++;console.log('✓ '+name)}
 const game=(w=375,h=667)=>{const g=new Game({},{},w,h,null);g.start();return g}
 const fight=(ch,w=375,h=667)=>{const g=game(w,h);g.chapterSystem.index=ch;g._spawnBoss();g.chapterSystem.startBossFight();g.boss.x=g.boss.homeX;g.boss._setState('roam');g.boss.update(g.bird);return g}
 test('1.8.2 六章开战上限、生存时长、HP递增，后期压力同步提高',()=>{
- assert.equal(C.VERSION,'1.8.5')
+ assert.equal(C.VERSION,'1.8.6')
  for(let i=0;i<6;i++){const ch=C.CHAPTERS.LIST[i],b=C.BOSS.VARIANTS[i];assert.ok(ch.maxFrames>ch.minFrames);assert.ok(b.survivalFrames>=6000);if(i)assert.ok(ch.mods.bossHp>C.CHAPTERS.LIST[i-1].mods.bossHp)}
 })
 test('不通过任何管道也按上限开战，仅触发一次；选卡和暂停不累计',()=>{

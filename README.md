@@ -2,15 +2,15 @@
 
 Flappy Bird单指飞行 + roguelike成长的微信小游戏，CommonJS / Canvas 2D，无npm运行依赖。
 
-当前为 **1.8.5 视觉辨识与反馈更新**（2026-10-03）：一层护盾一个圆圈、顶部剩余数；雨风可见且方向明确；五类补给、73张卡、弹体和机关使用更直观的图形。继承1.8.4战斗平衡与UI避让。[更新说明与实际预览](docs/iterations/迭代_v1.8.5_视觉辨识与反馈.md)。手机验收及微信上传由用户手动完成。
+当前为 **1.8.6 审查修复**（2026-10-03）：修复v185-review确认的9项缺陷，覆盖危险区显示、胜利保护、召唤物清场、卡池、累计得分、残水、导弹命中顺序、冰雹无敌与补给提示。生机收割保留“冷却后下次击杀触发”，卡面已明确。[逐项修复与验证](docs/iterations/迭代_v1.8.6_审查修复.md)。手机验收及微信上传由用户手动完成。
 
 ## 运行
 
-在微信开发者工具中导入本目录，选择“小游戏”，使用自己的小游戏AppID。编译后点击拍翅，升级选卡。本机项目配置不入Git。此前Nightly工具已成功本地启动基础v1.8.4并响应点击；本次1.8.5已做离线Canvas验证，尚未在微信/手机复测；剩余工具日志与验证范围见[项目现状](docs/STATE.md)。
+在微信开发者工具中导入本目录，选择“小游戏”，使用自己的小游戏AppID。编译后点击拍翅，升级选卡。本机项目配置不入Git。此前Nightly工具已成功本地启动基础v1.8.4并响应点击；本次1.8.6已做离线Canvas验证，尚未在微信/手机复测；剩余工具日志与验证范围见[项目现状](docs/STATE.md)。
 
 首次导入或重新生成本地配置后，运行 `node scripts/prepare_wechat.js`，再关闭并重新打开项目。此脚本保留AppID及编译设置，将测试、文档和工具脚本排除出上传包，避免Node测试代码被微信上传编译器解析。上传由用户手动完成。
 
-同日已修复上传包超限：主包约 **2.86MB**，美术资源分包约 **3.82MB**。PNG尺寸、透明度与可见像素保持一致；重新打开微信项目使分包配置生效。
+同日已修复上传包超限：主包约 **2.87MB**，美术资源分包约 **3.82MB**。PNG尺寸、透明度与可见像素保持一致；重新打开微信项目使分包配置生效。
 
 ## 玩法
 
@@ -37,6 +37,7 @@ node test/test_v182_balance.js
 node test/test_v183.js
 node test/test_v184.js
 node test/test_projectile_hits.js
+node test/test_v186.js
 node test/sim_v184.js 64
 node test/probe_v184.js
 node scripts/check_package.js
@@ -45,9 +46,13 @@ node test/sim_v182_balance.js boss 4
 node test/sim_v182_balance.js endless 8
 ```
 
-152项回归通过（130既有＋5布局＋7视觉/反馈＋10弹丸命中）。有`@napi-rs/canvas`环境时另运行`test/test_ui_layout.js`和`test/test_v185.js`。1.8.4的自然成长模拟改前/后各192局，以及45套相同装备的Boss对照。有限观察与反应模型未用真人数据校准，不能代表真人胜率；后期样本较少。实际Canvas检查Boss、破根进展、短屏指引与卡面。
+179项检查通过：既有152项、审查10项、新增14项流程回归与3项Canvas检查。有`@napi-rs/canvas`环境时另运行`test/test_ui_layout.js`、`test/test_v185.js`、`test/render_v186.js`以及`docs/audits/v185-review/reproduce.cjs`。旧视觉脚本可用`ART_OUTPUT=../docs/audits/v186/visual`指定本轮目录，避免覆盖历史截图。
+
+45个运行JS语法、上传候选包体检查通过；24局自然成长模拟执行完成、最远到第六章。有限反应模型未用真人数据校准，不能代表真人胜率或微信手机验证。修复前后结果、实际Canvas截图和复现命令见[1.8.6记录](docs/iterations/迭代_v1.8.6_审查修复.md)。
 
 ## 交接
+
+- [1.8.6审查逐项修复](docs/iterations/迭代_v1.8.6_审查修复.md) · [顶部危险区](docs/audits/v186/top-hazards.png) · [修订卡面](docs/audits/v186/clarified-cards.png)
 
 - [1.8.5视觉辨识审计与预览](docs/iterations/迭代_v1.8.5_视觉辨识与反馈.md)
 

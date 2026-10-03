@@ -1,0 +1,67 @@
+[
+  {
+    "file": "test/test_v160.js",
+    "exitCode": 0,
+    "checks": 15
+  },
+  {
+    "file": "test/test_v170.js",
+    "exitCode": 0,
+    "checks": 12
+  },
+  {
+    "file": "test/test_v180.js",
+    "exitCode": 0,
+    "checks": 21
+  },
+  {
+    "file": "test/test_v181.js",
+    "exitCode": 0,
+    "checks": 23
+  },
+  {
+    "file": "test/test_v182.js",
+    "exitCode": 0,
+    "checks": 16
+  },
+  {
+    "file": "test/test_v182_balance.js",
+    "exitCode": 0,
+    "checks": 16
+  },
+  {
+    "file": "test/test_v183.js",
+    "exitCode": 0,
+    "checks": 13
+  },
+  {
+    "file": "test/test_v184.js",
+    "exitCode": 0,
+    "checks": 14
+  },
+  {
+    "file": "test/test_projectile_hits.js",
+    "exitCode": 0,
+    "checks": 10
+  },
+  {
+    "file": "test/test_ui_layout.js",
+    "exitCode": 0,
+    "checks": 5
+  },
+  {
+    "file": "test/test_v185.js",
+    "exitCode": 0,
+    "checks": 7
+  },
+  {
+    "file": "test/test_v186.js",
+    "exitCode": 0,
+    "checks": 14
+  },
+  {
+    "file": "test/render_v186.js",
+    "exitCode": 0,
+    "checks": 3
+  }
+]

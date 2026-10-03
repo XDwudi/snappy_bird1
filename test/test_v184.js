@@ -8,7 +8,7 @@ const game=()=>{const g=new Game({},{},375,667,null);g.start();return g}
 const fight=(ch=0,h=667)=>{const g=new Game({},{},375,h,null);g.start();g.chapterSystem.index=ch;g._spawnBoss();g.chapterSystem.startBossFight();g.boss.x=g.boss.homeX;g.boss._setState('roam');g.boss.update(g.bird);return g}
 const give=(g,id,lv=1)=>{for(let i=0;i<lv;i++)g.abilitySystem.selectAbility(id)}
 test('1.8.4六Boss不增加血量，生存通关与章节时限保留',()=>{
- assert.equal(C.VERSION,'1.8.5');assert.deepEqual(C.CHAPTERS.LIST.map(c=>c.mods.bossHp),[135,235,410,680,1120,1750])
+ assert.equal(C.VERSION,'1.8.6');assert.deepEqual(C.CHAPTERS.LIST.map(c=>c.mods.bossHp),[135,235,410,680,1120,1750])
  assert.deepEqual(C.BOSS.VARIANTS.map(b=>b.survivalFrames),[6000,7080,8160,9240,10320,11400])
 })
 test('古木每根3HP，分段破甲；破根12秒强攻后仍永久易伤且不复生',()=>{

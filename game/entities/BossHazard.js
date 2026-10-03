@@ -35,13 +35,24 @@ class BossHazard {
       this.alive=false
     }
   }
+  // Rendering and collision share the entire playable height, including the HUD area.
+  getDangerRects() {
+    if (this.kind === 'beam') return [{x:0,y:this.y-this.radius,width:this.screenW,height:this.radius*2}]
+    const x=this.kind==='column'?this.x-this.radius:this.x
+    const width=this.kind==='column'?this.radius*2:this.width
+    const top=MathUtil.clamp(this.topHeight,0,this.groundY)
+    const bottom=MathUtil.clamp(this.bottomY,0,this.groundY)
+    return [{x,y:0,width,height:top},{x,y:bottom,width,height:this.groundY-bottom}]
+  }
   checkCollision(bird) {
     if (!this.alive || this.age<this.warn) return false
-    const halfW=bird.collisionWidth/2, halfH=bird.collisionHeight/2
-    if(this.kind==='gate') return bird.x+halfW>Math.min(this.x,this.previousX==null?this.x:this.previousX) && bird.x-halfW<Math.max(this.x,this.previousX==null?this.x:this.previousX)+this.width &&
-      (bird.y-halfH<this.topHeight || bird.y+halfH>this.bottomY)
-    if(this.kind==='column') return Math.abs(bird.x-this.x)<this.radius+halfW && (bird.y-halfH<this.topHeight || bird.y+halfH>this.bottomY)
-    if(this.kind==='beam') return Math.abs(bird.y-this.y)<this.radius+halfH
+    const halfW=(bird.collisionWidth || 0)/2, halfH=bird.collisionHeight/2
+    if(['gate','column','beam'].includes(this.kind)) return this.getDangerRects().some(rect=>{
+      const move=this.kind==='gate'&&this.previousX!=null?this.previousX-this.x:0
+      return rect.height>0 && bird.x+halfW>rect.x+Math.min(0,move) &&
+        bird.x-halfW<rect.x+rect.width+Math.max(0,move) &&
+        bird.y+halfH>rect.y && bird.y-halfH<rect.y+rect.height
+    })
     const x=this.previousX==null?this.x:this.previousX,y=this.previousY==null?this.y:this.previousY
     const dx=this.x-x,dy=this.y-y,len=dx*dx+dy*dy
     const t=len?MathUtil.clamp(((bird.x-x)*dx+(bird.y-y)*dy)/len,0,1):0

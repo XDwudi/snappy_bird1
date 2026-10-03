@@ -93,11 +93,13 @@ function hazard(c,o){
  const band=(x,y,w,h)=>{if(h<=0||w<=0)return;c.fillStyle=color;c.globalAlpha=warning? .1:.65;c.fillRect(x,y,w,h);c.globalAlpha=1;P.path(c,[[x,y],[x+w,y],[x+w,y+h],[x,y+h],[x,y]],color,2)
   c.save();c.beginPath();c.rect(x,y,w,h);c.clip();c.globalAlpha=warning? .45:.3;for(let k=x-h;k<x+w;k+=20){P.path(c,[[k,y],[k+h,y+h]],color,2);if(o.piercing)P.path(c,[[k+h,y],[k,y+h]],color,2)}c.restore()}
  if(o.kind==='gate'){
-  if(warning){band(0,130,o.screenW,Math.max(0,o.topHeight-130));band(0,o.bottomY,o.screenW,o.groundY-o.bottomY);P.brackets(c,3,o.topHeight,o.screenW-6,o.gap,C.green)}
-  else{band(o.x,0,o.width,o.topHeight);band(o.x,o.bottomY,o.width,o.groundY-o.bottomY);P.path(c,[[o.x,o.topHeight],[o.x+o.width,o.topHeight]],C.paper,3);P.path(c,[[o.x,o.bottomY],[o.x+o.width,o.bottomY]],C.paper,3)}
+  for(const r of o.getDangerRects())band(warning?0:r.x,r.y,warning?o.screenW:r.width,r.height)
+  if(warning){P.brackets(c,3,o.topHeight,o.screenW-6,o.gap,C.green)}
+  else{P.path(c,[[o.x,o.topHeight],[o.x+o.width,o.topHeight]],C.paper,3);P.path(c,[[o.x,o.bottomY],[o.x+o.width,o.bottomY]],C.paper,3)}
  }else if(o.kind==='column'){
-  band(o.x-o.radius,130,o.radius*2,Math.max(0,o.topHeight-130));band(o.x-o.radius,o.bottomY,o.radius*2,o.groundY-o.bottomY);P.brackets(c,o.x-28,o.topHeight,56,o.gap,C.green)
- }else if(o.kind==='beam'){band(0,o.y-o.radius,o.screenW,o.radius*2);if(!warning)P.path(c,[[0,o.y],[o.screenW,o.y]],C.paper,2)}
+  for(const r of o.getDangerRects())band(r.x,r.y,r.width,r.height)
+  P.brackets(c,o.x-28,o.topHeight,56,o.gap,C.green)
+ }else if(o.kind==='beam'){for(const r of o.getDangerRects())band(r.x,r.y,r.width,r.height);if(!warning)P.path(c,[[0,o.y],[o.screenW,o.y]],C.paper,2)}
  else if(warning){c.globalAlpha=.7;c.setLineDash([4,7]);P.path(c,[[o.x,o.y],[o.x+o.vx*100,o.y+o.vy*100]],color,1);c.setLineDash([]);P.ring(c,o.x,o.y,o.grow?23:o.radius+4,color,1);P.ring(c,o.x,o.y,(o.grow?26:o.radius+7),color,.8,o.age/o.warn)}
  else{projectile(c,o,false);if(o.grow)P.ring(c,o.x,o.y,o.radius,color,.9)}
  // Piercing text is consolidated in the ground HUD; no opaque labels over targets.

@@ -109,6 +109,7 @@ class Game {
     // 游戏状态
     this.state = Config.GAME.STATE.READY
     this.score = 0
+    this._scoreRemainder = 0
     this.bestScore = 0
 
     // 实体
@@ -196,6 +197,7 @@ class Game {
     this.boss = null               // Boss 实体（出场演出 enter 阶段创建，死亡演出后/离场出屏后清空）
     this.combat = new CombatSystem(this)
     this.feathers = []             // Boss 羽刃弹幕列表
+    this._bossVictoryProtectionFrames = 0
     this._bossDyingFrames = 0      // 死亡演出慢动作剩余帧（§4.11：30 帧 0.5×，复用速度包）
     this._bossRewardPending = false // 大礼包结算中（面板链：自选卡→祝福→经验升级→转场）
     this.bossFightFrames = 0
@@ -290,6 +292,7 @@ class Game {
     Logger.info('Game', '游戏开始', { screenW: this.screenW, screenH: this.screenH })
     this.state = Config.GAME.STATE.PLAYING
     this.score = 0
+    this._scoreRemainder = 0
     this.gameTime = 0
     this.spawnSystem.reset()      // [v1.5.0] 生成计时状态（管道/怪物距离、道具/补给线计时器）统一由 SpawnSystem 重置
     this.frameCount = 0
@@ -315,6 +318,7 @@ class Game {
     this.boss = null
     this.combat = new CombatSystem(this)
     this.feathers = []
+    this._bossVictoryProtectionFrames = 0
     this._bossDyingFrames = 0
     this._bossRewardPending = false
     this.bossFightFrames = 0
@@ -356,6 +360,7 @@ class Game {
     Logger.info('Game', '返回首页')
     this.state = Config.GAME.STATE.READY
     this.score = 0
+    this._scoreRemainder = 0
     this.pipes = []
     this.monsters = []            // [v1.3.0]
     this.missiles = []            // [v1.3.0]
@@ -377,6 +382,7 @@ class Game {
     this.boss = null
     this.combat = new CombatSystem(this)
     this.feathers = []
+    this._bossVictoryProtectionFrames = 0
     this._bossDyingFrames = 0
     this._bossRewardPending = false
     this.bossFightFrames = 0
@@ -615,6 +621,7 @@ class Game {
 
     if (this.state !== Config.GAME.STATE.PLAYING) return
 
+    if (this._bossVictoryProtectionFrames > 0) this._bossVictoryProtectionFrames--
     this.gameTime++
 
     // [v1.2.0] 环境属性修饰器重置
@@ -1092,6 +1099,8 @@ class Game {
       screenW: this.screenW,
       screenH: this.screenH,
       abilities: this.abilitySystem,
+      bossActive: this.chapterSystem.isBossActive(),
+      isVictoryProtected: () => this._isVictoryProtected(),
       interceptProjectile: projectile => this.combat.intercept(projectile),
       weather: this.weatherSystem,  // [v1.4.0] 风暴驯化状态查询（isTamed）
       verticalWindForce: 0,
@@ -1174,13 +1183,14 @@ class Game {
    * [v1.4.0] 时之晶：冻结期怪物停止移动/追踪，但不取消碰撞判定
    *           （铁喙协同建立在受击链不变上："冻结期碰瓷零风险"）
    * @param {number} scrollSpeed - 当前滚动速度（减速对怪物同步生效）
-   * @returns {boolean} true=游戏结束
+   * @returns {boolean} true=游戏结束或复活，本帧应停止
    */
   _updateMonsters(scrollSpeed) {
     // [v1.4.0] 时之晶冻结：怪物/弹幕（v1.5.0）冻结，鸟可动；友方导弹不冻结
     const frozen = this.abilitySystem.timeCrystalFreezeFrames > 0
-    for (let i = this.monsters.length - 1; i >= 0; i--) {
-      const monster = this.monsters[i]
+    const monsters = this.monsters
+    for (let i = monsters.length - 1; i >= 0; i--) {
+      const monster = monsters[i]
       if (!frozen) {
         const slow=monster.frostFrames>0?0.5:1
         if(monster.frostFrames>0)monster.frostFrames--
@@ -1188,12 +1198,14 @@ class Game {
       }
 
       if (monster.isOffscreen() || monster.hp <= 0) {
-        this.monsters.splice(i, 1)
+        monsters.splice(i, 1)
         continue
       }
 
       if (monster.checkCollision(this.bird)) {
         if (this._handleCollision(monster)) return true
+        if (this.phoenixAnim) return true
+        if (this.monsters !== monsters) break
       }
     }
     return false
@@ -1365,8 +1377,8 @@ class Game {
     if (method === 'kill') boss.startDying()
     else boss.startLeaving()
     this.monsters = []
-    this.abilitySystem.invincibleFrames = Math.max(this.abilitySystem.invincibleFrames,
-      Config.BOSS.DEATH_SLOWMO_FRAMES + 2)
+    // Separate settlement protection: endless caps only apply to combat abilities.
+    this._bossVictoryProtectionFrames = Config.BOSS.DEATH_SLOWMO_FRAMES + 2
     this._addFloatingText(this.screenW / 2, this.screenH * 0.4,
       method === 'kill' ? '击败 Boss！' : '生存通关！', '#ffd700', 90)
     this._bossDyingFrames = Config.BOSS.DEATH_SLOWMO_FRAMES
@@ -1731,7 +1743,7 @@ class Game {
   }
 
   /**
-   * [v1.3.0] 导弹命中检测：怪物优先，其次可破坏管道
+   * [v1.8.6] 导弹命中检测：所有可受弹对象按首次接触时间结算；锁定优先级只影响追踪
    * [v1.4.0] 猎手标记：导弹伤害 +lv，击杀触发连锁爆炸（硬规则：连锁击杀不再二次连锁）；
    *           蜂群链路：命中后 1.5s 窗内下一发 +1（叠层上限 1+lv 硬封顶，窗破清零）
    * @param {Missile} missile
@@ -1743,24 +1755,28 @@ class Game {
     // 本次伤害 = 基础 + 猎手标记 + 蜂群链路当前叠层
     const damage = Config.MISSILE.DAMAGE + hunterLv + this.abilitySystem.missileLinkStacks
 
-    for(const node of this.combat.targets().filter(t=>t.isMechanic)) {
-      if(missile.hitTest(node)) {
-        node.takeDamage(damage);this._spawnExplosion(node.x,node.y,'180,240,180',8)
-        if(this.boss && this.boss.hp<=0)this._onBossVictory('kill')
-        return true
-      }
+    const candidates = this.combat.targets().filter(t=>!t.isBoss ||
+      !['entering','dying','leaving'].includes(t.state)).concat(
+      this.pipes.filter(p=>p.destructible && p.hp>0))
+    let target = null, firstTime = Infinity
+    for (const candidate of candidates) {
+      const time = missile.hitTime(candidate)
+      if (time < firstTime) { firstTime = time; target = candidate }
     }
-    let hitSomething = false
+    if (!target) return false
+    if (target.isMechanic) {
+      target.takeDamage(damage);this._spawnExplosion(target.x,target.y,'180,240,180',8)
+      if(this.boss && this.boss.hp<=0)this._onBossVictory('kill')
+      return true
+    }
     let killedMonster = null
 
-    // [v1.5.0] Boss 最优先判定（体型大易命中；猎手标记/屠戮者加成生效，
+    // Boss 命中保留猎手标记/屠龙者及同来源受击间隔，
     // 蜂群链路叠层对 Boss 不加成——防叠层秒杀 30HP 设计目标，D19）
     // [v1.5.0 D21] 对 Boss 伤害 ×MISSILE_DAMAGE_MULT（保底输出链与火力流共享）；
     // 受击间隔门在 Boss.takeDamage 内收敛同批多发（防弹幕级 DPS 秒杀）；
     // 每次命中（含被门挡下）都爆爆炸粒子+受击白闪，命中反馈可见、不"白打"
-    if (this.boss && this.boss.hp > 0 && this.boss.state !== 'entering' &&
-        this.boss.state !== 'dying' && this.boss.state !== 'leaving' &&
-        missile.hitTest(this.boss)) {
+    if (target === this.boss) {
       const slayerLv = this.abilitySystem.owned.get('boss_slayer') || 0
       // [v1.5.0 D21] 系数只乘基础导弹伤害，猎手/屠龙者加成保持 1:1 flat（不削卡）：
       // 无卡 3/发、成型火力 6/发、满配 7/发——保底链与火力流的差距由命中频次拉开
@@ -1770,7 +1786,6 @@ class Game {
       this.boss.takeDamage(bossDamage)
       this.combat.chargeEndless(Math.max(0,beforeHP-this.boss.hp))
       if (this.boss.hp < beforeHP) this._addFloatingText(this.boss.x, this.boss.y - 36, '-' + (beforeHP - this.boss.hp), '#fff5a6', 28)
-      hitSomething = true
       // 蜂群链路命中 Boss 只续窗不叠层（火力转移到召唤物时保留节奏）
       if (linkLv > 0) {
         this.abilitySystem.missileLinkWindow = Config.MISSILE.LINK_WINDOW_FRAMES
@@ -1784,42 +1799,24 @@ class Game {
       return true
     }
 
-    // 怪物优先
-    for (let i = this.monsters.length - 1; i >= 0; i--) {
-      const m = this.monsters[i]
-      if (m.hp <= 0) continue
-      if (missile.hitTest(m)) {
-        this._damageObstacle(m, damage)
-        hitSomething = true
-        if (m.hp <= 0) {
-          killedMonster = m
-          this._onMonsterKilled(m)
-          this.monsters.splice(i, 1)
-        } else {
-          Logger.info('Missile', '命中怪物', { type: m.monsterType, hp: m.hp, damage: damage })
-        }
-        break
+    if (target.type === 'monster') {
+      this._damageObstacle(target, damage)
+      if (target.hp <= 0) {
+        killedMonster = target
+        this._onMonsterKilled(target)
+        const index = this.monsters.indexOf(target)
+        if (index >= 0) this.monsters.splice(index, 1)
+      } else {
+        Logger.info('Missile', '命中怪物', { type: target.monsterType, hp: target.hp, damage })
+      }
+    } else {
+      this._damageObstacle(target, damage)
+      if (target.hp <= 0) {
+        this._onPipeDestroyed(target)
+        const index = this.pipes.indexOf(target)
+        if (index >= 0) this.pipes.splice(index, 1)
       }
     }
-
-    // 可破坏管道
-    if (!hitSomething) {
-      for (let i = this.pipes.length - 1; i >= 0; i--) {
-        const p = this.pipes[i]
-        if (!p.destructible || p.hp <= 0) continue
-        if (missile.hitTest(p)) {
-          this._damageObstacle(p, damage)
-          hitSomething = true
-          if (p.hp <= 0) {
-            this._onPipeDestroyed(p)
-            this.pipes.splice(i, 1)
-          }
-          break
-        }
-      }
-    }
-
-    if (!hitSomething) return false
 
     // [v1.4.0] 蜂群链路：任何命中都续窗+叠层（硬封顶 1+lv）
     if (linkLv > 0) {
@@ -1929,7 +1926,11 @@ class Game {
   // ==================== 通过管道处理 ====================
 
   _addScore(points) {
-    this.score += points * (this.chapterSystem.endless ? 2 : 1)
+    // Keep fractional pipe gains across awards; UI/storage continue to receive integers.
+    const total = this._scoreRemainder + points * (this.chapterSystem.endless ? 2 : 1)
+    const whole = Math.floor(total + 1e-9)
+    this._scoreRemainder = Math.max(0, total - whole)
+    this.score += whole
     if (this.onScoreChange) this.onScoreChange(this.score)
   }
 
@@ -1938,7 +1939,7 @@ class Game {
     const stats = this.abilitySystem.getStats()
 
     // 得分
-    const points = Math.round(1 * stats.scoreMultiplier)
+    const points = stats.scoreMultiplier
     this._addScore(points)
 
     // [v1.1.0] 管道计数
@@ -2121,7 +2122,7 @@ class Game {
         // [v1.1.5] 统一护盾：添加1层护盾（不超过最大层数）
         const a=this.abilitySystem,before=a.shieldLayers,temp=a.tempHp
         const gained=a.addShieldLayer(1)
-        const text=a.shieldLayers>before?'护盾+1 · 现'+a.shieldLayers+'层':a.tempHp>temp?'满盾转临时生命':gained===0&&a.shieldLayers<a.maxShieldLayers?'补给冷却中':'护盾已满'
+        const text=a.shieldLayers>before?'护盾+1 · 现'+a.shieldLayers+'层':a.tempHp>temp?'满盾转临时生命':gained===0&&a.canReceiveShield()?'补给冷却中':'护盾已满'
         this._addFloatingText(this.bird.x, this.bird.y - 30, text, '#a4deef', 50)
         break
       }
@@ -2172,6 +2173,10 @@ class Game {
 
   // ==================== 碰撞处理 [v1.1.0] HP系统 ====================
 
+  _isVictoryProtected() {
+    return this._bossVictoryProtectionFrames > 0 || this._bossRewardPending
+  }
+
   /**
    * 碰撞事件处理：无敌 > 时间扭曲 > 羽盾 > 统一护盾(弹力护盾优先) > 扣血(临时HP优先) > 凤凰 > 死亡
    * [v1.1.5] 统一护盾系统：shieldLayers > 0时消耗一层，
@@ -2186,6 +2191,7 @@ class Game {
    * @returns {boolean} true=游戏结束, false=继续
    */
   _handleCollision(pipe) {
+    if (this._isVictoryProtected()) return false
     // [v1.4.0] 铁喙：受击无敌帧期间撞怪反杀且免伤（对管道无效；对 Boss 免疫，isBoss 分支预留）
     if (pipe && pipe.type === 'monster' && !pipe.isBoss &&
         this.abilitySystem.invincibleFrames > 0) {
@@ -2292,14 +2298,7 @@ class Game {
     this.shakeFrames = 8
     this.shakeIntensity = 4
     this.bird.invincibleBlink = 30
-    this.abilitySystem.invincibleFrames = this.abilitySystem.getInvincibleFrames()
-    // [v1.5.0] U8 猎手直觉（boss_slayer）：Boss 战中受击额外 +30 帧/级无敌（Boss 战高压补偿）
-    if (!dead && this.chapterSystem.isBossActive()) {
-      const slayerLv = this.abilitySystem.owned.get('boss_slayer') || 0
-      if (slayerLv > 0) {
-        this.abilitySystem.invincibleFrames += Config.ABILITY.BOSS_SLAYER_INVINCIBLE_PER_LV * slayerLv
-      }
-    }
+    this.abilitySystem.invincibleFrames = this.abilitySystem.getInvincibleFrames(this.chapterSystem.isBossActive())
 
     if (dead) {
       // 凤凰复活

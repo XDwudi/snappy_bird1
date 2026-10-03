@@ -353,10 +353,10 @@ class AbilitySystem {
     s.scrollSpeedMultiplier = Math.max(0.5, 1 - 0.10 * lv('slow_world'))
 
     // 双倍积分
-    s.scoreMultiplier = Math.round((1 + lv('double_score')) * buffMul * berserkMul * stormMul)
+    s.scoreMultiplier = (1 + lv('double_score')) * buffMul * berserkMul * stormMul
     // [v1.4.0] 血契: 得分 +30%/级（在双倍积分结果上叠乘，血契是独立乘区）
     if (bloodPactLv > 0) {
-      s.scoreMultiplier = Math.round(s.scoreMultiplier * (1 + Config.ABILITY.BLOOD_PACT_BONUS_PER_LV * bloodPactLv))
+      s.scoreMultiplier *= 1 + Config.ABILITY.BLOOD_PACT_BONUS_PER_LV * bloodPactLv
     }
 
     // 幸运光环
@@ -687,8 +687,10 @@ class AbilitySystem {
   /**
    * 获取受击无敌帧数（含体魄加成）
    */
-  getInvincibleFrames() {
-    return Config.HP.INVINCIBLE_FRAMES + this.getStat('invincibleBonus')
+  getInvincibleFrames(bossActive = false) {
+    const slayer = bossActive && this.hp > 0 ? (this.owned.get('boss_slayer') || 0) : 0
+    return Config.HP.INVINCIBLE_FRAMES + this.getStat('invincibleBonus') +
+      slayer * Config.ABILITY.BOSS_SLAYER_INVINCIBLE_PER_LV
   }
 
   // ==================== [v1.1.5] 统一护盾系统 ====================
@@ -728,8 +730,14 @@ class AbilitySystem {
    *           HUD 空心心形与普通HP区分；超载只转HP不产羽盾——羽盾全局硬顶2层不变）
    * [v1.5.0] 活力祝福：临时HP 上限 +1/次（blessingTempHpCapBonus，§4.10"临时HP+1（上限+1）"）
    */
+  canReceiveShield() {
+    return this.shieldLayers < this.maxShieldLayers ||
+      ((this.owned.get('aegis_overdrive') || 0) >= 3 &&
+       this.tempHp < Config.SHIELD.OVERDRIVE_TEMP_HP_CAP + this.blessingTempHpCapBonus)
+  }
+
   addShieldLayer(amount) {
-    if(this.shieldLayers>=this.maxShieldLayers && ((this.owned.get('aegis_overdrive')||0)<3 || this.tempHp>=Config.SHIELD.OVERDRIVE_TEMP_HP_CAP+this.blessingTempHpCapBonus))return 0
+    if(!this.canReceiveShield())return 0
     amount=this.limitRenewal(amount)
     const before = this.shieldLayers
     const oldTemp=this.tempHp

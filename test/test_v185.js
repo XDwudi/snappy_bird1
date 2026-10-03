@@ -5,7 +5,7 @@ GlobalFonts.registerFromPath(process.env.CJK_FONT||'/System/Library/Fonts/STHeit
 const Game=require('../game/core/Game'),Art=require('../game/art/GameArt'),E=require('../game/art/Entities'),FX=require('../game/art/Effects'),I=require('../game/art/Icons'),P=require('../game/art/Pixel'),A=require('../game/art/Assets')
 const Item=require('../game/entities/Item'),Rain=require('../game/weather/RainEffect'),Wind=require('../game/weather/WindEffect'),R=require('../game/abilities/AbilityRegistry'),Config=require('../game/config/GameConfig')
 require('../game/systems/GameLogger').enabled=false
-const out=path.resolve(__dirname,'../docs/audits/v185');fs.mkdirSync(out,{recursive:true})
+const out=path.resolve(__dirname,process.env.ART_OUTPUT||'../docs/audits/v185');fs.mkdirSync(out,{recursive:true})
 let count=0;function test(name,fn){fn();count++;console.log('✓ '+name)}
 function make(w=390,h=844,top=47,inset=34){const c=createCanvas(w,h),ctx=c.getContext('2d'),g=new Game(c,ctx,w,h,{top,bottom:h-inset});g.start();g.frameCount=240;g.gameTime=3600;g.bird.y=h*.44;return{c,ctx,g}}
 function weather(g,type){g.weatherSystem._triggerEffect(type,g._buildGameCtx());const e=g.weatherSystem.activeEffects.find(v=>v.type===type);e.elapsed=e.duration/2;if(type==='rain')e.rainLevel=64;if(type==='wind'){e.isVertical=false;e.direction=1;e.currentForce=.1}g.floatingTexts=[];return e}
@@ -13,7 +13,7 @@ function save(c,name){fs.writeFileSync(path.join(out,name+'.png'),c.toBuffer('im
 async function main(){
  for(const [key,file] of Object.entries(A.files))A.images[key]=await loadImage(path.resolve(__dirname,'..',file))
  test('1.8.5；五补给与武器/磁吸/机关使用真实物体图形，所有卡牌映射有效',()=>{
-  assert.equal(Config.VERSION,'1.8.5')
+  assert.equal(Config.VERSION,'1.8.6')
   for(const [id,glyph] of Object.entries({missile:'missile',shield_pack:'shield',health_pack:'heart',exp_pack:'crystal',speed_pack:'clock',magnet:'magnet',sand_lance:'spear',frost_lance:'spear',iron_beak:'beak',raincoat:'umbrella',venom_thread:'skull'}))assert.equal(I.spec[id].glyph,glyph)
   for(const def of R.getAll()){assert.ok(I.glyphs[I.spec[def.id].glyph]);assert.equal(I.spec[def.id].mark,undefined)}
   for(const rows of Object.values(I.glyphs))assert.ok(rows.every(row=>row.length<=10))

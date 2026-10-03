@@ -1,0 +1,122 @@
+{
+  "baseline": "98d7da0",
+  "failed": 0,
+  "passed": 10,
+  "review": 1,
+  "skipped": 0,
+  "results": [
+    {
+      "id": "A01",
+      "title": "磁轨穿盾区域必须覆盖实际碰撞位置",
+      "observed": {
+        "alpha": 165,
+        "collides": true,
+        "hp": 1,
+        "shield": 1
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "A02",
+      "title": "无尽胜利演出应全程保护并完成领奖",
+      "observed": {
+        "frames": 30,
+        "state": "upgrading",
+        "hp": 2,
+        "deathAnimationRemaining": 0,
+        "clears": 1,
+        "score": 200
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "A03",
+      "title": "两只召唤物在场时战败清场不得使更新循环抛异常",
+      "status": "PASS"
+    },
+    {
+      "id": "A04",
+      "title": "无尽不应新抽到已无章节事件可触发的章节之主",
+      "observed": {
+        "earlierEligible": true,
+        "dueAfterAcquisition": false,
+        "dueInEndless": false,
+        "stillOfferedInEndless": false
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "A05",
+      "title": "三个百分比得分增益的一级效果不应全部取整归零",
+      "observed": {
+        "blood_pact": 1.3,
+        "berserk": 1.25,
+        "storm_child": 1.2
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "A06",
+      "title": "策划确认项：生机收割冷却结束后需要额外击杀",
+      "observed": {
+        "hp": 1,
+        "kills": 7,
+        "renewalCD": 0
+      },
+      "review": "达标后仍需额外击杀才重试治疗；需明确触发契约，不计入确认缺陷",
+      "status": "REVIEW"
+    },
+    {
+      "id": "A07a",
+      "title": "停雨后的拍翅甩水提示应仍可兑现",
+      "observed": {
+        "waterAfterFlap": 45,
+        "detail": "残水45%·拍翅甩水"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "A07b",
+      "title": "Boss冻结残水时应保持原有重力修饰",
+      "observed": {
+        "before": 0.2475,
+        "frozenGravity": 0.2475,
+        "water": 49.5
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "A08",
+      "title": "导弹连续碰撞应选择运动路径上最先接触的怪物",
+      "observed": {
+        "times": [
+          0.36923076923076925,
+          0.8307692307692308
+        ],
+        "nearHp": 19,
+        "farHp": 20
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "A09",
+      "title": "屠龙者的Boss战受击无敌应覆盖冰雹伤害",
+      "observed": {
+        "feather": 120,
+        "hail": 120
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "A10",
+      "title": "满盾超载可转临时心时应正确显示补给冷却",
+      "observed": {
+        "tempHp": 0,
+        "texts": [
+          "补给冷却中"
+        ]
+      },
+      "status": "PASS"
+    }
+  ]
+}

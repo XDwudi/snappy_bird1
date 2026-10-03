@@ -109,7 +109,7 @@ class AbilityRegistry {
   _meetsPrerequisite(ability, owned, chapter = 1) {
     if ((ability.unlockChapter || 1) > chapter) return false
     // 最后一章已没有后续章节入场事件，避免新抽到白板过章卡。
-    if (chapter >= Config.CHAPTERS.LIST.length && ['nomad','chapter_echo'].includes(ability.id)) return false
+    if (chapter >= Config.CHAPTERS.LIST.length && ['nomad','chapter_echo','chapter_master'].includes(ability.id)) return false
     const weaponPool=['shadow_echo','venom_thread','storm_chain'].includes(ability.id)
       ? Config.ABILITY.PROJECTILE_WEAPONS : Config.ABILITY.AUTO_WEAPONS
     if (Config.ABILITY.WEAPON_PREREQUISITES.includes(ability.id) &&

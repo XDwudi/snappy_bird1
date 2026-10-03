@@ -187,11 +187,11 @@ const Abilities = [
     id: 'teleport',
     name: '瞬移闪避',
     icon: '💫',
-    desc: '即将碰撞时自动瞬移',
+    desc: '接近管道边缘时自动瞬移至缺口',
     category: ABILITY.CATEGORY.ACTIVE,
     rarity: 'epic',          // [v1.1.3]
     maxLevel: 3,
-    effectText: (lv) => `瞬移至间隙，CD ${30 - 5 * (lv - 1)}s`
+    effectText: (lv) => `接近管道边缘时瞬移至缺口，CD ${30 - 5 * (lv - 1)}s`
   },
   {
     id: 'shield_burst',
@@ -207,13 +207,13 @@ const Abilities = [
     id: 'phoenix',
     name: '凤凰之翼',
     icon: '🔥',
-    desc: '死亡时原地复活',
+    desc: '死亡后回到屏幕中上部复活',
     category: ABILITY.CATEGORY.ACTIVE,
     rarity: 'epic',          // [v1.1.3]
     maxLevel: 2,
-    // [v1.2.1] 文案修正：升级会重置已用次数，实际为"每级复活次数+1"（Lv2一局最多复活3次）
+    // 每级增加1次复活；升级保留已消耗次数，Lv2每局合计最多2次。
     // [v1.4.0] 血契语义同步：复活=HP回满"当前上限"（血契降低上限后不回满旧上限）
-    effectText: (lv) => `复活次数 +1/级，HP回满当前上限`
+    effectText: (lv) => `复活次数+1/级，回到屏幕中上部，HP回满当前上限`
   },
   // [v1.1.0新增]
   {
@@ -330,7 +330,7 @@ const Abilities = [
     category: ABILITY.CATEGORY.SPECIAL,
     rarity: 'epic',          // [v1.1.3]
     maxLevel: 3,
-    effectText: (lv) => `HP=1：羽刃/元素间隔-${8*lv}%，得分+${25*lv}%；血契时增益减半`
+    effectText: (lv) => `HP=1：羽刃/元素间隔-${8*lv}%，过管得分+${25*lv}%；血契时增益减半`
   },
   // [v1.2.0新增] 风暴之子
   {
@@ -341,7 +341,7 @@ const Abilities = [
     category: ABILITY.CATEGORY.SPECIAL,
     rarity: 'epic',
     maxLevel: 3,
-    effectText: (lv) => `天气中羽刃/元素间隔-${4*lv}%，得分+${20*lv}%；操作不变`
+    effectText: (lv) => `天气中羽刃/元素间隔-${4*lv}%，过管得分+${20*lv}%；操作不变`
   },
 
   // ==================== [v1.4.0] 能力扩展包·批次1：common ×6 ====================
@@ -537,11 +537,11 @@ const Abilities = [
     id: 'missile_link',
     name: '蜂群链路',
     icon: '🐝',
-    desc: '导弹命中后下一发加伤',
+    desc: '导弹命中怪物/管道叠加伤害，Boss仅续时',
     category: ABILITY.CATEGORY.SPECIAL,
     rarity: 'rare',
     maxLevel: 2,
-    effectText: (lv) => `导弹命中后1.5s内下一枚伤害+1（可叠${1 + lv}层）`
+    effectText: (lv) => `命中怪物/管道后1.5s内导弹+1伤，最多${1 + lv}层；Boss仅续时不加伤，机关不续时`
   },
   // R7 铁羽：回响之翼专属放大器；无回响之翼时不生效（选牌 UI 灰显）；组合上限2层为全局硬顶
   {
@@ -599,7 +599,7 @@ const Abilities = [
     category: ABILITY.CATEGORY.SPECIAL,
     rarity: 'epic',
     maxLevel: 2,
-    effectText: (lv) => `最大HP-1，得分/经验+${30 * lv}%，受击无敌+${lv}s`
+    effectText: (lv) => `最大HP-1，过管得分/经验+${30 * lv}%，受击无敌+${lv}s`
   },
   // E4 幻影舞步：擦边流史诗顶点；窗内擦边只刷新窗口、不叠加倍率（防指数回路）；窗口期金色残影
   {
@@ -684,7 +684,7 @@ const Abilities = [
     maxLevel: 2,
     effectText: (lv) => `进入新章节：随机1张已持卡临时+${lv}级（本章有效）`
   },
-  // R10 战利品陈列：Boss 击杀复利卡，按已击败数线性叠乘（4 章封顶 4 层）；
+  // R10 战利品陈列：Boss 击杀复利卡，按已击败数线性加算（封顶6层）；
   // 第一章未过 Boss 前零收益写明；与大礼包错位——礼包是定额，陈列是比率
   {
     id: 'trophy_wall',
@@ -694,7 +694,7 @@ const Abilities = [
     category: ABILITY.CATEGORY.SPECIAL,
     rarity: 'rare',
     maxLevel: 2,
-    effectText: (lv) => `每个已击败Boss：经验+${15 * lv}%、道具率+${5 * lv}pp（本局永久）`
+    effectText: (lv) => `每次击杀Boss：经验+${15 * lv}%、道具率+${5 * lv}pp；最多6层，道具总加成上限35pp`
   },
   // E7 章节之主：章节流派史诗顶点；"必含史诗"与 N9 软保底不叠加——消耗当次软保底计数
   {
@@ -705,7 +705,7 @@ const Abilities = [
     category: ABILITY.CATEGORY.SPECIAL,
     rarity: 'epic',
     maxLevel: 1,
-    effectText: (lv) => '章节祝福效果+50%；每章首次升级面板必含1张史诗'
+    effectText: (lv) => '后续章节祝福效果+50%；新章首次升级面板必含1张史诗（第五章可获取）'
   }
 ]
 

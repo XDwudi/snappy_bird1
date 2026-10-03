@@ -123,6 +123,11 @@ class HailEffect extends WeatherEffect {
 
   _handleHailCollision(hailstone, gameCtx) {
     const abilities = gameCtx.abilities
+    // Victory settlement protection is independent of combat invincibility caps.
+    if (gameCtx.isVictoryProtected && gameCtx.isVictoryProtected()) {
+      this._addCrackEffect(hailstone.x, hailstone.y, '#ffffff')
+      return
+    }
 
     // [v1.4.0] 定风珠：免疫期冰雹不造成伤害（视觉碎裂保留，免疫判定在 debuff 应用点）
     if (this.isDebuffImmune(gameCtx)) {
@@ -178,7 +183,7 @@ class HailEffect extends WeatherEffect {
     gameCtx.damageFlash = 12
     gameCtx.shakeFrames = 4
     gameCtx.shakeIntensity = 2
-    abilities.invincibleFrames = abilities.getInvincibleFrames()
+    abilities.invincibleFrames = abilities.getInvincibleFrames(gameCtx.bossActive)
     gameCtx.bird.invincibleBlink = 30
     this._addCrackEffect(hailstone.x, hailstone.y, '#ff4444')
     gameCtx.addFloatingText(hailstone.x, hailstone.y - 20, '-1 HP', '#ff4444', 35)

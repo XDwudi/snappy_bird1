@@ -8,7 +8,7 @@ const groups=[
 ]
 const extra=[
  ['seed_bolt','灵种飞弹',1,'uncommon',lv=>`每${5-lv}秒发射追踪灵种，伤害${lv}（Boss ${lv+1}）`],
- ['seed_harvest','生机收割',1,'rare',lv=>`每击杀${9-lv*2}只怪物回复1HP；治疗冷却12秒`],
+ ['seed_harvest','生机收割',1,'rare',lv=>`击杀${9-lv*2}只回复1HP，冷却12秒；冷却中达标保留，冷却后下次击杀触发`],
  ['sand_lance','破甲沙矛',2,'uncommon',lv=>`每3秒发射穿透${lv+1}个敌人的沙矛，伤害${lv+1}（Boss ${lv+2}）`],
  ['dune_cache','沙丘补给',2,'rare',lv=>`每通过${16-lv*3}根管道获得1层护盾（遵守护盾上限）`],
  ['shadow_echo','暗影复射',3,'rare',lv=>`每4轮新武器弹丸附加暗影弹，伤害${lv+1}（Boss ${lv+2}）`],
@@ -32,6 +32,8 @@ module.exports=function addCampaignAbilities(abilities) {
   }
   // 第一章保留一张史诗核心，章节礼物及史诗保底不会成为空承诺。
   const phoenix=abilities.find(a=>a.id==='phoenix');phoenix.unlockChapter=1;phoenix.faction='森芽'
+  // Acquire before the final chapter so the next chapter's first panel can still fire.
+  abilities.find(a=>a.id==='chapter_master').unlockChapter=5
   for(const id of ['shrink_ray','time_warp','combo_heart']) {
     const a=abilities.find(a=>a.id===id);a.unlockChapter=1;a.faction='森芽'
   }

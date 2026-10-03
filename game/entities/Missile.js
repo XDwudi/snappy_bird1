@@ -90,16 +90,21 @@ class Missile {
    * @returns {boolean}
    */
   hitTest(ob) {
+    return this.hitTime(ob) !== Infinity
+  }
+
+  // First physical contact in this frame; homing priority does not override occlusion.
+  hitTime(ob) {
     const M = Config.MISSILE
     // [v1.5.0] isBoss 并入中心盒分支：Boss 与 Monster 同为"左缘 x + 中心 y"约定；
     // 走管道分支会用 topHeight/bottomY 间隙判定导致永远打不中本体（管道分支是"打管身避间隙"语义）
     if (ob.type === 'monster' || ob.isBoss || ob.isMechanic) {
-      return MathUtil.projectileHitTime(this,ob,M.WIDTH/2,M.HEIGHT/2) !== Infinity
+      return MathUtil.projectileHitTime(this,ob,M.WIDTH/2,M.HEIGHT/2)
     }
     // 管道：弹点进入上管或下管区域即命中
-    return [{x:ob.x,y:0,width:ob.width,height:ob.topHeight},
+    return Math.min(...[{x:ob.x,y:0,width:ob.width,height:ob.topHeight},
       {x:ob.x,y:ob.bottomY,width:ob.width,height:ob.groundY-ob.bottomY}]
-      .some(box=>MathUtil.sweptBoxTime(this,ob,box,M.WIDTH/2,M.HEIGHT/2)!==Infinity)
+      .map(box=>MathUtil.sweptBoxTime(this,ob,box,M.WIDTH/2,M.HEIGHT/2)))
   }
 
   /**
