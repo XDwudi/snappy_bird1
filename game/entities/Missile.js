@@ -10,6 +10,7 @@ const Art=require('../art/Entities')
  */
 
 const Config = require('../config/GameConfig.js')
+const MathUtil = require('../core/MathUtil.js')
 
 class Missile {
   /**
@@ -59,6 +60,7 @@ class Missile {
     this.trail.push({ x: this.x, y: this.y })
     if (this.trail.length > M.TRAIL_LENGTH) this.trail.shift()
 
+    this.previousX = this.x; this.previousY = this.y
     this.x += Math.cos(this.angle) * speed
     this.y += Math.sin(this.angle) * speed
     this._flamePhase += 0.6
@@ -92,12 +94,12 @@ class Missile {
     // [v1.5.0] isBoss 并入中心盒分支：Boss 与 Monster 同为"左缘 x + 中心 y"约定；
     // 走管道分支会用 topHeight/bottomY 间隙判定导致永远打不中本体（管道分支是"打管身避间隙"语义）
     if (ob.type === 'monster' || ob.isBoss || ob.isMechanic) {
-      return Math.abs(this.x - (ob.x + ob.width / 2)) < ob.width / 2 + M.WIDTH / 2 &&
-             Math.abs(this.y - ob.y) < ob.height / 2 + M.HEIGHT / 2
+      return MathUtil.projectileHitTime(this,ob,M.WIDTH/2,M.HEIGHT/2) !== Infinity
     }
     // 管道：弹点进入上管或下管区域即命中
-    if (this.x + M.WIDTH / 2 < ob.x || this.x - M.WIDTH / 2 > ob.x + ob.width) return false
-    return this.y < ob.topHeight || this.y > ob.bottomY
+    return [{x:ob.x,y:0,width:ob.width,height:ob.topHeight},
+      {x:ob.x,y:ob.bottomY,width:ob.width,height:ob.groundY-ob.bottomY}]
+      .some(box=>MathUtil.sweptBoxTime(this,ob,box,M.WIDTH/2,M.HEIGHT/2)!==Infinity)
   }
 
   /**

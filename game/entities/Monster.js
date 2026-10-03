@@ -66,6 +66,16 @@ class Monster extends Obstacle {
     this.bottomY = this.y + this.height / 2
   }
 
+  // Offensive hitbox follows visible body/wing extents, separately from contact damage.
+  getProjectileBounds() {
+    const bat = this.monsterType === 'bat'
+    const width = bat ? this.width * 1.35 : this.width
+    const top = bat ? this.height * .63 : this.height / 2
+    const bottom = bat ? top : this.width * .6
+    return { x: this.x + (this.width - width) / 2, y: this.y - top,
+      width, height: top + bottom }
+  }
+
   /**
    * 更新（覆盖基类模板方法，额外接收小鸟用于追踪）
    * @param {number} speed - 世界滚动速度

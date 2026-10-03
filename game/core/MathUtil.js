@@ -104,6 +104,41 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
   return distance(x1, y1, x2, y2) < r1 + r2
 }
 
+// Sweep the projectile against the target's relative movement, not just its endpoint.
+// Returns entry time in [0,1], or Infinity. Player-contact boxes are unchanged.
+function projectileHitTime(shot, target, halfWidth, halfHeight) {
+  const box = target.getProjectileBounds ? target.getProjectileBounds() : {
+    x: target.x, y: target.y - target.height / 2,
+    width: target.width, height: target.height
+  }
+  return sweptBoxTime(shot, target, box, halfWidth, halfHeight)
+}
+
+function sweptBoxTime(shot, target, box, halfWidth, halfHeight) {
+  const oldX = shot.previousX == null ? shot.x : shot.previousX
+  const oldY = shot.previousY == null ? shot.y : shot.previousY
+  const moveX = target._projectileX == null ? 0 : target.x - target._projectileX
+  const moveY = target._projectileY == null ? 0 : target.y - target._projectileY
+  const start = [oldX + moveX, oldY + moveY]
+  const end = [shot.x, shot.y]
+  const low = [box.x - halfWidth, box.y - halfHeight]
+  const high = [box.x + box.width + halfWidth, box.y + box.height + halfHeight]
+  let enter = 0, leave = 1
+  for (let axis = 0; axis < 2; axis++) {
+    const delta = end[axis] - start[axis]
+    if (Math.abs(delta) < 1e-9) {
+      if (start[axis] < low[axis] || start[axis] > high[axis]) return Infinity
+    } else {
+      const a = (low[axis] - start[axis]) / delta
+      const b = (high[axis] - start[axis]) / delta
+      enter = Math.max(enter, Math.min(a, b))
+      leave = Math.min(leave, Math.max(a, b))
+      if (enter > leave) return Infinity
+    }
+  }
+  return enter
+}
+
 module.exports = {
   aabbCollision,
   centerToRect,
@@ -112,5 +147,7 @@ module.exports = {
   lerp,
   clamp,
   distance,
-  circleCollision
+  circleCollision,
+  projectileHitTime,
+  sweptBoxTime
 }

@@ -708,6 +708,12 @@ class Game {
     // 主动技能预判
     this._checkActiveAbilities()
 
+    // Snapshot once per live frame, including frozen targets (no stale movement sweep).
+    for (const target of this.pipes.concat(this.combat.targets())) {
+      target._projectileX = target.x
+      target._projectileY = target.y
+    }
+
     // 管道更新与碰撞
     for (let i = this.pipes.length - 1; i >= 0; i--) {
       const pipe = this.pipes[i]

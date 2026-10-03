@@ -1,6 +1,7 @@
 const Art=require('../art/Entities')
 // 新武器独立计时/有界实体池，不改变拍翅物理或旧导弹伤害链。
 const Config = require('../config/GameConfig.js')
+const MathUtil = require('../core/MathUtil.js')
 class CombatSystem {
   constructor(game) {
     this.game = game
@@ -78,12 +79,18 @@ class CombatSystem {
           s.angle+=Math.max(-0.05,Math.min(0.05,delta))
         }
       }
+      s.previousX = s.x; s.previousY = s.y
       s.x += Math.cos(s.angle) * Config.COMBAT.BLADE_SPEED
       s.y += Math.sin(s.angle) * Config.COMBAT.BLADE_SPEED
       s.life++
       const boss = g.boss
-      const hit=this.targets().find(m=>!s.hits.has(m) && this.hit(s,m))
-      if (hit) {
+      const contacts=this.targets().filter(m=>!s.hits.has(m)).map(target=>({target,
+        time:MathUtil.projectileHitTime(s,target,5,4)})).filter(c=>c.time!==Infinity).sort((a,b)=>a.time-b.time)
+      let hit = null
+      for (const contact of contacts) {
+        if (s.pierce <= 0 || (g._bossClearMode && boss && boss.hp <= 0)) break
+        hit = contact.target
+        if (hit.hp <= 0) continue
         s.hits.add(hit)
         this.damageTarget(hit,hit.isBoss?s.bossDamage:s.damage,s.source)
         if (s.source === 'frost' && !hit.isBoss) hit.frostFrames=120
@@ -179,9 +186,7 @@ class CombatSystem {
     }
   }
   hit(s, target) {
-    // 每帧8px，命中扩展5px，避免穿过细小怪物。
-    return s.x + 5 >= target.x && s.x - 5 <= target.x + target.width &&
-      s.y + 4 >= target.topHeight && s.y - 4 <= target.bottomY
+    return MathUtil.projectileHitTime(s,target,5,4) !== Infinity
   }
   render(ctx) {
     Art.combat(ctx, this)

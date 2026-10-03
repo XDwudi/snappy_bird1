@@ -13,6 +13,10 @@ class EliteMonster extends Monster {
     this.hint={gunship:'躲开瞄准弹，反击炮艇',stormcaller:'优先击杀，驱散叠加天气',prism:'避开交叉弹，反击菱形核心',bomber:'离开孢雷圆圈，反击水母'}[this.eliteKind]
     this.width=46;this.height=38;this.hp=opts.eliteHp || [6,12,24,42,66,96][Math.min(5,this.tier)];this.maxHp=this.hp
     this.shotTimer=0;this.stayFrames=720+this.tier*60;this.retreating=false
+    this._syncBox()
+  }
+  getProjectileBounds() {
+    return { x:this.x+this.width/2-31,y:this.y-30,width:62,height:60 }
   }
   update(speed,bird,scale=1) {
     this.age+=scale;this.phase+=.05*scale;if(this.hitFlash>0)this.hitFlash--

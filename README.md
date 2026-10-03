@@ -23,6 +23,8 @@ Flappy Bird单指飞行 + roguelike成长的微信小游戏，CommonJS / Canvas 
 - 无尽两分钟后压缩回血/回盾/无敌时间，五分钟后加速增压；不再反复回满血。5–20分钟仍需手机验收。
 - 普通怪靠近管道出口；精英包括炮艇、天气灵、棱镜哨兵、孢雷水母，按章节与无尽时间成长。普通生命红心、临时生命黄心，剩1红心显示危险边框。
 
+1.8.5补充修复：子弹按整段相对运动轨迹判定命中，普通怪/精英受弹范围与可见轮廓对齐；详见[弹丸命中修复](docs/iterations/修复_v1.8.5_弹丸命中.md)。
+
 ## 验证
 
 ```sh
@@ -34,6 +36,7 @@ node test/test_v182.js
 node test/test_v182_balance.js
 node test/test_v183.js
 node test/test_v184.js
+node test/test_projectile_hits.js
 node test/sim_v184.js 64
 node test/probe_v184.js
 node scripts/check_package.js
@@ -42,7 +45,7 @@ node test/sim_v182_balance.js boss 4
 node test/sim_v182_balance.js endless 8
 ```
 
-142项回归通过（130既有＋5布局＋7视觉/反馈）。有`@napi-rs/canvas`环境时另运行`test/test_ui_layout.js`和`test/test_v185.js`。1.8.4的自然成长模拟改前/后各192局，以及45套相同装备的Boss对照。有限观察与反应模型未用真人数据校准，不能代表真人胜率；后期样本较少。实际Canvas检查Boss、破根进展、短屏指引与卡面。
+152项回归通过（130既有＋5布局＋7视觉/反馈＋10弹丸命中）。有`@napi-rs/canvas`环境时另运行`test/test_ui_layout.js`和`test/test_v185.js`。1.8.4的自然成长模拟改前/后各192局，以及45套相同装备的Boss对照。有限观察与反应模型未用真人数据校准，不能代表真人胜率；后期样本较少。实际Canvas检查Boss、破根进展、短屏指引与卡面。
 
 ## 交接
 
