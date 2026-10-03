@@ -260,13 +260,15 @@ class WeatherSystem {
   /**
    * 渲染所有活跃效果
    */
-  render(ctx, screenW, screenH, gameCtx) {
+  render(ctx, screenW, screenH, gameCtx, layer) {
     for (const effect of this.activeEffects) {
+      if (layer === 'ambient' && effect.type === 'hail') continue
+      if (layer === 'hazards' && effect.type !== 'hail') continue
       effect.render(ctx, screenW, screenH, gameCtx)
     }
 
     // 渲染残留雨效果（干燥中的粒子）
-    if (this.rainResidual) {
+    if (this.rainResidual && layer !== 'hazards') {
       this.rainResidual.render(ctx, screenW, screenH, gameCtx)
     }
   }

@@ -5,8 +5,11 @@ function bird(c,b,layers){
  if(b.invincibleBlink>0&&Math.floor(b.invincibleBlink/4)%2===0)c.globalAlpha=.55
  if(!A.draw(c,'bird'+b.wingFrame,-19,-18,38,36))fallback(c,0,0,32,26,C.gold)
  c.restore()
- if(layers>0){const r=b.width/2*b.collisionScale+6;P.ring(c,b.x,b.y,r,C.ink,1);P.ring(c,b.x,b.y,r+2,C.ice,.9)
-  for(let i=0;i<Math.min(layers,8);i++){const x=b.x+(i-(Math.min(layers,8)-1)/2)*5;c.fillStyle=C.ice;c.fillRect(Math.round(x)-1,Math.round(b.y+r+5),3,3)}
+ // One complete outlined circle per real shield layer (maximum currently 7).
+ // No filled halo: the bird and projectiles remain visible through every layer.
+ if(layers>0){c.save();const r=b.width/2*b.collisionScale+6
+  for(let i=0;i<layers;i++){c.beginPath();c.arc(b.x,b.y,r+i*6,0,Math.PI*2);c.strokeStyle=C.ink;c.lineWidth=3.5;c.stroke();c.strokeStyle=i%2?C.paper:C.ice;c.lineWidth=1.8;c.stroke()}
+  c.restore()
  }
 }
 function monster(c,m){
@@ -34,7 +37,7 @@ function elite(c,m){
  if(m.eliteKind==='bomber')for(let k=0;k<3;k++){c.fillStyle=C.green;c.globalAlpha=.5;c.fillRect(Math.round(x-15+k*14),Math.round(y+32+(phase*5+k*6)%13),2,2);c.globalAlpha=1}
  P.text(c,m.retreating?'撤离':m.name,x,y-40,10,C.paper,'center',true)
  P.bar(c,x-25,y+36,50,8,m.hp/m.maxHp,C.gold)
- P.ring(c,x,y,35,C.gold,.45,Math.max(0,1-m.age/m.stayFrames))
+ P.bar(c,x-25,y+46,50,6,Math.max(0,1-m.age/m.stayFrames),C.muted)
 }
 function bossBody(c,b){
  // Match the original collision footprint; limbs are decorative overscan only.
@@ -59,21 +62,36 @@ function boss(c,b){
  if(b.phase2Flash>0){c.save();c.globalAlpha=b.phase2Flash/Config.BOSS.PHASE2_FLASH_FRAMES*.25;P.brackets(c,5,5,b.screenW-10,b.screenH-10,C.red);c.restore()}
 }
 function charge(c,b){const y=b.chargeY,h=b.height;c.save();c.fillStyle=C.red;c.globalAlpha=.13;c.fillRect(0,y-h/2,b.screenW,h);c.globalAlpha=1;P.path(c,[[0,y-h/2],[b.screenW,y-h/2]],C.red,2);P.path(c,[[0,y+h/2],[b.screenW,y+h/2]],C.red,2);for(let x=16;x<b.screenW;x+=28)P.path(c,[[x+5,y-5],[x,y],[x+5,y+5]],C.gold,2);c.restore()}
-function item(c,o){const r=o.radius*(1+Math.sin(o.pulsePhase)*.05);c.save();P.ring(c,o.x,o.y,r+5,C.paper,.55,.75,o.pulsePhase*.2);I.draw(c,o.type,o.x,o.y,r*2.5);P.spark(c,o.x+r+3,o.y-r,2,C.gold);c.restore()}
+const itemLabels={missile:'导弹',health_pack:'回血',shield_pack:'护盾',exp_pack:'经验',speed_pack:'减速'}
+function item(c,o){
+ const r=o.radius*(1+Math.sin(o.pulsePhase)*.05);c.save()
+ // A solid pickup frame separates helpful items from unframed hostile shots.
+ P.box(c,o.x-r-5,o.y-r-5,r*2+10,r*2+10,C.panel,(I.spec[o.type]||I.spec.star).color)
+ I.draw(c,o.type,o.x,o.y,28)
+ const label=itemLabels[o.type];if(label){c.font='bold 9px sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=3;c.strokeStyle=C.ink;c.fillStyle=C.paper;c.strokeText(label,o.x,o.y+r+11);c.fillText(label,o.x,o.y+r+11)}
+ c.restore()
+}
 function missile(c,m){c.save();for(let i=0;i<m.trail.length;i++){c.globalAlpha=(i+1)/m.trail.length*.5;const p=m.trail[i];c.fillStyle=i%2?C.gold:C.paper;c.fillRect(Math.round(p.x)-1,Math.round(p.y)-1,3,3)}c.globalAlpha=1;c.translate(Math.round(m.x),Math.round(m.y));c.rotate(m.angle)
  c.fillStyle=C.ink;c.fillRect(-9,-4,18,8);c.fillStyle=C.paper;c.fillRect(-7,-2,12,4);c.fillStyle=C.red;c.fillRect(5,-3,5,6);c.fillRect(10,-1,2,2);c.fillRect(-9,-6,4,3);c.fillRect(-9,3,4,3);c.fillStyle=C.gold;c.fillRect(-13-Math.floor(Math.sin(m._flamePhase)*2),-2,5,4);c.restore()}
 function projectile(c,o,ice){
  c.save();for(let i=0;i<(o.trail||[]).length;i++){const t=o.trail[i];c.globalAlpha=.1+i*.05;c.fillStyle=ice?C.ice:C.gold;c.fillRect(Math.round(t.x)-1,Math.round(t.y)-1,3,3)}c.globalAlpha=1
  const r=o.radius;c.translate(Math.round(o.x),Math.round(o.y));c.rotate(ice?o.rotation:o.angle||0)
- c.fillStyle=C.ink;c.fillRect(-r,-r+2,r*2,r*2-4);c.fillRect(-r+2,-r,r*2-4,r*2)
- c.fillStyle=ice?C.ice:o.color||C.red;c.fillRect(-r+2,-r+2,Math.max(2,r*2-4),Math.max(2,r*2-4));c.fillStyle=C.paper;c.fillRect(-r+2,-r+2,3,3);c.restore()
+ if(ice){
+  const pts=[[-r/2,-r],[r/2,-r],[r,-r/2],[r,r/2],[r/2,r],[-r/2,r],[-r,r/2],[-r,-r/2],[-r/2,-r]]
+  c.beginPath();pts.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.fillStyle=C.ice;c.fill();c.strokeStyle=C.ink;c.lineWidth=1.5;c.stroke();P.path(c,[[-r/2,-r/2],[0,0],[r/2,-r/2]],C.paper,1.5)
+ }else{
+  // Spiked hostile pellet, visibly unlike the white feather/arrow fired by the player.
+  const pts=[[r,0],[r*.35,r*.35],[0,r],[-r*.35,r*.35],[-r,0],[-r*.35,-r*.35],[0,-r],[r*.35,-r*.35],[r,0]]
+  c.beginPath();pts.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.fillStyle=o.piercing?C.purple:o.color||C.red;c.fill();c.strokeStyle=C.ink;c.lineWidth=2;c.stroke();c.fillStyle=C.paper;c.fillRect(-1,-1,2,2)
+ }
+ c.restore()
 }
 function hazard(c,o){
  if(o.telegraphFrames!=null&&o.age<o.warn-o.telegraphFrames)return
  const warning=o.age<o.warn,color=o.piercing?C.purple:warning?C.gold:o.color||C.red
  c.save()
  const band=(x,y,w,h)=>{if(h<=0||w<=0)return;c.fillStyle=color;c.globalAlpha=warning? .1:.65;c.fillRect(x,y,w,h);c.globalAlpha=1;P.path(c,[[x,y],[x+w,y],[x+w,y+h],[x,y+h],[x,y]],color,2)
-  c.save();c.beginPath();c.rect(x,y,w,h);c.clip();c.globalAlpha=warning? .45:.3;for(let k=x-h;k<x+w;k+=20)P.path(c,[[k,y],[k+h,y+h]],color,2);c.restore()}
+  c.save();c.beginPath();c.rect(x,y,w,h);c.clip();c.globalAlpha=warning? .45:.3;for(let k=x-h;k<x+w;k+=20){P.path(c,[[k,y],[k+h,y+h]],color,2);if(o.piercing)P.path(c,[[k+h,y],[k,y+h]],color,2)}c.restore()}
  if(o.kind==='gate'){
   if(warning){band(0,130,o.screenW,Math.max(0,o.topHeight-130));band(0,o.bottomY,o.screenW,o.groundY-o.bottomY);P.brackets(c,3,o.topHeight,o.screenW-6,o.gap,C.green)}
   else{band(o.x,0,o.width,o.topHeight);band(o.x,o.bottomY,o.width,o.groundY-o.bottomY);P.path(c,[[o.x,o.topHeight],[o.x+o.width,o.topHeight]],C.paper,3);P.path(c,[[o.x,o.bottomY],[o.x+o.width,o.bottomY]],C.paper,3)}
@@ -90,8 +108,8 @@ function mechanics(c,m,birdX){
  const b=m.boss,t=b.variant.theme;if(['entering','dying','leaving'].includes(b.state))return
  c.save()
  for(const n of m.nodes)if(n.hp>0){const x=n.x+15,y=n.y,active=n.kind!=='relay'||n.index===m.activeNode
-  if(n.kind==='root'){P.path(c,[[x,y],[b.x-8,y],[b.x+b.width/2,b.y]],'#597f61',3);P.box(c,x-13,y-13,26,26,'#84633f','#c69d61');I.draw(c,'seed_bolt',x,y,23)}
-  else if(n.kind==='cocoon'){P.box(c,x-11,y-15,22,30,'#645477',C.purple);for(let j=-8;j<=8;j+=8)P.path(c,[[x-8,y+j],[x+8,y+j+4]],'#ba9dc7',2);P.ring(c,x,y,21,C.purple,.9,n.age/420)}
+  if(n.kind==='root'){P.path(c,[[x,y],[b.x-8,y],[b.x+b.width/2,b.y]],'#597f61',3);I.draw(c,'root',x,y,34)}
+  else if(n.kind==='cocoon'){c.beginPath();c.ellipse(x,y,11,15,0,0,Math.PI*2);c.fillStyle='#645477';c.fill();c.strokeStyle=C.purple;c.lineWidth=2;c.stroke();for(let j=-8;j<=8;j+=8)P.path(c,[[x-8,y+j],[x+8,y+j+4]],'#ba9dc7',2);P.bar(c,x-12,y+19,24,6,n.age/420,C.purple)}
   else{P.box(c,x-13,y-13,26,26,active?'#497b89':'#354754',active?C.ice:C.edge);P.text(c,n.index+1,x,y,15,active?C.paper:C.muted,'center',true)}
   if(active)P.brackets(c,x-18,y-19,36,38,n.kind==='cocoon'?C.purple:C.green)
   P.bar(c,x-15,y-27,30,6,n.hp/n.maxHp,C.green)
@@ -101,12 +119,20 @@ function mechanics(c,m,birdX){
   if(!m.weak){const half=t==='desert'?34:48;c.fillStyle=C.green;c.globalAlpha=.08;c.fillRect(birdX-28,y-half,56,half*2);c.globalAlpha=1;P.brackets(c,birdX-28,y-half,56,half*2,C.green)
    P.bar(c,birdX-24,y+half+4,48,7,t==='desert'?1:m.zoneTime/45,C.green);P.text(c,t==='desert'?'诱撞':t==='glacier'?'蓄热':'开阀',birdX,y-half-9,11,C.paper,'center',true)}
   if(t==='desert'){P.box(c,b.screenW*.52,y-25,18,50,'#977853',C.gold);P.path(c,[[b.screenW*.52+6,y-18],[b.screenW*.52+11,y],[b.screenW*.52+5,y+15]],C.ink,2)}
-  else{I.draw(c,t==='glacier'?'flame':'node',b.x-10,y,20);for(let i=0;i<3;i++)P.box(c,b.x+i*12,b.y+b.height/2+10,9,8,i<m.progress?C.gold:C.panel,C.edge)}
+  else{I.draw(c,t==='glacier'?'flame':'valve',b.x-10,y,20);for(let i=0;i<3;i++)P.box(c,b.x+i*12,b.y+b.height/2+10,9,8,i<m.progress?C.gold:C.panel,C.edge)}
  }
  c.restore()
 }
 function combat(c,s){const b=s.game.bird;c.save();for(const shot of s.shots){c.save();c.translate(Math.round(shot.x),Math.round(shot.y));c.rotate(shot.angle);const color=({seed:C.green,sand:C.gold,echo:C.purple,frost:C.ice,revenge:C.red})[shot.source]||C.paper;c.fillStyle=color;c.globalAlpha=.3;c.fillRect(-20,-1,18,2);c.globalAlpha=1
  if(shot.source==='seed'){I.draw(c,'seed_bolt',0,0,14)}else{P.path(c,[[-8,3],[-2,0],[9,0]],C.ink,5);P.path(c,[[-8,3],[-2,0],[9,0]],color,3);P.path(c,[[4,-3],[9,0],[4,3]],color,2)}c.restore()}
  if(s.flash)P.spark(c,b.x+b.width/2,b.y,Math.max(2,s.flash/2),C.paper)
- const lv=s.level('orbit_guard');if(lv){const ready=s.guardCD<=0;P.ring(c,b.x,b.y,Config.COMBAT.GUARD_RADIUS,C.ice,ready? .8:.4,ready?1:1-s.guardCD/Config.COMBAT.GUARD_CD[lv-1]);if(ready)I.draw(c,'feather_blade',b.x+Math.cos(s.age*.06)*34,b.y+Math.sin(s.age*.06)*34,14)}c.restore()}
+ const lv=s.level('orbit_guard');if(lv){
+  const ready=s.guardCD<=0,angle=s.age*.06,r=Config.COMBAT.GUARD_RADIUS,x=b.x+Math.cos(angle)*r,y=b.y+Math.sin(angle)*r
+  // A moving blade and short gold wake mean interception, never another shield circle.
+  c.globalAlpha=ready?1:.35
+  if(ready){c.beginPath();c.arc(b.x,b.y,r,angle-.5,angle);c.strokeStyle=C.gold;c.lineWidth=2;c.stroke()}
+  I.draw(c,'feather_blade',x,y,18)
+  if(!ready)P.bar(c,x-8,y+10,16,6,1-s.guardCD/Config.COMBAT.GUARD_CD[lv-1],C.gold)
+ }c.restore()}
+
 module.exports={bird,monster,elite,bossBody,boss,charge,item,missile,projectile,hazard,mechanics,combat,pipe:W.pipe}

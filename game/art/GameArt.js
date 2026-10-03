@@ -1,4 +1,4 @@
-const A=require('./Assets'),P=require('./Pixel'),I=require('./Icons'),W=require('./World'),Config=require('../config/GameConfig'),C=P.C
+const A=require('./Assets'),P=require('./Pixel'),I=require('./Icons'),W=require('./World'),FX=require('./Effects'),Config=require('../config/GameConfig'),C=P.C
 function init(){A.init()}
 function heartHUD(g,x,y,size=12){
  const a=g.abilitySystem,c=g.ctx,cap=a.maxHp+Config.SHIELD.OVERDRIVE_TEMP_HP_CAP+a.blessingTempHpCapBonus,cols=Math.ceil(cap/2),width=Math.max(74,g.screenW*.5-42),step=Math.min(size+3,width/cols),s=Math.min(size,step-1)
@@ -20,10 +20,15 @@ function hud(g){
  g._artHeaderBottom=l.headerBottom
  c.save();P.box(c,0,0,w,l.headerBottom,C.panel,C.edge);heartHUD(g,12,top+2,11)
  fit(c,g.score,w*.52,top+10,w*.23,22,C.paper,'center',true)
+ fit(c,'护盾 '+a.shieldLayers+'/'+a.maxShieldLayers,12,top+30,w*.36,10,C.ice)
  fit(c,'Lv.'+e.level,w*.52,top+28,w*.23,10,C.gold,'center',true)
  let sx=w-12
  for(const s of [['echo_wing',a.featherShields],['phoenix',(a.owned.get('phoenix')||0)-a.phoenixUsed]])if(a.owned.get(s[0])){
-  P.text(c,'×'+s[1],sx,top+27,10,C.muted,'right');I.draw(c,s[0],sx-28,top+27,14);sx-=45
+  fit(c,(s[0]==='echo_wing'?'羽盾×':'复活×')+s[1],sx,top+27,44,9,C.muted,'right');sx-=46
+ }
+ if(!a.owned.get('echo_wing')&&!a.owned.get('phoenix')){
+  const rain=g.weatherSystem.activeEffects.find(v=>v.type==='rain')||g.weatherSystem.rainResidual
+  if(rain&&rain.rainLevel>0)fit(c,(rain.active?'积水 ':'残水 ')+Math.round(rain.rainLevel)+'%',w-12,top+27,w*.28,10,C.ice,'right')
  }
  P.bar(c,12,top+37,w-24,7,e.progress,C.green)
  if(boss)bossHP(g)
@@ -48,12 +53,12 @@ function footer(g){
  g._artDockTop=l.ground
  c.save();c.beginPath();c.rect(0,l.ground,w,Math.max(0,available));c.clip()
  P.box(c,0,l.ground,w,g.screenH-l.ground,C.panel,C.edge)
- const names={wind:'风',rain:'雨',hail:'雹'},status=g.weatherSystem.getActiveEffectInfo().map(v=>names[v.type]+v.remaining+'s')
- if(g.weatherSystem.tamedWeather)status.push('驯化'+names[g.weatherSystem.tamedWeather])
- if(a.hp===1)status.unshift('生命危险')
- if(g.feathers.some(f=>f.piercing&&f.age>=f.warn-(f.telegraphFrames==null?f.warn:f.telegraphFrames)))status.unshift('◆穿盾')
- if(a.owned.get('combo_heart')&&a.comboCount>0)status.push('连击 '+Math.floor(a.comboCount)+'/'+a.getStat('comboThreshold'))
+ const status=FX.weatherStatus(g)
+ if(a.hp===1&&!status.length)status.push('生命危险')
+ if(!b&&g.feathers.some(f=>f.piercing&&f.age>=f.warn-(f.telegraphFrames==null?f.warn:f.telegraphFrames)))status.unshift('◆穿盾躲避')
+ if(a.owned.get('combo_heart')&&a.comboCount>0&&status.join('').length<22)status.push('连击 '+Math.floor(a.comboCount)+'/'+a.getStat('comboThreshold'))
  const factions=a.getFactions().filter(f=>f.tier>0).map(f=>f.name+f.count).join(' · ')
+ const detail=FX.weatherDetail(g)
  let row=l.ground+9
  if(b){
   fit(c,b.getActionLabel(),w/2,row,w-20,10,b.piercingAttack?C.purple:C.paper,'center');row+=13
@@ -61,10 +66,11 @@ function footer(g){
  }else if(g.chapterSystem.endless){
   const m=g.chapterSystem.getMods()
   fit(c,'恢复 '+Math.round(100*m.recoveryRate)+'% · 补给 '+Math.round(m.renewalInterval/60)+'s · 破敌盾 '+Math.floor(g.combat.endlessCharge)+'/'+Math.ceil(20*m.pressure),w/2,row,w-20,9,C.ice,'center');row+=13
- }else{fit(c,factions||'穿越障碍 · 积累经验 · 选择能力',w/2,row,w-20,10,C.muted,'center');row+=13}
+ }else{fit(c,detail||factions||'穿越障碍 · 积累经验 · 选择能力',w/2,row,w-20,10,C.muted,'center');row+=13}
  if(status.length){fit(c,status.join(' · '),w/2,row,w-20,10,a.hp===1?C.red:C.ice,'center');row+=13}
  else if(b&&factions&&available>=67){fit(c,factions,w/2,row,w-20,9,C.muted,'center');row+=13}
  // On a short safe-area footer, combat guidance takes priority over passive inventory.
+ if(b&&detail&&row+5<=l.bottom-2){fit(c,detail,w/2,row,w-20,10,C.ice,'center');row+=13}
  const owned=a.getOwnedList(),iconH=22,iy=row-3
  g._artInventoryBounds=null
  if(owned.length&&iy+iconH<=l.bottom-2){

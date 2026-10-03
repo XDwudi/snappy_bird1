@@ -8,7 +8,7 @@
 const Campaign = require('./CampaignConfig.js')
 
 module.exports = {
-  VERSION: '1.8.4',
+  VERSION: '1.8.5',
   // ==================== 小鸟参数 ====================
   BIRD: {
     WIDTH: 34,              // 小鸟视觉宽度

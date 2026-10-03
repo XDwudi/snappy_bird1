@@ -1,0 +1,32 @@
+{
+  "scope": "Offline @napi-rs/canvas CPU render sample; 1x pixels; no WeChat/device FPS or startup claim",
+  "node": "v26.6.0",
+  "platform": "darwin",
+  "arch": "arm64",
+  "rows": [
+    {
+      "size": "320x568",
+      "samples": 120,
+      "medianMs": 0.7,
+      "p95Ms": 0.76,
+      "hazards": 80,
+      "effects": 80
+    },
+    {
+      "size": "375x667",
+      "samples": 120,
+      "medianMs": 0.7,
+      "p95Ms": 0.78,
+      "hazards": 80,
+      "effects": 80
+    },
+    {
+      "size": "390x844",
+      "samples": 120,
+      "medianMs": 0.69,
+      "p95Ms": 0.76,
+      "hazards": 80,
+      "effects": 80
+    }
+  ]
+}

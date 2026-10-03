@@ -9,7 +9,7 @@ const game=(w=375,h=667)=>{const g=new Game({},{},w,h,null);g.start();return g}
 const fight=(ch,h=667)=>{const g=game(375,h);g.chapterSystem.index=ch;g._spawnBoss();g.chapterSystem.startBossFight();g.boss.x=g.boss.homeX;g.boss._setState('roam');g.boss.update(g.bird);return g}
 const give=(g,id,lv)=>{for(let i=0;i<lv;i++)g.abilitySystem.selectAbility(id)}
 test('版本1.8.1；六Boss有18个不重复专属招式与六种机关',()=>{
- assert.equal(C.VERSION,'1.8.4') // 旧机制回归沿用当前版本
+ assert.equal(C.VERSION,'1.8.5') // 旧机制回归沿用当前版本
  const kinds=C.BOSS.VARIANTS.flatMap(b=>b.skills.map(s=>s.kind))
  assert.ok(kinds.filter(k=>kinds.filter(x=>x===k).length===1).length>=18)
  assert.equal(new Set(Array.from({length:6},(_,i)=>fight(i).boss.mechanics.label())).size,6)

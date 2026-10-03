@@ -7,7 +7,7 @@ const Game=require('../game/core/Game'),Art=require('../game/art/GameArt'),A=req
 const Monster=require('../game/entities/Monster')
 require('../game/systems/GameLogger').enabled=false
 const screens=[[320,568,20,0],[375,667,20,20],[390,844,47,34],[430,932,59,34]]
-const out=path.resolve(__dirname,'../docs/audits/v184-ui');fs.mkdirSync(out,{recursive:true})
+const out=path.resolve(__dirname,process.env.ART_OUTPUT||'../docs/audits/v184-ui');fs.mkdirSync(out,{recursive:true})
 let count=0
 function test(name,fn){fn();count++;console.log('✓ '+name)}
 function make([w,h,top,inset],chapter=0){const c=createCanvas(w,h),ctx=c.getContext('2d'),g=new Game(c,ctx,w,h,{top,bottom:h-inset});g.start();g.chapterSystem._applyNextChapter(chapter);g.chapterSystem._transition=null;g._spawnBoss();g.chapterSystem.startBossFight();g.boss.x=g.boss.homeX;g.boss._setState('roam');g.boss.mechanics.cycleStart();g.bird.y=280;return {c,ctx,g}}

@@ -17,6 +17,6 @@ async function main(){
   rows.push({size:w+'x'+h,samples:120,medianMs:+samples[60].toFixed(2),p95Ms:+samples[114].toFixed(2),hazards:g.feathers.length,effects:g.abilityEffects.length})
  }
  const result={scope:'Offline @napi-rs/canvas CPU render sample; 1x pixels; no WeChat/device FPS or startup claim',node:process.version,platform:process.platform,arch:process.arch,rows}
- fs.writeFileSync(path.resolve(__dirname,'../docs/audits/v183/render-timing.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2))
+ fs.writeFileSync(path.resolve(__dirname,process.env.ART_OUTPUT||'../docs/audits/v183/render-timing.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2))
 }
 main().catch(e=>{console.error(e);process.exitCode=1})

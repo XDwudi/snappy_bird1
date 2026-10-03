@@ -5,7 +5,7 @@ if(fs.existsSync(font))GlobalFonts.registerFromPath(font,'sans-serif')
 const Game=require('../game/core/Game'),R=require('../game/abilities/AbilityRegistry'),A=require('../game/art/Assets'),P=require('../game/art/Pixel'),I=require('../game/art/Icons')
 const Pipe=require('../game/entities/Pipe'),Item=require('../game/entities/Item'),Elite=require('../game/entities/EliteMonster'),Hazard=require('../game/entities/BossHazard')
 require('../game/systems/GameLogger').enabled=false
-const out=path.resolve(__dirname,'../docs/audits/v183');fs.mkdirSync(out,{recursive:true})
+const out=path.resolve(__dirname,process.env.ART_OUTPUT||'../docs/audits/v183');fs.mkdirSync(out,{recursive:true})
 function make(w=375,h=667){const c=createCanvas(w,h),g=new Game(c,c.getContext('2d'),w,h,null);g.start();g.score=128;g.expSystem.level=5;g.bird.y=h*.47;g.frameCount=180;g.gameTime=3600;return{c,g}}
 function save(c,name){fs.writeFileSync(path.join(out,name+'.png'),c.toBuffer('image/png'))}
 async function main(){

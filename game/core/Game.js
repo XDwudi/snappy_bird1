@@ -668,7 +668,7 @@ class Game {
     // [v1.2.1] 首次获得护盾教学提示（道具/能力/冰晶护体等所有来源统一覆盖，每局只提示一次）
     if (!this._shieldHintShown && this.abilitySystem.shieldLayers > 0) {
       this._shieldHintShown = true
-      this._addFloatingText(this.bird.x, this.bird.y - 45, '护盾可挡1次碰撞', '#3498db', 90)
+      this._addFloatingText(this.bird.x, this.bird.y - 45, '每圈护盾可挡1次碰撞', '#3498db', 90)
     }
 
     // [v1.2.0] 应用环境重力加成（雨效果）
@@ -2113,8 +2113,10 @@ class Game {
       }
       case 'shield_pack': {
         // [v1.1.5] 统一护盾：添加1层护盾（不超过最大层数）
-        this.abilitySystem.addShieldLayer(1)
-        this._addFloatingText(this.bird.x, this.bird.y - 30, '护盾+1!', '#3498db', 50)
+        const a=this.abilitySystem,before=a.shieldLayers,temp=a.tempHp
+        const gained=a.addShieldLayer(1)
+        const text=a.shieldLayers>before?'护盾+1 · 现'+a.shieldLayers+'层':a.tempHp>temp?'满盾转临时生命':gained===0&&a.shieldLayers<a.maxShieldLayers?'补给冷却中':'护盾已满'
+        this._addFloatingText(this.bird.x, this.bird.y - 30, text, '#a4deef', 50)
         break
       }
       case 'speed_pack': {
@@ -2264,7 +2266,7 @@ class Game {
         this.abilitySystem.invincibleFrames = 20
         this.shakeFrames = 4
         this.shakeIntensity = 2
-        this._addFloatingText(this.bird.x, this.bird.y - 25, '弹开!', '#3498db', 35)
+        this._addFloatingText(this.bird.x, this.bird.y - 25, '弹开 · 剩'+this.abilitySystem.shieldLayers+'层盾', '#3498db', 35)
         Logger.info('Collision', '弹力护盾弹开', { shieldLayers: this.abilitySystem.shieldLayers })
       } else {
         // 普通护盾抵挡
@@ -2272,6 +2274,7 @@ class Game {
         this.abilitySystem.invincibleFrames = 60
         this.shakeFrames = 6
         this.shakeIntensity = 3
+        this._addFloatingText(this.bird.x, this.bird.y-30, '护盾抵挡 · 剩'+this.abilitySystem.shieldLayers+'层', '#a4deef', 40)
         Logger.info('Collision', '护盾抵挡', { shieldLayers: this.abilitySystem.shieldLayers })
       }
       return false
@@ -2500,6 +2503,11 @@ class Game {
     this._drawHUD()
     ctx.restore()
 
+    const weatherGameCtx = this._buildGameCtx()
+    weatherGameCtx.artTop = Art.layout(this).headerBottom
+    weatherGameCtx.artFrame = this.frameCount
+    this.weatherSystem.render(ctx, this.screenW, this.screenH, weatherGameCtx, 'ambient')
+
     for (const monster of this.monsters) monster.render(ctx)   // [v1.3.0]
     if (this.boss) this.boss.render(ctx)                       // [v1.5.0] Boss 本体（含冲锋预警/阶段变色）
     for (const f of this.feathers) f.render(ctx)               // [v1.5.0] Boss 羽刃弹幕
@@ -2515,9 +2523,8 @@ class Game {
     // [v1.2.2] N7 能力内联特效（自愈十字/护盾环/二段跳尾迹）
     this._drawAbilityEffects()
 
-    // [v1.2.0] 环境效果渲染（在障碍物和小鸟之间）
-    const weatherGameCtx = this._buildGameCtx()
-    this.weatherSystem.render(ctx, this.screenW, this.screenH, weatherGameCtx)
+    // Physical hail remains in the foreground; ambient rain/wind are below targets.
+    this.weatherSystem.render(ctx, this.screenW, this.screenH, weatherGameCtx, 'hazards')
 
     // [v1.1.5] 统一护盾：传递护盾层数给Bird渲染
     const shieldLayers = this.abilitySystem.shieldLayers

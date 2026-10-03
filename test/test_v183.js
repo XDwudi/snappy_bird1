@@ -9,7 +9,7 @@ function game(w=375,h=667,safe=null){const c=context(),g=new Game({},c,w,h,safe)
 function choices(g,count){g.state='upgrading';g._currentChoices=R.getAll().slice(0,count);g.render()}
 function state(g){return JSON.stringify({bird:[g.bird.x,g.bird.y,g.bird.velocity,g.bird.collisionWidth,g.bird.collisionHeight],hp:[g.abilitySystem.hp,g.abilitySystem.tempHp,g.abilitySystem.shieldLayers],owned:[...g.abilitySystem.owned],time:[g.gameTime,g.bossFightFrames,g.frameCount],xp:[g.expSystem.level,g.expSystem.exp],boss:g.boss&&[g.boss.x,g.boss.y,g.boss.hp,g.boss.state,g.boss.stateT,g.boss.attackIndex],hazards:g.feathers.map(f=>[f.x,f.y,f.age,f.warn,f.radius]),pipes:g.pipes.map(p=>[p.x,p.topHeight,p.bottomY,p.gap])})}
 test('版本与运行包：全部四张PNG在项目中，RGBA解码预算24MiB，运行文件低于7MiB（给上传限制预留空间）',()=>{
- assert.equal(C.VERSION,'1.8.4');let total=0,decoded=0
+ assert.equal(C.VERSION,'1.8.5');let total=0,decoded=0
  function size(dir){for(const e of fs.readdirSync(dir,{withFileTypes:true})){const f=path.join(dir,e.name);if(e.isDirectory())size(f);else total+=fs.statSync(f).size}}
  size(path.join(__dirname,'../art-extra'));size(path.join(__dirname,'../game'));size(path.join(__dirname,'../utils'));total+=fs.statSync(path.join(__dirname,'../game.js')).size
  for(const f of Object.values(A.files)){const b=fs.readFileSync(path.join(__dirname,'..',f));assert.equal(b.toString('ascii',1,4),'PNG');decoded+=b.readUInt32BE(16)*b.readUInt32BE(20)*4}
@@ -35,9 +35,9 @@ test('角色与Boss裁切均在图集内，三帧小鸟/四精英/六Boss齐全'
  assert.equal(Object.keys(A.rects).length,14)
  for(const r of Object.values(A.rects)){const b=fs.readFileSync(path.join(__dirname,'..',A.files[r[0]]));assert.ok(r[1]>=0&&r[2]>=0&&r[3]>0&&r[4]>0);assert.ok(r[1]+r[3]<=b.readUInt32BE(16)&&r[2]+r[4]<=b.readUInt32BE(20))}
 })
-test('73张能力全部有专属图标映射和颜色，语义组合不重复',()=>{
- const seen=new Set();assert.equal(R.getAll().length,73)
- for(const d of R.getAll()){const s=I.spec[d.id];assert.ok(s&&s.color,d.id);const key=s.glyph+':'+s.mark;assert.ok(!seen.has(key),d.id);seen.add(key);I.draw(context(),d.id,20,20,24)}
+test('73张能力全部有明确图标映射和颜色，小图保留主轮廓，大图使用语义角标',()=>{
+ assert.equal(R.getAll().length,73)
+ for(const d of R.getAll()){const s=I.spec[d.id];assert.ok(s&&s.color,d.id);assert.ok(I.glyphs[s.glyph],d.id);if(s.badge)assert.ok(I.glyphs[s.badge],d.id);I.draw(context(),d.id,20,20,24)}
 })
 test('三屏全部73张卡的满级效果全文绘制，数值文案没有省略',()=>{
  for(const w of [320,375,430])for(const d of R.getAll()){const c=context(),level=Math.max(0,d.maxLevel-1),full=d.effectText(level+1),lines=P.lines(c,full,w-58,11);Art.card(c,{x:16,y:90,w:w-32,h:86+lines.length*15},d,level,{})
