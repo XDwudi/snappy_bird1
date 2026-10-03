@@ -1,4 +1,3 @@
-const Random=require('../core/Random')
 /**
  * 1.8.2 六章进度：管数/最低时间达标，或达到最长有效时间后迎战。
  * 剧情战败只重赛，不跳章；六章分别获胜（生存或击杀）后进入无尽。
@@ -147,7 +146,7 @@ class ChapterSystem {
       this.endlessFrames++
       if (this.endlessFrames % 60 === 0) this._deps.setSpawnMods(this.getMods())
       if (!this._bossActive && !this._bossIntro && this.endlessFrames >= this.nextBossAt) {
-        this.endlessBossIndex = Math.floor(Random.random() * Config.BOSS.VARIANTS.length)
+        this.endlessBossIndex = Math.floor(Math.random() * Config.BOSS.VARIANTS.length)
         this._triggerBossPoint('endless')
       }
     } else if (this._awaitingRematch && this.chapterTime >= this._bossReturnDeadline) {
@@ -203,7 +202,7 @@ class ChapterSystem {
       if (this.index + 1 < Config.CHAPTERS.LIST.length) {
         this._startTransition()
       } else if (this.cleared.size === Config.CHAPTERS.LIST.length) {
-        // v1.9.0: explicit campaign-complete choice owns entry into endless.
+        this.enterEndless()
       }
     }
   }

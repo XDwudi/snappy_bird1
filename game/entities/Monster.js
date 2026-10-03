@@ -1,4 +1,3 @@
-const Random=require('../core/Random')
 const Art=require('../art/Entities')
 /**
  * Monster.js - 怪物障碍实体 [v1.3.0新增]
@@ -47,7 +46,7 @@ class Monster extends Obstacle {
     this.height = height
     this.y = y                          // 中心Y
     this.baseY = y                      // 蝙蝠正弦基准Y
-    this.phase = Random.random() * Math.PI * 2  // 正弦/扇翅相位
+    this.phase = Math.random() * Math.PI * 2  // 正弦/扇翅相位
     this._targetY = y                   // 浮游怪追踪目标Y（Game 每帧写入小鸟 y）
     // [v1.5.0] 章节移动参数覆写点（§4.4）；缺省取配置基准值，行为与 v1.4.0 完全一致
     this._trackSpeed = (opts && opts.trackSpeed) || Config.MONSTER.FLOATER.TRACK_SPEED

@@ -1,4 +1,3 @@
-const Random=require('./Random')
 /**
  * MathUtil.js - 数学工具函数
  * 
@@ -42,7 +41,7 @@ function centerToRect(cx, cy, w, h) {
  * @returns {number}
  */
 function randomRange(min, max) {
-  return min + Random.random() * (max - min)
+  return min + Math.random() * (max - min)
 }
 
 /**
@@ -52,7 +51,7 @@ function randomRange(min, max) {
  * @returns {number}
  */
 function randomInt(min, max) {
-  return Math.floor(min + Random.random() * (max - min + 1))
+  return Math.floor(min + Math.random() * (max - min + 1))
 }
 
 /**

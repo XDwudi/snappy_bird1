@@ -60,7 +60,7 @@ class Boss extends Obstacle {
     this.aimAngle = Math.PI
     this.wallCenter = this.baseY
     this.wallGap = B.WALL_GAP[0]
-    this._weaponGates = {};this._batchBudget={};this.damageLog={hits:0,attempted:0,applied:0,limited:0}
+    this._weaponGates = {}
     this._trail = []
     this._hitFlash = 0               // 受击白闪反馈（帧）
     this._hitGate = 0                // [v1.5.0 D21] 受击间隔门剩余帧（>0 时导弹命中不扣血，白闪照常）
@@ -86,7 +86,7 @@ class Boss extends Obstacle {
     if (this.phase2Flash > 0) this.phase2Flash--
     if (!['entering', 'dying', 'leaving'].includes(this.state)) {
       this.combatAge = combatFrames == null ? this.combatAge + 1 : combatFrames
-      if (this.hp < this.maxHp * Config.BOSS.PHASE2_HP_RATIO || this.combatAge >= this.survivalFrames * .55) this._enterPhase2()
+      if (this.hp < this.maxHp * Config.BOSS.PHASE2_HP_RATIO || this.combatAge >= this.survivalFrames * .35) this._enterPhase2()
     }
     if (this.state === 'entering') {
       const t = Math.min(1, this.stateT / B.INTRO_ENTER_FRAMES)
@@ -98,7 +98,6 @@ class Boss extends Obstacle {
       this.y += MathUtil.clamp(this.baseY + Math.sin(this.roamT * 0.025) * 80 - this.y, -2, 2)
       if (this.stateT >= this.variant.restFrames / Math.sqrt(this.power)) this._beginAttack(bird)
     } else if (this.state === 'windup') {
-      if(this.variant.theme==='desert'&&this.stateT<this.warnFrames-60){this.chargeY=MathUtil.clamp(bird.y,155,this.groundY-45)}
       const windupProgress = Math.min(1, this.stateT / this.warnFrames)
       this.y = this._windupStartY + (this.chargeY - this._windupStartY) * windupProgress
       this.x = this.homeX + Math.min(1, this.stateT / this.warnFrames) * 20
@@ -145,7 +144,6 @@ class Boss extends Obstacle {
       this.comboLength=this.comboQueue.length
       this.comboStep=0
     }
-    if(!chained&&this.variant.theme==='desert'&&this.combatAge-(this._lastLure||-480)>=480){this.comboQueue=this.phase===2?[4,4]:[4];this.comboLength=this.comboQueue.length;this._lastLure=this.combatAge}
     const idx=this.comboQueue.shift()
     this.skill=this.variant.skills[idx]
     this.action=this.skill.kind
@@ -169,18 +167,17 @@ class Boss extends Obstacle {
     if (this._deps.onPhase2) this._deps.onPhase2(this)
   }
 
-  takeDamage(n, source = 'missile', batch) {
-    if (['entering','dying','leaving'].includes(this.state)||this.hp<=0)return false
-    const damage=Math.max(1,Math.round((n+(this.state==='recover'?1:0))*this.mechanics.damageScale()))
-    // Each launch has a bounded budget; ordinary shots in later volleys never disappear into a 45-frame gate.
-    const key=source+':'+(batch==null?this.combatAge:batch),entry=this._batchBudget[key]||{used:0,age:this.combatAge}
-    const budget=source==='missile'?24:18,applied=Math.min(this.hp,damage,Math.max(0,budget-entry.used))
-    entry.used+=applied;this._batchBudget[key]=entry
-    for(const id of Object.keys(this._batchBudget))if(this.combatAge-this._batchBudget[id].age>240)delete this._batchBudget[id]
-    this.damageLog.hits++;this.damageLog.attempted+=damage;this.damageLog.applied+=applied;this.damageLog.limited+=damage-applied
-    this.hp-=applied;this._hitFlash=8
-    if(this.hp<this.maxHp*Config.BOSS.PHASE2_HP_RATIO&&this.hp>0)this._enterPhase2()
-    return this.hp<=0
+  takeDamage(n, source = 'missile') {
+    if (['entering', 'dying', 'leaving'].includes(this.state) || this.hp <= 0) return false
+    const gate = source === 'missile' ? this._hitGate : (this._weaponGates[source] || 0)
+    if (gate > 0) return false
+    const damage = Math.max(1, Math.round((n + (this.state === 'recover' ? 1 : 0)) * this.mechanics.damageScale()))
+    this.hp = Math.max(0, this.hp - damage)
+    this._hitFlash = 8
+    if (source === 'missile') this._hitGate = Config.BOSS.HIT_GATE_FRAMES
+    else this._weaponGates[source] = Config.BOSS.HIT_GATE_FRAMES
+    if (this.hp < this.maxHp * Config.BOSS.PHASE2_HP_RATIO && this.hp > 0) this._enterPhase2()
+    return this.hp <= 0
   }
 
   getActionLabel() {

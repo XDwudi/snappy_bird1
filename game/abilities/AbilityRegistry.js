@@ -1,4 +1,3 @@
-const Random=require('../core/Random')
 /**
  * AbilityRegistry.js - 能力注册表 [v1.1.3]
  *
@@ -108,7 +107,16 @@ class AbilityRegistry {
    * @returns {boolean} true=无依赖或前置已持有
    */
   _meetsPrerequisite(ability, owned, chapter = 1) {
-    return require('../config/BuildConfig').valid(ability, owned, chapter)
+    if ((ability.unlockChapter || 1) > chapter) return false
+    // 最后一章已没有后续章节入场事件，避免新抽到白板过章卡。
+    if (chapter >= Config.CHAPTERS.LIST.length && ['nomad','chapter_echo','chapter_master'].includes(ability.id)) return false
+    const weaponPool=['shadow_echo','venom_thread','storm_chain'].includes(ability.id)
+      ? Config.ABILITY.PROJECTILE_WEAPONS : Config.ABILITY.AUTO_WEAPONS
+    if (Config.ABILITY.WEAPON_PREREQUISITES.includes(ability.id) &&
+        !weaponPool.some(id => (owned.get(id) || 0) > 0)) return false
+    const prereq = Config.ABILITY.PREREQUISITES[ability.id]
+    if (!prereq) return true
+    return (owned.get(prereq) || 0) > 0
   }
 
   /**
@@ -148,7 +156,7 @@ class AbilityRegistry {
 
     for (let i = 0; i < count && pool.length > 0; i++) {
       const totalWeight = pool.reduce((sum, c) => sum + c.weight, 0)
-      let r = Random.random() * totalWeight
+      let r = Math.random() * totalWeight
 
       let pickedIndex = 0
       for (let j = 0; j < pool.length; j++) {
@@ -192,8 +200,8 @@ class AbilityRegistry {
       const rarePool = candidates.filter(c => isRarePlus(c.ability) && !resultIds[c.ability.id])
 
       if (rarePool.length > 0) {
-        const picked = rarePool[Math.floor(Random.random() * rarePool.length)].ability
-        const slot = Math.floor(Random.random() * result.length)
+        const picked = rarePool[Math.floor(Math.random() * rarePool.length)].ability
+        const slot = Math.floor(Math.random() * result.length)
         result[slot] = picked
         Logger.info('Ability', '软保底触发', { streak: this._noRareStreak, guaranteed: picked.id })
         this._noRareStreak = 0
@@ -228,7 +236,7 @@ class AbilityRegistry {
     }
     if (pool.length === 0) return null
     const totalWeight = pool.reduce((sum, c) => sum + c.weight, 0)
-    let r = Random.random() * totalWeight
+    let r = Math.random() * totalWeight
     for (const c of pool) {
       r -= c.weight
       if (r <= 0) return c.ability
@@ -259,7 +267,7 @@ class AbilityRegistry {
     }
     if (pool.length === 0) return null
     const totalWeight = pool.reduce((sum, c) => sum + c.weight, 0)
-    let r = Random.random() * totalWeight
+    let r = Math.random() * totalWeight
     for (const c of pool) {
       r -= c.weight
       if (r <= 0) return c.ability
@@ -291,7 +299,7 @@ class AbilityRegistry {
       }
       if (pool.length === 0) return null
       const totalWeight = pool.reduce((sum, c) => sum + c.weight, 0)
-      let r = Random.random() * totalWeight
+      let r = Math.random() * totalWeight
       let chosen = pool[pool.length - 1].ability
       for (const c of pool) {
         r -= c.weight

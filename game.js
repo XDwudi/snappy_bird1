@@ -49,14 +49,13 @@ game.onReady = function () {}
 // ===== 触摸事件 =====
 wx.onTouchStart(function (e) {
   const touch = e.touches[0]
-  if (!touch || e.touches.length!==1) {game.handleTouchCancel();return}
+  if (!touch) return
   // clientX/clientY 为 CSS 像素，与 ctx.scale 后的逻辑坐标一致
   game.handleTouchStart(touch.clientX, touch.clientY)
 })
 
 wx.onTouchMove(function (e) {
   const touch = e.touches[0]
-  if(e.touches.length!==1){game.handleTouchCancel();return}
   if (touch) game.handleTouchMove(touch.clientX, touch.clientY)
 })
 wx.onTouchEnd(function (e) {
@@ -64,9 +63,6 @@ wx.onTouchEnd(function (e) {
   if (touch) game.handleTouchEnd(touch.clientX, touch.clientY)
 })
 wx.onTouchCancel(function () { game.handleTouchCancel() })
-
-wx.onHide(function(){game.suspend()})
-wx.onShow(function(){game.resume()})
 
 // ===== 启动游戏循环 =====
 Logger.info('System', '游戏循环启动')

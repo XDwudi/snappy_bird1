@@ -1,4 +1,3 @@
-const Random=require('../core/Random')
 const FX=require('../art/Effects')
 /**
  * WindEffect.js - 风环境效果 [v1.2.0新增]
@@ -23,8 +22,8 @@ class WindEffect extends WeatherEffect {
 
   onTrigger(gameCtx) {
     super.onTrigger(gameCtx)
-    this.isVertical = Random.random() < 0.5
-    this.direction = Random.random() < 0.5 ? 1 : -1
+    this.isVertical = Math.random() < 0.5
+    this.direction = Math.random() < 0.5 ? 1 : -1
     this.duration = this.getDuration(gameCtx.gameTime, gameCtx)
     this.particles = []
   }

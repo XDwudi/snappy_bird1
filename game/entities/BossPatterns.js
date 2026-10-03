@@ -29,12 +29,11 @@ module.exports=function cast(boss,bird,skill) {
   switch(skill.kind) {
     // 1.8.1 专属招式：同一预警实体驱动实际轨迹，机关状态提供反击路线。
     case 'return_seed':
-      for(const dy of (boss.mechanics.nodes.some(n=>n.kind==='root'&&n.index===0&&n.hp<=0)?[0]:[-.30,0,.30]))bolt(boss.x,boss.y,angle+dy,speed*.75,{returnAt:55,life:170})
+      for(const dy of [-.30,0,.30])bolt(boss.x,boss.y,angle+dy,speed*.75,{returnAt:55,life:170})
       duration=175;break
     case 'vine_steps':
     case 'frost_steps': {
       const ys=skill.kind==='vine_steps'?[g-60,190,g-125]:[190,g-75,260]
-      if(skill.kind==='vine_steps'&&boss.mechanics.nodes.some(n=>n.kind==='root'&&n.index===1&&n.hp<=0))ys.splice(1)
       if(boss.phase===2)ys.push(skill.kind==='vine_steps'?210:g-115)
       ys.forEach((y,i)=>emit({kind:'beam',y,radius:20,warn:dangerWarn+i*78,life:32,piercing}))
       duration=172;break
@@ -91,7 +90,7 @@ module.exports=function cast(boss,bird,skill) {
       for(const y of [aim-65,aim+65])for(const offset of [-.1,.1])bolt(w-15,clamp(y,150,g-30),Math.PI+offset,speed)
       break
     case 'rail_switch':
-      for(let i=boss.mechanics.activeNode;i<3;i++)emit({kind:'column',x:bird.x,y:clamp(aim,250,g-125)+(i%2?-40:40),gap:140,radius:17,warn:dangerWarn+i*90,life:30,piercing})
+      for(let i=0;i<3;i++)emit({kind:'column',x:bird.x,y:clamp(aim,250,g-125)+(i%2?-40:40),gap:140,radius:17,warn:dangerWarn+i*90,life:30,piercing})
       duration=195;break
     case 'orbit_discharge':
       for(let i=0;i<7;i++){const a=Math.PI-.72+i*.24;bolt(w*.82,(g+130)/2,a,speed*.85,{warn:warn+i*10,radius:7})}
@@ -139,7 +138,7 @@ module.exports=function cast(boss,bird,skill) {
       duration=145;break
     case 'dash':
       boss.chargeY=aim;boss._windupStartY=boss.y;boss._setState('windup')
-      return boss.variant.theme==='desert'?180:warn
+      return warn
   }
   // 连协只在当前招式危险物完全退场后接续，增加密度不制造未预告交叉封路。
   boss.attackDuration=Math.max(duration,lastEnd-warn+2)

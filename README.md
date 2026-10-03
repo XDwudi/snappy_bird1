@@ -1,43 +1,56 @@
 # Snappy Bird
 
-Flappy Bird单指飞行＋roguelike构筑的微信小游戏，CommonJS / Canvas 2D，无npm运行依赖。
+Flappy Bird单指飞行 + roguelike成长的微信小游戏，CommonJS / Canvas 2D，无npm运行依赖。
 
-当前 **v1.9.0 构筑与玩法体验**（2026-10-03）：单局3组件＋6被动、六路线专精/进化、六Boss机关重做、章间调整与续局；升级采用“点选预览＋底部确认”，解决幸运六卡误触。[完整变更与验证](docs/iterations/迭代_v1.9.0_构筑与玩法体验.md)。手机体验验收及微信上传由用户手动完成。
+当前为 **1.8.6 审查修复**（2026-10-03）：修复v185-review确认的9项缺陷，覆盖危险区显示、胜利保护、召唤物清场、卡池、累计得分、残水、导弹命中顺序、冰雹无敌与补给提示。生机收割保留“冷却后下次击杀触发”，卡面已明确。[逐项修复与验证](docs/iterations/迭代_v1.8.6_审查修复.md)。手机验收及微信上传由用户手动完成。
 
 ## 运行
 
-微信开发者工具导入本目录，选择“小游戏”，使用自己的AppID。运行 `node scripts/prepare_wechat.js` 后重新打开项目，确保测试/文档不进入上传包；本机配置不入Git。主包约2.91MB、资源分包约3.82MB。
+在微信开发者工具中导入本目录，选择“小游戏”，使用自己的小游戏AppID。编译后点击拍翅，升级选卡。本机项目配置不入Git。此前Nightly工具已成功本地启动基础v1.8.4并响应点击；本次1.8.6已做离线Canvas验证，尚未在微信/手机复测；剩余工具日志与验证范围见[项目现状](docs/STATE.md)。
 
-点击拍翅；升级时上下滑动查看，点卡只预选，再点底部确认。每局2次重掷；Boss后可以继续、有限换装或保存退出，主页提供继续旅程。离开休息点后清除旧检查点，战斗过程不保存。
+首次导入或重新生成本地配置后，运行 `node scripts/prepare_wechat.js`，再关闭并重新打开项目。此脚本保留AppID及编译设置，将测试、文档和工具脚本排除出上传包，避免Node测试代码被微信上传编译器解析。上传由用户手动完成。
+
+同日已修复上传包超限：主包约 **2.87MB**，美术资源分包约 **3.82MB**。PNG尺寸、透明度与可见像素保持一致；重新打开微信项目使分包配置生效。
 
 ## 玩法
 
-- 73历史卡ID迁移为71张可获取卡＋管感/先知免费UI；一局最多3组件、6被动、1专精、2进化，不再无限收集全池或凑旧派系属性。
-- 六Boss考题：拆根减压、锁定诱撞、双卵抉择、跟随暖流、双阀进入、按序断路。可击杀或坚持到时限通关；六章结束主动选择结算或无尽。
-- 一次升级后至少6秒有效飞行，经验可积累等待；每Boss一次成长奖励，不连弹祝福。章间2次调整支持组件/被动同时替换、等额转移等级和处理失效进化。
-- 固定60Hz逻辑、后台暂停；保存原候选/随机状态/一次性资源。新最高分与旧规则历史分分开，本地战报解释本局构筑和死亡原因。
-- 生机收割沿用用户确认规则：冷却中达标保留计数，冷却结束后下一次击杀再治疗。
+- 拍翅不吃属性增幅；轻羽只减缓下落，顺风等成长转为火力节奏。20级后经验需求递增，天气卡减负与增益可以共存。
+
+- 六个Boss各六招及P2连协，并有拆根、诱撞、破卵、蓄热、开阀、按序断路六种破解方式。
+- 每章管数与最低时间达标，或达到最长时间即迎战。Boss可击杀或生存通关；剧情战败20管或35秒后再挑战，不跳章。
+- 73张卡随章节开放；同派系不同卡达到2/4张提供实际增益，卡面显示来源。
+- 六章全部通关后进入无尽：得分双倍、等级无限、随机Boss按当前难度增强，直至死亡。
+- 无尽两分钟后压缩回血/回盾/无敌时间，五分钟后加速增压；不再反复回满血。5–20分钟仍需手机验收。
+- 普通怪靠近管道出口；精英包括炮艇、天气灵、棱镜哨兵、孢雷水母，按章节与无尽时间成长。普通生命红心、临时生命黄心，剩1红心显示危险边框。
+
+1.8.5补充修复：子弹按整段相对运动轨迹判定命中，普通怪/精英受弹范围与可见轮廓对齐；详见[弹丸命中修复](docs/iterations/修复_v1.8.5_弹丸命中.md)。
 
 ## 验证
 
 ```sh
-node test/test_v190.js
-node test/test_lifecycle_v190.js
+node test/test_v160.js
+node test/test_v170.js
+node test/test_v180.js
+node test/test_v181.js
+node test/test_v182.js
+node test/test_v182_balance.js
+node test/test_v183.js
+node test/test_v184.js
 node test/test_projectile_hits.js
-node test/reachability_v190.js
-node test/matrix_v190.js
-node test/progression_v190.js
-node test/sim_v190.js 16 2000
+node test/test_v186.js
+node test/sim_v184.js 64
+node test/probe_v184.js
 node scripts/check_package.js
-# 本地有 @napi-rs/canvas 和中文字体时：
-node test/render_v190.js
+node test/probe_v182_balance.js
+node test/sim_v182_balance.js boss 4
+node test/sim_v182_balance.js endless 8
 ```
 
-74项逻辑、生命周期、轨迹、物理路径和多屏Canvas检查通过；108场Boss对照、12组完整成长探针、48局自然模型结果已归档。对照/成长探针屏蔽扣血，不能视为真人通关；自然模型最远第3章。手机性能、12人理解度和含无尽的真人P90≤30分钟尚未验收，未上传微信。旧版本测试留作历史规格，不适用于本版全部新规则。
+179项检查通过：既有152项、审查10项、新增14项流程回归与3项Canvas检查。有`@napi-rs/canvas`环境时另运行`test/test_ui_layout.js`、`test/test_v185.js`、`test/render_v186.js`以及`docs/audits/v185-review/reproduce.cjs`。旧视觉脚本可用`ART_OUTPUT=../docs/audits/v186/visual`指定本轮目录，避免覆盖历史截图。
+
+45个运行JS语法、上传候选包体检查通过；24局自然成长模拟执行完成、最远到第六章。有限反应模型未用真人数据校准，不能代表真人胜率或微信手机验证。修复前后结果、实际Canvas截图和复现命令见[1.8.6记录](docs/iterations/迭代_v1.8.6_审查修复.md)。
 
 ## 交接
-
-- [1.9.0实现、数值与验证](docs/iterations/迭代_v1.9.0_构筑与玩法体验.md) · [六Boss新机关](docs/audits/v190/six-bosses.png) · [幸运六卡确认](docs/audits/v190/selected-320.png)
 
 - [1.8.6审查逐项修复](docs/iterations/迭代_v1.8.6_审查修复.md) · [顶部危险区](docs/audits/v186/top-hazards.png) · [修订卡面](docs/audits/v186/clarified-cards.png)
 

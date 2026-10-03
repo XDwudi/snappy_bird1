@@ -1,4 +1,3 @@
-const Random=require('../core/Random')
 const FX=require('../art/Effects')
 /**
  * HailEffect.js - 冰雹环境效果 [v1.2.0新增]
@@ -92,10 +91,10 @@ class HailEffect extends WeatherEffect {
 
   _spawnHailstone(screenW) {
     const H = Config.WEATHER.HAIL
-    const speed = H.MIN_SPEED + Random.random() * (H.MAX_SPEED - H.MIN_SPEED)
-    const radius = H.MIN_RADIUS + Random.random() * (H.MAX_RADIUS - H.MIN_RADIUS)
+    const speed = H.MIN_SPEED + Math.random() * (H.MAX_SPEED - H.MIN_SPEED)
+    const radius = H.MIN_RADIUS + Math.random() * (H.MAX_RADIUS - H.MIN_RADIUS)
     this.hailstones.push(new Hailstone(
-      Random.random() * screenW,
+      Math.random() * screenW,
       -10,
       speed,
       radius
@@ -141,7 +140,7 @@ class HailEffect extends WeatherEffect {
     if (this.isTamed(gameCtx)) {
       this._tryConvertHail(hailstone,gameCtx)
       this._addCrackEffect(hailstone.x, hailstone.y, '#b8ff9e')
-      if (Random.random() < Config.WEATHER.TAMED_HAIL_EXP_CHANCE &&
+      if (Math.random() < Config.WEATHER.TAMED_HAIL_EXP_CHANCE &&
           typeof gameCtx.gainExp === 'function') {
         gameCtx.gainExp(Config.WEATHER.TAMED_HAIL_EXP_AMOUNT, 'tamed_hail')
         gameCtx.addFloatingText(hailstone.x, hailstone.y - 20, `+${Config.WEATHER.TAMED_HAIL_EXP_AMOUNT} EXP`, '#b8ff9e', 35)
@@ -180,7 +179,6 @@ class HailEffect extends WeatherEffect {
     }
 
     // HP扣血
-    if(gameCtx.recordDamage)gameCtx.recordDamage()
     const dead = abilities.takeDamage()
     gameCtx.damageFlash = 12
     gameCtx.shakeFrames = 4

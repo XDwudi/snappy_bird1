@@ -1,4 +1,3 @@
-const Random=require('../core/Random')
 /**
  * 生成管道、怪物、精英与道具。Game 通过回调接收实体。
  * v1.8.2：普通怪靠近管道出口；四种精英轮换，按章节/无尽时间成长。
@@ -133,7 +132,7 @@ class SpawnSystem {
     this.itemSpawnTimer++
     if (this.itemSpawnTimer >= Config.ITEM.RANDOM_SPAWN_INTERVAL) {
       const spawnChance = Config.ITEM.RANDOM_SPAWN_CHANCE + (this._deps.getStats().itemSpawnBonus || 0)
-      if (Random.random() < spawnChance) {
+      if (Math.random() < spawnChance) {
         this.spawnRandomItem()
       }
       this.itemSpawnTimer = 0
@@ -199,7 +198,7 @@ class SpawnSystem {
     const anchor = Math.max(minCenter, Math.min(maxCenter, previous))
     const low = Math.max(minCenter, anchor - step)
     const high = Math.min(maxCenter, anchor + step)
-    const center = low + Random.random() * (high - low)
+    const center = low + Math.random() * (high - low)
     this._lastPipeCenter = center
     // 缩小射线围绕同一中心展开，不把整个间隙向上偏移。
     const topHeight = center - baseGap / 2
@@ -220,7 +219,7 @@ class SpawnSystem {
    */
   updateMonsterSpawn(scrollSpeed) {
     const M = Config.MONSTER
-    if (this._deps.getGameTime() < 900) return
+    if (this._deps.getGameTime() < M.SPAWN_DELAY) return
     const maxAlive = (this._chapterMods && this._chapterMods.monsterMaxAlive != null)
       ? this._chapterMods.monsterMaxAlive : M.MAX_ALIVE
     if (this._deps.getMonsterCount() >= maxAlive) return
@@ -237,7 +236,7 @@ class SpawnSystem {
     if (this._monsterDistance < spawnDist) return
     this._monsterDistance = 0
 
-    const type = Random.random() < M.BAT_WEIGHT ? 'bat' : 'floater'
+    const type = Math.random() < M.BAT_WEIGHT ? 'bat' : 'floater'
     const groundY = this._deps.screenH - Config.GROUND.HEIGHT
     const y = this.pickMonsterY()
     // [v1.5.0] 生成参数组装：章节修正（HP/追踪/振幅）+ 精英升级；默认路径 opts=null 零变化
@@ -291,7 +290,7 @@ class SpawnSystem {
     this._eliteTimer = 0
     const chance = (this._chapterMods && this._chapterMods.eliteChance != null)
       ? this._chapterMods.eliteChance : M.ELITE_CHANCE
-    if (Random.random() < chance || ++this._eliteMisses >= 2) {
+    if (Math.random() < chance || ++this._eliteMisses >= 2) {
       this._eliteMisses=0
       this._elitePending = true
       Logger.info('Monster', '精英预警：下一只怪物升级为精英', { gameTime: this._deps.getGameTime(), chance: chance })
@@ -303,10 +302,10 @@ class SpawnSystem {
     const groundY=this._deps.screenH-Config.GROUND.HEIGHT
     const pipe=this._deps.getPipes().slice().sort((a,b)=>b.x-a.x)[0]
     if(pipe) {
-      const side=Random.random()<.5?-1:1
+      const side=Math.random()<.5?-1:1
       return Math.max(150,Math.min(groundY-40,pipe.topHeight+pipe.gap/2+side*Math.min(45,pipe.gap*.2)))
     }
-    return Math.max(150,Math.min(groundY-40,this._deps.getBirdY()+ (Random.random()<.5?-55:55)))
+    return Math.max(150,Math.min(groundY-40,this._deps.getBirdY()+ (Math.random()<.5?-55:55)))
   }
 
   // ==================== 道具生成 ====================
@@ -316,7 +315,7 @@ class SpawnSystem {
     const groundY = this._deps.screenH - Config.GROUND.HEIGHT
     const minY = Config.PIPE.MIN_TOP + 30
     const maxY = groundY - 30
-    const itemY = minY + Random.random() * (maxY - minY)
+    const itemY = minY + Math.random() * (maxY - minY)
     const itemX = this._deps.screenW + 20
     const itemType = this.rollItemType()
     this._deps.onSpawnItem(new Item(itemX, itemY, itemType))
@@ -332,12 +331,12 @@ class SpawnSystem {
     // [v1.1.0] 生成道具 [v1.1.3] 修复：在小鸟前方生成（右侧），不在后方（管道位置）
     const stats = this._deps.getStats()
     const chance = Config.ITEM.SPAWN_CHANCE + (stats.itemSpawnBonus || 0)
-    if (Random.random() < chance) {
-      const itemX = this._deps.screenW + 20 + Random.random() * 40  // [v1.1.3] 前方生成
+    if (Math.random() < chance) {
+      const itemX = this._deps.screenW + 20 + Math.random() * 40  // [v1.1.3] 前方生成
       const groundY = this._deps.screenH - Config.GROUND.HEIGHT
       const minY = Config.PIPE.MIN_TOP + 30
       const maxY = groundY - 30
-      const itemY = minY + Random.random() * (maxY - minY)
+      const itemY = minY + Math.random() * (maxY - minY)
       const itemType = this.rollItemType()
       this._deps.onSpawnItem(new Item(itemX, itemY, itemType))
     }
@@ -358,7 +357,7 @@ class SpawnSystem {
     let total = 0
     for (const t of types) total += weights[t] * multOf(t)
 
-    let r = Random.random() * total
+    let r = Math.random() * total
     for (const t of types) {
       r -= weights[t] * multOf(t)
       if (r <= 0) return t

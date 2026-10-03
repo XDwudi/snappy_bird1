@@ -1,4 +1,3 @@
-const Random=require('../core/Random')
 const FX=require('../art/Effects')
 /**
  * RainEffect.js - 雨环境效果 [v1.2.0新增]

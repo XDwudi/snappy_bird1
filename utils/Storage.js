@@ -4,16 +4,11 @@
  * 封装微信本地缓存，管理最高分、累计金币等持久化数据。
  */
 
-const KEY_BEST_SCORE = 'snappy_best_score_v190'
+const KEY_BEST_SCORE = 'snappy_best_score'
 const KEY_TOTAL_COINS = 'snappy_total_coins'
 const KEY_UNLOCKED_SKINS = 'snappy_unlocked_skins'
 
 module.exports = {
-  getLegacyBestScore(){try{return wx.getStorageSync('snappy_best_score')||0}catch(e){return 0}},
-  saveRun(data){try{wx.setStorageSync('snappy_run_v190',data);return true}catch(e){return false}},
-  loadRun(){try{return wx.getStorageSync('snappy_run_v190')||null}catch(e){return null}},
-  clearRun(){try{wx.removeStorageSync('snappy_run_v190')}catch(e){}},
-  saveReport(data){try{wx.setStorageSync('snappy_report_v190',data)}catch(e){}},
   /**
    * 获取最高分
    * @returns {number}

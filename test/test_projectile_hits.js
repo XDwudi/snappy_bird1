@@ -3,7 +3,7 @@ const Game=require('../game/core/Game'),Monster=require('../game/entities/Monste
 require('../game/systems/GameLogger').enabled=false
 let count=0
 function test(name,fn){fn();count++;console.log('✓ '+name)}
-function game(){const g=new Game({},{},375,667,null);g.start();g.bird.y=300;g.combat.bladeCD=999;return g}
+function game(){const g=new Game({},{},375,667,null);g.start();g.bird.y=300;return g}
 function elite(x=200,y=300){return new Elite(x,y,'bat',587,{elite:true,screenW:375,eliteHp:20,eliteKind:'gunship'})}
 function shot(x,y,source='blade',pierce=1){return{x,y,angle:0,damage:2,bossDamage:3,source,life:1,hits:new Set(),pierce}}
 
@@ -46,17 +46,17 @@ test('沙矛同帧穿过多个目标逐个扣血，各目标只结算一次',()=
  assert.equal(a.hp,18);assert.equal(b.hp,18);assert.equal(g.combat.shots[0].pierce,1)
  g.combat.update();assert.equal(a.hp,18);assert.equal(b.hp,18)
 })
-test('核心与派生弹命中保留伤害，毒丝/雷链仅绑定冰枪',()=>{
+test('全部新武器弹丸命中精英后保留伤害/毒丝/雷链效果',()=>{
  for(const source of ['blade','seed','sand','frost','frost_shell','wind','echo','revenge','reflect']){
-  const g=game(),m=elite(),other=elite(280,400);g.monsters=[m,other];g.abilitySystem.chapter=6;g.abilitySystem.selectAbility('frost_lance');g.combat.cooldowns.frost_lance=999;g.abilitySystem.selectAbility('venom_thread');g.abilitySystem.selectAbility('storm_chain')
-  g.combat.shots=[shot(210,325,source)];g.combat.update();assert.equal(m.hp,18,source);assert.equal(!!m.venom,source==='frost',source);assert.equal(other.hp,source==='frost'?17:20,source);if(source==='frost')assert.equal(m.frostFrames,120)
+  const g=game(),m=elite(),other=elite(280,400);g.monsters=[m,other];g.abilitySystem.selectAbility('venom_thread');g.abilitySystem.selectAbility('storm_chain')
+  g.combat.shots=[shot(210,325,source)];g.combat.update();assert.equal(m.hp,18,source);assert.ok(m.venom,source);assert.equal(other.hp,17,source);if(source==='frost')assert.equal(m.frostFrames,120)
  }
 })
-test('Boss和机关可命中，Boss下一批弹不被旧门限吞掉',()=>{
+test('Boss和机关可命中，Boss同来源受击间隔仍保留',()=>{
  const g=game();g._spawnBoss();g.chapterSystem.startBossFight();const b=g.boss;b.x=b.homeX;b._setState('roam');b._syncBox();b.mechanics.cycleStart()
  const n=b.mechanics.nodes[0],before=n.hp;g.combat.shots=[shot(n.x-5,n.y)];g.combat.update();assert.equal(n.hp,before-2)
  g.combat.shots=[shot(b.x+20,b.y)];const hp=b.hp;g.combat.update();assert.ok(b.hp<hp)
- const after=b.hp;g.combat.shots=[shot(b.x+20,b.y)];g.combat.update();assert.ok(b.hp<after)
+ const after=b.hp;g.combat.shots=[shot(b.x+20,b.y)];g.combat.update();assert.equal(b.hp,after)
 })
 test('导弹路径穿管体命中，穿缺口不误炸管道',()=>{
  const p=new Pipe(150,200,180,587),s=new Missile(230,150,null);s.previousX=100;s.previousY=150
