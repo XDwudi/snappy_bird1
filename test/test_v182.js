@@ -63,7 +63,7 @@ test('多轮弹幕密度随章节和阶段增加，危险物退场后才连协',
 test('生命危险边框只在剩1心时出现，恢复和重开即解除',()=>{
  const g=game();let strokes=0,texts=[];g.ctx=new Proxy({},{get:(_,k)=>k==='fillRect'?()=>strokes++:k==='fillText'?t=>texts.push(t):()=>{},set:()=>true})
  g.abilitySystem.hp=2;g._drawDangerBorder();assert.equal(strokes,0)
- g.abilitySystem.hp=1;g._drawDangerBorder();assert.ok(strokes>0);assert.ok(texts.includes('生命危险'))
+ g.abilitySystem.hp=1;g._drawDangerBorder();assert.ok(strokes>0);assert.ok(!texts.includes('生命危险')) // warning text now belongs to the safe ground footer
  strokes=0;g.start();g._drawDangerBorder();assert.equal(strokes,0)
 })
 test('精英早期6HP，后期96HP，无尽继续成长，伴飞窗口也增长',()=>{

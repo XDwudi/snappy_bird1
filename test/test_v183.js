@@ -56,7 +56,7 @@ test('选卡在抬手时触发一次；滑动不选卡；取消/更换卡组不�
 })
 test('飞行触摸保持按下即拍翅，抬手不重复触发',()=>{const g=game();let count=0;g.flap=()=>count++;g.handleTouchStart(10,200);assert.equal(count,1);g.handleTouchMove(10,100);g.handleTouchEnd(10,100);assert.equal(count,1)})
 test('底部能力图标与结算按钮全部避开34px系统安全区',()=>{
- for(const [w,h] of [[320,568],[390,844]]){const g=game(w,h,{top:47,bottom:h-34});g.abilitySystem.selectAbility('feather_blade');g.render();assert.ok(g._artDockTop+46<=g.safeBottom)
+ for(const [w,h] of [[320,568],[390,844]]){const g=game(w,h,{top:47,bottom:h-34});g.abilitySystem.selectAbility('feather_blade');g.render();assert.ok(g._artDockTop>=h-C.GROUND.HEIGHT);if(g._artInventoryBounds)assert.ok(g._artInventoryBounds.y+g._artInventoryBounds.h<=g.safeBottom)
  g.state='gameover';g.render();for(const b of [g._homeBtnBounds,g._restartBtnBounds]){assert.ok(b.y+b.h<=g.safeBottom);assert.ok(b.x+b.w<=w)}let action='';g.restart=()=>action='restart';g.backToReady=()=>action='home';g.handleTouchStart(1,1);assert.equal(action,'');for(const [key,expected] of [['_restartBtnBounds','restart'],['_homeBtnBounds','home']]){const b=g[key];g.handleTouchStart(b.x+10,b.y+10);assert.equal(action,expected)}}
 })
 test('图集缺失时六章/Boss/全部天气/实体可绘制，渲染不耗随机数、不改变战斗状态',()=>{

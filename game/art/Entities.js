@@ -82,7 +82,8 @@ function hazard(c,o){
  }else if(o.kind==='beam'){band(0,o.y-o.radius,o.screenW,o.radius*2);if(!warning)P.path(c,[[0,o.y],[o.screenW,o.y]],C.paper,2)}
  else if(warning){c.globalAlpha=.7;c.setLineDash([4,7]);P.path(c,[[o.x,o.y],[o.x+o.vx*100,o.y+o.vy*100]],color,1);c.setLineDash([]);P.ring(c,o.x,o.y,o.grow?23:o.radius+4,color,1);P.ring(c,o.x,o.y,(o.grow?26:o.radius+7),color,.8,o.age/o.warn)}
  else{projectile(c,o,false);if(o.grow)P.ring(c,o.x,o.y,o.radius,color,.9)}
- if(o.piercing&&(o.kind==='beam'||o.kind==='column'||o.kind==='gate')){const yy=Math.max(184,Math.min(o.groundY-18,o.y-30));P.box(c,o.screenW-103,yy-10,94,20,C.panel,C.purple);P.text(c,'◆ 穿盾 · 躲避',o.screenW-56,yy,10,C.purple,'center',true)}
+ // Piercing text is consolidated in the ground HUD; no opaque labels over targets.
+
  c.restore()
 }
 function mechanics(c,m,birdX){

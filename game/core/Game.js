@@ -2494,6 +2494,12 @@ class Game {
 
     for (const pipe of this.pipes) pipe.render(ctx)
     this._drawPipeSense()   // [v1.4.0] 管感：高亮下一根管道间隙
+    // HUD under combat entities: even an enemy/player entering the header stays visible.
+    ctx.save()
+    ctx.translate(-shakeX, -shakeY)
+    this._drawHUD()
+    ctx.restore()
+
     for (const monster of this.monsters) monster.render(ctx)   // [v1.3.0]
     if (this.boss) this.boss.render(ctx)                       // [v1.5.0] Boss 本体（含冲锋预警/阶段变色）
     for (const f of this.feathers) f.render(ctx)               // [v1.5.0] Boss 羽刃弹幕
@@ -2536,8 +2542,8 @@ class Game {
     // [v1.1.0] 浮动文字
     this._drawFloatingTexts()
 
-    // HUD（不受震动影响）
-    this._drawHUD()
+    // Status and inventory stay in the ground strip, outside the combat field.
+    Art.footer(this)
 
     // [v1.5.0] 章节转场演出覆盖层（§4.3：白闪/色带擦除/标题卡，覆盖世界与 HUD）
     if (this.chapterSystem.isTransitioning()) {
